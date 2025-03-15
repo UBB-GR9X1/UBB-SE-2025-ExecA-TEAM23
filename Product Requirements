@@ -1,0 +1,8 @@
+Our platform provides a secure login system with three different dashboards: one for medics, one for patients, and one for administrators. Each user type has specific tools designed to make managing their information and interactions easy.
+
+The medic dashboard allows doctors to view and update their profile, which includes their name, department, career details, date of birth, email, phone number, and profile picture. They can change their password, email, phone number, and profile picture as needed. Medics also have access to their list of assigned appointments and can check their current and upcoming shifts. They can search for other medics, communicate with patients and colleagues through the chat system, and log out securely when done.
+
+The patient dashboard gives users full control over their profile, where they can see and update details such as their name, date of birth, email, phone number, and profile picture. Patients can create new appointments, view their list of past and upcoming visits, and check their current treatments. They can also search for doctors, use the chat feature to communicate with them or even try the doctor recommendation system where the patient inputs his symptoms and the app recommends a doctor. Patients can log out when needed.
+
+The admin dashboard provides the functionality of viewing timestamped logs regarding new accounts created by non-hospital staff, users that have logged in, users that have modified their account credentials like username, passowrd, mail, name.
+
