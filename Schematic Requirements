@@ -26,7 +26,7 @@ Three dashboard templates:
 
 3. Admin
 see timestaped logs regarding operations like:
-- new accounts created by non-hospital staff
+- new accounts created
 - users that have logged in
 - users that have modified their account credentials: username, password, mail, name
 
