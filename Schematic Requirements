@@ -5,7 +5,7 @@ Three dashboard templates:
 -patient
 -admin
 
-1. Medic should be able to:
+1. Doctor should be able to:
 -see profile info (name, department, career info, date of birth, email, number, profile picture)
 -perform update to info (password, email, number, profile picture)
 -see list of assigned appointments
@@ -23,6 +23,7 @@ Three dashboard templates:
 -search medic profiles
 -logout functionality
 -see current treatments
+-Doctor recommendation system where the patient inputs his symptoms and the app recommends a doctor.
 
 3. Admin
 see timestaped logs regarding operations like:
