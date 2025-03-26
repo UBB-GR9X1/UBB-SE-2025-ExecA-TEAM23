@@ -90,6 +90,20 @@ CREATE TABLE Admins (
 
 
 -------------------------------------
+-- Create Logs
+-------------------------------------
+CREATE TABLE Logs (
+    LogId INT IDENTITY(1,1) PRIMARY KEY,
+    UserId INT NULL, 
+    ActionType NVARCHAR(50) NOT NULL CHECK (ActionType IN ('LOGIN', 'LOGOUT', 'UPDATE_PROFILE', 'CHANGE_PASSWORD', 'DELETE_ACCOUNT')),  
+    Timestamp DATETIME NOT NULL DEFAULT GETDATE(),  -- Auto-set when action occurs
+
+    CONSTRAINT FK_Logs_Users FOREIGN KEY (UserId) REFERENCES Users(UserId) ON DELETE SET NULL
+);
+
+
+
+-------------------------------------
 -- Insert Departments
 -------------------------------------
 INSERT INTO Departments (DepartmentName)
@@ -150,7 +164,14 @@ VALUES
 (6, 'O-', '222-333-4444', 'None', 80.0, 175),     -- Mike Davis
 (7, 'B+', '333-444-5555', 'Pollen', 70.2, 170);   -- Sarah Miller
 
-
+-------------------------------------
+-- Insert Logs
+-------------------------------------
+INSERT INTO Logs (UserId, ActionType)
+VALUES 
+(3, 'LOGIN'),
+(5, 'UPDATE_PROFILE'),
+(7, 'LOGOUT');
 
 -------------------------------------
 -- Verify Data
@@ -282,7 +303,26 @@ UPDATE Doctors
 SET CareerInfo = @careerInfo 
 WHERE DoctorId = @doctorId;
 
--- TODO: Departments + Loggers
+-- Departments --
 
+-- Get all departments
+SELECT * FROM Departments
 
+-- Logs --
+
+-- Get all logs
+SELECT * FROM Logs 
+ORDER BY Timestamp DESC;
+
+-- Get logs by user id
+SELECT * FROM Logs 
+WHERE UserId = @UserId;
+
+-- Get logs before a Timestamp
+SELECT * FROM Logs 
+WHERE Timestamp < @BeforeTimestamp;  -- input example: 2024-03-26
+
+-- Get logs by ActionType
+SELECT * FROM Logs 
+WHERE ActionType = @ActionType;
 
