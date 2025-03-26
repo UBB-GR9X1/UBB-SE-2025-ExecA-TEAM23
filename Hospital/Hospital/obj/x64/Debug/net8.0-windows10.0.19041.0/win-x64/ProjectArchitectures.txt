@@ -1,1 +1,1 @@
-D:\sem4\ISS\UBB-SE-2025-ExecA\Hospital\Hospital\Hospital.csproj;x64
+D:\Faculta\ANUL II\Semestrul II\ISS\UBB-SE-2025-ExecA\Hospital\Hospital\Hospital.csproj;x64
