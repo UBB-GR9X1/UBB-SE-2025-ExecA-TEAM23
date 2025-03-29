@@ -29,7 +29,7 @@ namespace Hospital
         {
             this.InitializeComponent();
             LoggerDatabaseService loggerDatabaseService = new LoggerDatabaseService();
-            List<LogEntryModel> logs = loggerDatabaseService.GetLogsFromDB().Result;
+            List<LogEntryModel> logs = loggerDatabaseService.GetLogsByActionType(ActionType.LOGIN).Result;
             foreach (LogEntryModel log in logs)
             {
                 LogListBox.ItemsSource = logs;
