@@ -26,7 +26,7 @@ namespace Hospital.Models
             DepartmentName = departmentName;
             Rating = rating;
             CareerInfo = careerInfo;
-            AvatarUrl = avatarUrl;
+            AvatarUrl = "https://picsum.photos/200";
             PhoneNumber = phoneNumber;
             Mail = mail;
         }

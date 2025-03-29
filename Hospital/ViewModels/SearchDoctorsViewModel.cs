@@ -2,24 +2,69 @@
 using Hospital.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Hospital.ViewModels
 {
-    public class SearchDoctorsViewModel
+    public class SearchDoctorsViewModel : INotifyPropertyChanged
     {
-        private readonly SearchDoctorsManagerModel _searchDoctorsManager;
-        private readonly string _departmentPartialName;
+        public readonly SearchDoctorsManagerModel _searchDoctorsManager;
+        private string _departmentPartialName;
+        private DoctorDisplayModel _selectedDoctor;
+        private bool _isProfileOpen;
 
-        public List<DoctorDisplayModel> DoctorList { get; private set; }
+        private ObservableCollection<DoctorDisplayModel> _doctorList;
+        public ObservableCollection<DoctorDisplayModel> DoctorList
+        {
+            get => _doctorList;
+            private set
+            {
+                _doctorList = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string DepartmentPartialName
+        {
+            get => _departmentPartialName;
+            set
+            {
+                _departmentPartialName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public DoctorDisplayModel SelectedDoctor
+        {
+            get => _selectedDoctor;
+            set
+            {
+                _selectedDoctor = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsProfileOpen
+        {
+            get => _isProfileOpen;
+            set
+            {
+                _isProfileOpen = value;
+                OnPropertyChanged();
+            }
+        }
 
         public SearchDoctorsViewModel(SearchDoctorsManagerModel searchDoctorsManager, string departmentPartialName)
         {
             _searchDoctorsManager = searchDoctorsManager;
             _departmentPartialName = departmentPartialName;
-            DoctorList = new List<DoctorDisplayModel>();
+            _doctorList = new ObservableCollection<DoctorDisplayModel>();
+            _isProfileOpen = false;
         }
 
         public async Task LoadDoctors()
@@ -27,11 +72,39 @@ namespace Hospital.ViewModels
             try
             {
                 await _searchDoctorsManager.LoadDoctors(_departmentPartialName);
-                DoctorList = _searchDoctorsManager.GetSearchedDoctors();
+
+                // Clear and repopulate the collection with new results
+                DoctorList.Clear();
+                foreach (var doctor in _searchDoctorsManager.GetSearchedDoctors())
+                {
+                    DoctorList.Add(doctor);
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error loading doctors: {ex.Message}");
             }
         }
+
+        // Methods to handle the doctor profile
+        public void ShowDoctorProfile(DoctorDisplayModel doctor)
+        {
+            SelectedDoctor = doctor;
+            IsProfileOpen = true;
+        }
+
+        public void CloseDoctorProfile()
+        {
+            IsProfileOpen = false;
+            SelectedDoctor = null;
+        }
+
+        // INotifyPropertyChanged implementation
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
 }
