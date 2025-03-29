@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Hospital.Managers
 {
-    class SearchDoctorsManagerModel
+    public class SearchDoctorsManagerModel
     {
         public List<DoctorDisplayModel> doctorList { get; private set; }
         private DoctorsDatabaseService _doctorDBService;

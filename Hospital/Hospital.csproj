@@ -12,6 +12,9 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Views\SearchDoctorsView.xaml" />
+  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -44,8 +47,11 @@
     <Folder Include="Commands\" />
     <Folder Include="Exceptions\" />
     <Folder Include="Helpers\" />
-    <Folder Include="ViewModels\" />
-    <Folder Include="Views\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\SearchDoctorsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <!--
