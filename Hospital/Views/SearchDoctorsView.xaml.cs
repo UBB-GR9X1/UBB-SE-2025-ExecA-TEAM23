@@ -36,7 +36,7 @@ namespace Hospital.Views
             this.InitializeComponent();
 
             // This would normally be injected through dependency injection
-            var searchManager = new SearchDoctorsManagerModel(new DoctorsDatabaseService());
+            var searchManager = new SearchDoctorsManagerModel(new SearchDoctorsDatabaseService());
             ViewModel = new SearchDoctorsViewModel(searchManager, string.Empty);
 
             this.DataContext = ViewModel;

@@ -19,7 +19,9 @@
         <TextBlock Grid.Row="0" Text="Hospital Management System" 
                    Style="{StaticResource TitleTextBlockStyle}" 
                    Margin="20,10" HorizontalAlignment="Center"/>
-
+        
+        
+        <!-- It work move it if you want-->
         <views:SearchDoctorsView Grid.Row="1" x:Name="searchDoctorsView" 
                          Width="600" Height="400" 
                          HorizontalAlignment="Center" 
