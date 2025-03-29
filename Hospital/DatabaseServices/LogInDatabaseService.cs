@@ -1,4 +1,5 @@
 ﻿using Hospital.Configs;
+using Hospital.Exceptions;
 using Hospital.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.UI.Xaml;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Hospital.DatabaseServices
 {
-    class LogInDatabaseService
+    public class LogInDatabaseService
     {
         private readonly Config _config;
 
@@ -41,7 +42,11 @@ namespace Hospital.DatabaseServices
                     string mail = reader.GetString(3);
                     return new UserAuthModel(userId, userName, password, mail);
                 }
-                throw new Exception("No user found with given username");
+                throw new AuthenticationException("No user found with given username");
+            }
+            catch (AuthenticationException e)
+            {
+                throw e;
             }
             catch (SqlException e)
             {
@@ -54,3 +59,4 @@ namespace Hospital.DatabaseServices
         }
     }
 }
+    
