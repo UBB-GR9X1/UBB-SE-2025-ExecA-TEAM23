@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Padding="20">
+    <Grid x:Name="RootGrid" Padding="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -22,7 +22,10 @@
         </StackPanel>
 
         <ListView Grid.Row="1" x:Name="DoctorsListView" Margin="0,20,0,0" 
-          ItemsSource="{x:Bind ViewModel.DoctorList, Mode=OneWay}">
+                  ItemsSource="{x:Bind ViewModel.DoctorList, Mode=OneWay}"
+                  SelectionMode="Single"
+                  IsItemClickEnabled="True"
+                  ItemClick="DoctorsListView_ItemClick">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid Padding="10">
@@ -38,7 +41,7 @@
                             Background="{ThemeResource SystemControlBackgroundBaseLowBrush}">
                             <Image>
                                 <Image.Source>
-                                    <BitmapImage UriSource="{Binding AvatarUrl, TargetNullValue='/Assets/default-profile.png', FallbackValue='/Assets/default-profile.png'}"/>
+                                    <BitmapImage UriSource="{Binding AvatarUrl}"/>
                                 </Image.Source>
                             </Image>
                         </Border>
@@ -55,12 +58,106 @@
                             <TextBlock VerticalAlignment="Center">
                                 <Run Text="Rating: "/>
                                 <Run Text="{Binding Rating}"/>
-                                <Run Text="/5 ★"/>  
+                                <Run Text="/5 ★"/>
                             </TextBlock>
                         </StackPanel>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+
+        <!-- Doctor Profile Popup -->
+        <Grid x:Name="ProfileOverlay" Grid.RowSpan="2" 
+      Background="{ThemeResource SystemControlBackgroundAltHighBrush}" Opacity="0.5"
+      Visibility="{x:Bind ViewModel.IsProfileOpen, Mode=OneWay}"
+      Tapped="ProfileOverlay_Tapped">
+        </Grid>
+
+        <!-- Doctor Profile Panel -->
+        <Border x:Name="ProfilePanel" Grid.RowSpan="2" 
+        CornerRadius="8" BorderThickness="1" BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}"
+        Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}"
+        Width="400" MaxHeight="600" VerticalAlignment="Center" HorizontalAlignment="Center"
+        Visibility="{x:Bind ViewModel.IsProfileOpen, Mode=OneWay}"
+        IsHitTestVisible="True"
+        Tapped="ProfilePanel_Tapped">
+
+            <Grid Padding="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Close button -->
+                <Button x:Name="CloseProfileButton" Grid.Row="0" HorizontalAlignment="Right" 
+                        Style="{StaticResource DateTimePickerFlyoutButtonStyle}"
+                        Click="CloseProfileButton_Click">
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE711;" FontSize="12"/>
+                </Button>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="0,0,10,0">
+                    <StackPanel Spacing="20" x:Name="ProfileContent">
+                        <!-- Profile Image -->
+                        <Border Width="120" Height="120" CornerRadius="60" 
+                                HorizontalAlignment="Center" Margin="0,0,0,10"
+                                Background="{ThemeResource SystemControlBackgroundBaseLowBrush}">
+                            <Image x:Name="DoctorProfileImage" Stretch="UniformToFill"/>
+                        </Border>
+
+                        <!-- Doctor Name -->
+                        <TextBlock x:Name="DoctorNameText"
+                                   Style="{StaticResource SubtitleTextBlockStyle}" 
+                                   HorizontalAlignment="Center" TextWrapping="Wrap"/>
+
+                        <!-- Details -->
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Department -->
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Department:" 
+                                       FontWeight="SemiBold" Margin="0,0,10,10"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" x:Name="DepartmentText"
+                                       TextWrapping="Wrap" Margin="0,0,0,10"/>
+
+                            <!-- Rating -->
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Rating:" 
+                                       FontWeight="SemiBold" Margin="0,0,10,10"/>
+                            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0,0,0,10">
+                                <TextBlock x:Name="RatingText"/>
+                                <TextBlock Text="/5 ★"/>
+                            </StackPanel>
+
+                            <!-- Email -->
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Email:" 
+                                       FontWeight="SemiBold" Margin="0,0,10,10"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" x:Name="EmailText"
+                                       TextWrapping="Wrap" Margin="0,0,0,10"/>
+
+                            <!-- Phone Number -->
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Phone:" 
+                                       FontWeight="SemiBold" Margin="0,0,10,10"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" x:Name="PhoneText"
+                                       TextWrapping="Wrap" Margin="0,0,0,10"/>
+
+                            <!-- Career Info -->
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="About:" 
+                                       FontWeight="SemiBold" Margin="0,0,10,0" VerticalAlignment="Top"/>
+                            <TextBlock Grid.Row="4" Grid.Column="1" x:Name="CareerInfoText"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>

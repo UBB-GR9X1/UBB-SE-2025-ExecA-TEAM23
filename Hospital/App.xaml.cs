@@ -33,7 +33,14 @@ namespace Hospital
         public App()
         {
             this.InitializeComponent();
+
+            // Prevent unhandled exceptions from breaking into the debugger
+            this.UnhandledException += (sender, e) =>
+            {
+                e.Handled = true;
+            };
         }
+        
 
         /// <summary>
         /// Invoked when the application is launched.
