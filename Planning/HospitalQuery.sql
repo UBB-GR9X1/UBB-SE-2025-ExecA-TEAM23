@@ -164,6 +164,21 @@ VALUES
 (6, 'O-', '222-333-4444', 'None', 80.0, 175),     -- Mike Davis
 (7, 'B+', '333-444-5555', 'Pollen', 70.2, 170);   -- Sarah Miller
 
+-- Insert new users for the doctors
+INSERT INTO Users (Username, Password, Mail, Role, Name, BirthDate, Cnp, Address, PhoneNumber)
+VALUES 
+('michael_brown', 'hashed_password_5', 'michael.brown@example.com', 'Doctor', 'Michael Brown', '1980-11-22', '5678901234567', '123 Cedar St', '123-456-7891'),
+('linda_white', 'hashed_password_6', 'linda.white@example.com', 'Doctor', 'Linda White', '1983-03-14', '6789012345678', '456 Spruce St', '321-654-0988'),
+('robert_green', 'hashed_password_7', 'robert.green@example.com', 'Doctor', 'Robert Green', '1975-07-30', '7890123456789', '789 Birch St', '987-123-4568');
+
+-- Insert new doctors with career information
+INSERT INTO Doctors (UserId, DepartmentId, LicenseNumber, CareerInfo)
+VALUES
+    ((SELECT UserId FROM Users WHERE Username = 'michael_brown'), 1, '987654', 'Dr. Michael Brown has over 20 years of experience in Cardiology. He specializes in heart surgeries and has published numerous research papers.'),
+    ((SELECT UserId FROM Users WHERE Username = 'linda_white'), 2, '876543', 'Dr. Linda White is a renowned Neurologist with a focus on neurodegenerative diseases. She has been awarded multiple times for her contributions to medical science.'),
+    ((SELECT UserId FROM Users WHERE Username = 'robert_green'), 3, '765432', 'Dr. Robert Green is a Pediatrician with a passion for child healthcare. He has been working in the field for over 25 years and is known for his compassionate approach.');
+
+
 -------------------------------------
 -- Insert Logs
 -------------------------------------
