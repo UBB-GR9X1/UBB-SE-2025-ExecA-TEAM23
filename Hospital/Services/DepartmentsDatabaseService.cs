@@ -30,12 +30,12 @@ namespace Hospital.Services
                         while (await reader.ReadAsync())
                         {
                             Department department = new Department(
-                                reader.GetInt32(0), 
-                                reader.GetString(1) 
-                            )
-                            {
-                                Description = reader.GetString(2)
-                            };
+                                reader.GetInt32(0),
+                                reader.GetString(1)
+                            );
+                            //{ ?????????????????????
+                            //    Description = reader.GetString(2)
+                            //};
                             departments.Add(department);
                         }
                     }
