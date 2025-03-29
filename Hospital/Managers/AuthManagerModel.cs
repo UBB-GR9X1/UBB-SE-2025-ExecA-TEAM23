@@ -13,7 +13,7 @@ namespace Hospital.Managers
     public class AuthManagerModel
     {
         private readonly LogInDatabaseService _logInDBService;
-        public static UserAuthModel? userInfo { get; private set; } = null;
+        public static UserAuthModel? s_userInfo { get; private set; } = null;
 
         public AuthManagerModel (LogInDatabaseService dbService)
         {
@@ -24,29 +24,36 @@ namespace Hospital.Managers
         {
             try
             {
-                userInfo = await _logInDBService.GetUserByUsername(username).ConfigureAwait(false);
+                s_userInfo = await _logInDBService.GetUserByUsername(username).ConfigureAwait(false);
                 return true;
             }
             catch (AuthenticationException e)
             {
                 System.Diagnostics.Debug.WriteLine(e.Message);
-                return false;
             }
             catch (SqlException e)
             {
-                throw new Exception($"SQL Exception: {e.Message}");
+                System.Diagnostics.Debug.WriteLine(e.Message);
             }
             catch (Exception e)
             {
-                throw new Exception($"Error loading Users: {e.Message}");
+                System.Diagnostics.Debug.WriteLine(e.Message);
             }
+            return false;
         }
 
         public bool VerifyPassword(string password)
         {
-            if (userInfo != null)
-                return userInfo.Password.Equals(password) ? true : false;
+            if (s_userInfo != null)
+                return s_userInfo.Password.Equals(password) ? true : false;
             return false;
+        }
+
+        public void Logout()
+        {
+            if (s_userInfo == null)
+                throw new AuthenticationException("Not logged in");
+            s_userInfo = null;
         }
     }
 }
