@@ -16,19 +16,24 @@ namespace Hospital.Models
         DELETE_ACCOUNT
     }
 
-    public class LogEntry
+    public class LogEntryModel
     {
         public int LogId { get; set; }
         public int UserId { get; set; }
         public ActionType Action { get; set; }
         public DateTime Timestamp { get; set; }
 
-        public LogEntry(int logId, int userId, ActionType action, DateTime timestamp)
+        public LogEntryModel(int logId, int userId, ActionType action, DateTime timestamp)
         {
             LogId = logId;
             UserId = userId;
             Action = action;
             Timestamp = timestamp;
+        }
+
+        public override string ToString()
+        {
+            return $"LogId: {LogId}, UserId: {UserId}, Action: {Action}, Timestamp: {Timestamp}";
         }
     }
 }
