@@ -47,7 +47,10 @@ namespace Hospital.DatabaseServices
 
                 SqlDataReader reader = await selectCommand.ExecuteReaderAsync().ConfigureAwait(false);
                 List<DoctorDisplayModel> doctorList = new List<DoctorDisplayModel>();
-
+                if(departmentPartialName == "")
+                {
+                    return doctorList;
+                }
                 while (await reader.ReadAsync().ConfigureAwait(false))
                 {
                     int doctorId = reader.GetInt32(0);

@@ -51,7 +51,7 @@ namespace Hospital.Configs
         // _databaseConnection = "Data Source={SERVER NAME};Initial Catalog={DATABASE_NAME};Integrated Security=True;TrustServerCertificate=True"
         // private string _databaseConnection = "Data Source=LAPTOP-ANDU\\SQLEXPRESS;Initial Catalog=HospitalDB;Integrated Security=True;TrustServerCertificate=True";
 
-        private string _databaseConnection = "Data Source=DESKTOP-5A6VJDA;Initial Catalog=HospitalApp;Integrated Security=True;TrustServerCertificate=True";
+        private string _databaseConnection = "Data Source=LAPTOP-ANDU\\SQLEXPRESS;Initial Catalog=HospitalDB;Integrated Security=True;TrustServerCertificate=True";
         public string DatabaseConnection { get { return _databaseConnection; } }
 
         public int patientId = 1;

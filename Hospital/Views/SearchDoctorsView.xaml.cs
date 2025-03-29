@@ -13,19 +13,60 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+using Hospital.ViewModels;
+using Hospital.Managers;
+using Hospital.Models;
+using Hospital.DatabaseServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Hospital.Views
 {
-    /// <summary>
-    /// An empty window that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    public sealed partial class SearchDoctorsView : Window
+    public sealed partial class SearchDoctorsView : UserControl
     {
+        public SearchDoctorsViewModel ViewModel { get; private set; }
+
+        // For debouncing search input
+        private CancellationTokenSource _debounceTokenSource;
+        private readonly int _debounceDelay = 300; // milliseconds
+
         public SearchDoctorsView()
         {
             this.InitializeComponent();
+
+            // This would normally be injected through dependency injection
+            var searchManager = new SearchDoctorsManagerModel(new DoctorsDatabaseService());
+            ViewModel = new SearchDoctorsViewModel(searchManager, string.Empty);
+
+            this.DataContext = ViewModel;
+
+            // Load initial empty search results
+            _ = ViewModel.LoadDoctors();
+        }
+
+        private async void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            // Cancel any previous search operation
+            _debounceTokenSource?.Cancel();
+            _debounceTokenSource = new CancellationTokenSource();
+            var token = _debounceTokenSource.Token;
+
+            try
+            {
+                // Wait before executing the search to avoid too many searches while typing
+                await Task.Delay(_debounceDelay, token);
+
+                // If the token was canceled during the delay, this won't execute
+                if (!token.IsCancellationRequested)
+                {
+                    ViewModel.DepartmentPartialName = SearchTextBox.Text;
+                    await ViewModel.LoadDoctors();
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                // This is expected when debouncing
+            }
         }
     }
 }
