@@ -45,8 +45,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Commands\" />
-    <Folder Include="Exceptions\" />
     <Folder Include="Helpers\" />
+    <Folder Include="ViewModels\" />
+    <Folder Include="Views\" />
+=======
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\SearchDoctorsView.xaml">

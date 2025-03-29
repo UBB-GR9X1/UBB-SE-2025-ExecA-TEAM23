@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Hospital.Models
 {
-    class UserAuthModel
+    public class UserAuthModel
     {
-        private int UserId { get; set; }
-        private string Username { get; set; }
-        private string Password { get; set; }
-        private string Mail { get; set; }
+        public int UserId { get; private set; }
+        public string Username { get; private set; }
+        public string Password { get; private set; }
+        public string Mail { get; private set; }
 
         public UserAuthModel(int userId, string username, string password, string mail)
         {
@@ -19,6 +19,11 @@ namespace Hospital.Models
             Username = username;
             Password = password;
             Mail = mail;
+        }
+
+        override public string ToString()
+        {
+            return UserId + Username + Password + Mail;
         }
     }
 }
