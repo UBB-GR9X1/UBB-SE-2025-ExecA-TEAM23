@@ -41,7 +41,6 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250310001" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Commands\" />
     <Folder Include="Exceptions\" />
     <Folder Include="Views\" />
   </ItemGroup>

@@ -44,5 +44,14 @@ namespace Hospital.Managers
             _logsList.Clear();
             _logsList.AddRange(await _loggerDatabaseService.GetLogsBeforeTimestamp(timestamp));
         }
+
+        public async Task LoadLogsWithParameters(int? userId, ActionType actionType, DateTime timestamp)
+        {
+            _logsList.Clear();
+            if(userId != null)
+                _logsList.AddRange(await _loggerDatabaseService.GetLogsWithParameters((int)userId, actionType, timestamp));
+            else
+                _logsList.AddRange(await _loggerDatabaseService.GetLogsWithParametersWithoutUserId(actionType, timestamp));
+        }
     }
 }

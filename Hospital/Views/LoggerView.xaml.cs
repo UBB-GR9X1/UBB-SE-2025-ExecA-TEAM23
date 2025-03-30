@@ -31,7 +31,12 @@ namespace Hospital.Views
             this.InitializeComponent();
             _loggerViewModel = new LoggerViewModel(new LoggerManagerModel());
             this.BindUi();
+            this.PopulateLogsView();
+        }
 
+        private void PopulateLogsView()
+        {
+            _loggerViewModel.LoadAllLogsCommand.Execute(null);
         }
 
         private void BindUi()
@@ -47,6 +52,8 @@ namespace Hospital.Views
             ActionTypeComboBox.ItemsSource = _loggerViewModel.ActionTypes;
 
             LoadLogsBeforeTimestampButton.Command = _loggerViewModel.LoadLogsBeforeTimestampCommand;
+
+            LoadLogsWithAllParametersButton.Command = _loggerViewModel.LoadLogsWithParametersCommand;
 
             // Bind TextBox, ComboBox, and DatePicker to ViewModel properties
             UserIdTextBox.SetBinding(Microsoft.UI.Xaml.Controls.TextBox.TextProperty, new Microsoft.UI.Xaml.Data.Binding

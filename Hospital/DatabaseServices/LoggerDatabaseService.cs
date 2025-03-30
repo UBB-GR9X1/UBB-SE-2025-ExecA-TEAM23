@@ -175,6 +175,75 @@ namespace Hospital.DatabaseServices
                 return new List<LogEntryModel>();
             }
         }
+
+        public async Task<List<LogEntryModel>> GetLogsWithParametersWithoutUserId(ActionType actionType, DateTime beforeTimeStamp)
+        {
+            const string queryGetLogsByParameters = "SELECT * FROM Logs WHERE ActionType = @ActionType AND Timestamp < @BeforeTimestamp;";
+            try
+            {
+                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                await connection.OpenAsync().ConfigureAwait(false);
+                SqlCommand selectCommand = new SqlCommand(queryGetLogsByParameters, connection);
+                selectCommand.Parameters.AddWithValue("@ActionType", actionType.ToString());
+                selectCommand.Parameters.AddWithValue("@BeforeTimestamp", beforeTimeStamp);
+                SqlDataReader reader = await selectCommand.ExecuteReaderAsync().ConfigureAwait(false);
+                List<LogEntryModel> logs = new List<LogEntryModel>();
+                while (await reader.ReadAsync().ConfigureAwait(false))
+                {
+                    int logId = reader.GetInt32(0);
+                    int userIdd = reader.GetInt32(1);
+                    ActionType action = (ActionType)Enum.Parse(typeof(ActionType), reader.GetString(2));
+                    DateTime timestamp = reader.GetDateTime(3);
+                    logs.Add(new LogEntryModel(logId, userIdd, action, timestamp));
+                }
+                return logs;
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"SQL Exception: {e.Message}");
+                return new List<LogEntryModel>();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"General Exception: {e.Message}");
+                return new List<LogEntryModel>();
+            }
+        }
+
+        public async Task<List<LogEntryModel>> GetLogsWithParameters(int userId, ActionType actionType, DateTime beforeTimeStamp)
+        {
+            const string queryGetLogsByParameters = "SELECT * FROM Logs WHERE UserId = @UserId AND ActionType = @ActionType AND Timestamp < @BeforeTimestamp;";
+            try
+            {
+                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                await connection.OpenAsync().ConfigureAwait(false);
+                SqlCommand selectCommand = new SqlCommand(queryGetLogsByParameters, connection);
+                selectCommand.Parameters.AddWithValue("@UserId", userId);
+                selectCommand.Parameters.AddWithValue("@ActionType", actionType.ToString());
+                selectCommand.Parameters.AddWithValue("@BeforeTimestamp", beforeTimeStamp);
+                SqlDataReader reader = await selectCommand.ExecuteReaderAsync().ConfigureAwait(false);
+                List<LogEntryModel> logs = new List<LogEntryModel>();
+                while (await reader.ReadAsync().ConfigureAwait(false))
+                {
+                    int logId = reader.GetInt32(0);
+                    int userIdd = reader.GetInt32(1);
+                    ActionType action = (ActionType)Enum.Parse(typeof(ActionType), reader.GetString(2));
+                    DateTime timestamp = reader.GetDateTime(3);
+                    logs.Add(new LogEntryModel(logId, userIdd, action, timestamp));
+                }
+                return logs;
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine($"SQL Exception: {e.Message}");
+                return new List<LogEntryModel>();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"General Exception: {e.Message}");
+                return new List<LogEntryModel>();
+            }
+        }
     }
 }
   

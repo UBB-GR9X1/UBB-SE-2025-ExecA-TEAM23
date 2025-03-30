@@ -23,6 +23,7 @@ namespace Hospital.ViewModels
         public ICommand LoadLogsByUserIdCommand { get; }
         public ICommand LoadLogsBeforeTimestampCommand { get; }
         public ICommand LoadLogsByActionTypeCommand { get; }
+        public ICommand LoadLogsWithParametersCommand { get; }
 
         private string _userIdInput;
 
@@ -74,6 +75,7 @@ namespace Hospital.ViewModels
             LoadLogsByUserIdCommand = new RelayCommand(async () => await LoadLogsByUserIdAsync());
             LoadLogsBeforeTimestampCommand = new RelayCommand(async () => await LoadLogsBeforeTimestampAsync());
             LoadLogsByActionTypeCommand = new RelayCommand(async () => await LoadLogsByActionTypeAsync());
+            LoadLogsWithParametersCommand = new RelayCommand(async () => await LoadLogsWithParametersAsync());
 
         }
 
@@ -85,7 +87,14 @@ namespace Hospital.ViewModels
 
         private async Task LoadLogsByUserIdAsync()
         {
-            Debug.WriteLine(UserIdInput);
+            if (string.IsNullOrWhiteSpace(UserIdInput))
+            {
+                Debug.WriteLine("No UserId provided, loading all logs...");
+                await _loggerManager.LoadAllLogs();
+                UpdateLogs();
+                return;
+            }
+
             if (int.TryParse(UserIdInput, out int userId))
             {
                 await _loggerManager.LoadLogsByUserId(userId);
@@ -103,6 +112,20 @@ namespace Hospital.ViewModels
         {
             Debug.WriteLine(SelectedActionType);
             await _loggerManager.LoadLogsByActionType(SelectedActionType);
+            UpdateLogs();
+        }
+
+        private async Task LoadLogsWithParametersAsync()
+        {
+            int? userId = null;
+
+            // Try to parse UserIdInput; if successful, assign the value, otherwise keep it null
+            if (int.TryParse(UserIdInput, out int parsedUserId))
+            {
+                userId = parsedUserId;
+            }
+
+            await _loggerManager.LoadLogsWithParameters(userId, SelectedActionType, SelectedTimestamp);
             UpdateLogs();
         }
 
