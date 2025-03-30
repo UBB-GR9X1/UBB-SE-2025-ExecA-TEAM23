@@ -59,6 +59,34 @@ namespace Hospital.Managers
 
             return result;
         }
+        public async Task<bool> CreateAccount(string username, string password, string mail, string name, DateOnly birthDate, string cnp)
+        {
+            if (string.IsNullOrWhiteSpace(username) || username.Contains(" "))
+                throw new AuthenticationException("Invalid username!\nCan't be null or with space");
+
+            if (string.IsNullOrEmpty(password) || password.Contains(" "))
+                throw new AuthenticationException("Invalid password!\nCan't be null or with space");
+
+            if (string.IsNullOrEmpty(mail) || !mail.Contains("@") || !mail.Contains("."))
+                throw new AuthenticationException("Invalid mail!\nCan't be null, has to contain '@' and '.'");
+
+            if (string.IsNullOrEmpty(name) || !name.Contains(" "))
+                throw new AuthenticationException("Invalid name!\nCan't be null, has to contain space");
+
+            if (cnp.Length != 13)
+                throw new AuthenticationException("Invalid CNP!\nHas to have length 13");
+
+            foreach (char c in cnp)
+            {
+                if (!char.IsDigit(c))
+                    throw new AuthenticationException("Invalid CNP!\nOnly numbers allowed");
+            }
+
+            bool result = await _logInDBService.CreateAccount(username, password, mail, name, birthDate, cnp);
+            if (result)
+                return await this.LoadUserByUsername(username);
+            return result;
+        }
 
         public async Task<bool> LogAction(ActionType action)
         {

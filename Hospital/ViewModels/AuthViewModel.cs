@@ -35,5 +35,10 @@ namespace Hospital.ViewModels
         {
             await _authManagerModel.Logout();
         }
+
+        public async Task CreateAccount(string username, string password, string mail, string name, DateOnly birthDate, string cnp)
+        {
+            await _authManagerModel.CreateAccount(username, password, mail, name, birthDate, cnp);
+        }
     }
 }

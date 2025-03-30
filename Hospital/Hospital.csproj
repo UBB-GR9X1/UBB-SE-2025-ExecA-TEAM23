@@ -12,9 +12,6 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-  <ItemGroup>
-    <Page Remove="views\LogoutWindow.xaml" />
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -49,6 +46,9 @@
     <Folder Include="Helpers\" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="CreateAccountWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
     <None Update="LogoutWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>

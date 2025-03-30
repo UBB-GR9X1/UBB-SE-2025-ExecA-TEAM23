@@ -54,5 +54,12 @@ namespace Hospital
                 await validationDialog.ShowAsync();
             }
         }
+
+        private void CreateAccountButton_Click(object sender, RoutedEventArgs e)
+        {
+            CreateAccountWindow createAccWindow = new CreateAccountWindow(_viewModel);
+            createAccWindow.Activate();
+            this.Close();
+        }
     }
 }

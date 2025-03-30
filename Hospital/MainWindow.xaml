@@ -27,11 +27,19 @@
             <PasswordBox x:Name="PasswordField" PlaceholderText="Password"
                  Background="Black" Foreground="White" BorderBrush="Gray" BorderThickness="1" Margin="0,5"/>
 
-            <!-- Login Button -->
-            <Button x:Name="LoginButton" Content="Login"
-            Background="#0078D7" Foreground="White"
-            Padding="10" FontWeight="Bold" Click="LoginButton_Click">
-            </Button>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
+                <!-- Login Button -->
+                <Button x:Name="LoginButton" Content="Login"
+                Background="#0078D7" Foreground="White"
+                Padding="10" FontWeight="Bold" Click="LoginButton_Click">
+                </Button>
+
+                <!-- Create Account Button -->
+                <Button x:Name="CreateAccount" Content="Create Account"
+                Background="#0078D7" Foreground="White"
+                Padding="10" FontWeight="Bold" Click="CreateAccountButton_Click">
+                </Button>
+            </StackPanel>
 
         </StackPanel>
 
