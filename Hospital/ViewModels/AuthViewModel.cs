@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Hospital.Models;
 
 namespace Hospital.ViewModels
 {
@@ -17,27 +18,22 @@ namespace Hospital.ViewModels
             _authManagerModel = auth;
         }
 
-        public async Task<bool> Login(string username, string password)
+        public async Task Login(string username, string password)
         {
             bool userExists = await _authManagerModel.LoadUserByUsername(username);
+
             if (!userExists)
                 throw new AuthenticationException("Username doesn't exist!");
-            bool validPassword = _authManagerModel.VerifyPassword(password);
+
+            bool validPassword = await _authManagerModel.VerifyPassword(password);
+
             if (!validPassword)
                 throw new AuthenticationException("Invalid password!");
-            return true;
         }
 
-        public void Logout()
+        public async Task Logout()
         {
-            try
-            {
-                _authManagerModel.Logout();
-            }
-            catch (AuthenticationException e)
-            {
-                Console.WriteLine(e);
-            }
+            await _authManagerModel.Logout();
         }
     }
 }
