@@ -13,6 +13,8 @@ namespace Hospital.Models
         public string Password { get; private set; }
         public string Mail { get; private set; }
 
+        public static readonly UserAuthModel Default = new UserAuthModel(0, "Guest", "", "");
+
         public UserAuthModel(int userId, string username, string password, string mail)
         {
             UserId = userId;

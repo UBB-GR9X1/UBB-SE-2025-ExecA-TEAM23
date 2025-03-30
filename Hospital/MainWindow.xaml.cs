@@ -36,7 +36,10 @@ namespace Hospital
 
             try
             {
-                bool successful = await _viewModel.Login(username, password);
+                await _viewModel.Login(username, password);
+                LogoutWindow log = new LogoutWindow(_viewModel);
+                log.Activate();
+                this.Close();
             }
             catch (AuthenticationException ex)
             {
@@ -50,8 +53,6 @@ namespace Hospital
                 validationDialog.XamlRoot = this.Content.XamlRoot;
                 await validationDialog.ShowAsync();
             }
-
-            // implement what happens after successful Login
         }
     }
 }

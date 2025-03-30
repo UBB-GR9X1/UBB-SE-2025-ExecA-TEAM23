@@ -57,6 +57,50 @@ namespace Hospital.DatabaseServices
                 throw new Exception($"Error loading Users: {e.Message}");
             }
         }
+
+        public async Task<bool> AuthenticationLogService (int userId, ActionType type)
+        {
+            string query = "INSERT INTO Logs (UserId, ActionType) VALUES (@userId, @type)";
+            try
+            {
+                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+
+                await connection.OpenAsync().ConfigureAwait(false);
+
+                using SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@userId", userId);
+
+                switch (type)
+                {
+                    case ActionType.LOGIN:
+                        command.Parameters.AddWithValue("@type", "LOGIN");
+                        break;
+                    case ActionType.LOGOUT:
+                        command.Parameters.AddWithValue("@type", "LOGOUT");
+                        break;
+                    default:
+                        throw new AuthenticationException("Invalid type for Authentication Log");
+                }
+
+                int rowsAffected = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+
+                return rowsAffected == 1;
+
+            }
+
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
     }
 }
-    
+ 
