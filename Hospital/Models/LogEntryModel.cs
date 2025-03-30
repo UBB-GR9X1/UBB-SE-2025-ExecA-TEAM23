@@ -20,20 +20,20 @@ namespace Hospital.Models
     {
         public int LogId { get; set; }
         public int UserId { get; set; }
-        public ActionType Action { get; set; }
+        public ActionType ActionType { get; set; }
         public DateTime Timestamp { get; set; }
 
         public LogEntryModel(int logId, int userId, ActionType action, DateTime timestamp)
         {
             LogId = logId;
             UserId = userId;
-            Action = action;
+            ActionType = action;
             Timestamp = timestamp;
         }
 
         public override string ToString()
         {
-            return $"LogId: {LogId}, UserId: {UserId}, Action: {Action}, Timestamp: {Timestamp}";
+            return $"LogId: {LogId}, UserId: {UserId}, Action: {ActionType}, Timestamp: {Timestamp}";
         }
     }
 }

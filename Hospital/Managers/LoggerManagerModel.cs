@@ -21,25 +21,25 @@ namespace Hospital.Managers
 
         public List<LogEntryModel> LogsList => _logsList;
 
-        public async void LoadAllLogs()
+        public async Task LoadAllLogs()
         {
             _logsList.Clear();
             _logsList.AddRange(await _loggerDatabaseService.GetLogsFromDB());
         }
 
-        public async void LoadLogsByUserId(int userId)
+        public async Task LoadLogsByUserId(int userId)
         {
             _logsList.Clear();
             _logsList.AddRange(await _loggerDatabaseService.GetLogsByUserId(userId));
         }
 
-        public async void LoadLogsByActionType(ActionType actionType)
+        public async Task LoadLogsByActionType(ActionType actionType)
         {
             _logsList.Clear();
             _logsList.AddRange(await _loggerDatabaseService.GetLogsByActionType(actionType));
         }
 
-        public async void LoadLogsBeforeTimestamp(DateTime timestamp)
+        public async Task LoadLogsBeforeTimestamp(DateTime timestamp)
         {
             _logsList.Clear();
             _logsList.AddRange(await _loggerDatabaseService.GetLogsBeforeTimestamp(timestamp));
