@@ -1,5 +1,6 @@
 ﻿using Hospital.Exceptions;
 using Hospital.ViewModels;
+using Microsoft.Data.SqlClient;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -35,6 +36,18 @@ namespace Hospital
                     XamlRoot = this.Content.XamlRoot
                 };
                 await dialog.ShowAsync();
+            }
+            catch (SqlException err)
+            {
+                var validationDialog = new ContentDialog
+                {
+                    Title = "Error",
+                    Content = $"{err.Message}",
+                    CloseButtonText = "OK"
+                };
+
+                validationDialog.XamlRoot = this.Content.XamlRoot;
+                await validationDialog.ShowAsync();
             }
         }
     }
