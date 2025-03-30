@@ -12,7 +12,10 @@
 			<TextBox x:Name="NameTextBox" PlaceholderText="Enter your full name" />
 			<CalendarDatePicker x:Name="BirthDateCalendarPicker" />
 			<TextBox x:Name="CNPTextBox" PlaceholderText="Enter your CNP" MaxLength="13" InputScope="Number" />
-			<Button x:Name="CreateAccountButton" Content="Create Account" Click="CreateAccountButton_Click"/>
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
+				<Button x:Name="CreateAccountButton" Content="Create Account" Click="CreateAccountButton_Click"/>
+				<Button x:Name="GoBackButton" Content="Go Back" Click="GoBackButton_Click" />
+			</StackPanel>
         </StackPanel>
     </Grid>
 </Window>

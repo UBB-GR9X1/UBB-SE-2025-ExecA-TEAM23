@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Hospital.Exceptions;
 using Hospital.Views;
 using System;
+using Microsoft.Data.SqlClient;
 
 namespace Hospital
 {
@@ -47,6 +48,18 @@ namespace Hospital
                 {
                     Title = "Error",
                     Content = $"{ex.Message}",
+                    CloseButtonText = "OK"
+                };
+
+                validationDialog.XamlRoot = this.Content.XamlRoot;
+                await validationDialog.ShowAsync();
+            }
+            catch (SqlException err)
+            {
+                var validationDialog = new ContentDialog
+                {
+                    Title = "Error",
+                    Content = $"{err.Message}",
                     CloseButtonText = "OK"
                 };
 

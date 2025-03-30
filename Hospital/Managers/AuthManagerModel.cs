@@ -22,17 +22,8 @@ namespace Hospital.Managers
 
         public async Task<bool> LoadUserByUsername(string username)
         {
-            try
-            {
-                _userInfo = await _logInDBService.GetUserByUsername(username).ConfigureAwait(false);
-                return true;
-            }
-            catch (Exception e) when (e is AuthenticationException || e is SqlException)
-            {
-                System.Diagnostics.Debug.WriteLine(e.Message);
-                _userInfo = UserAuthModel.Default;
-                return false;
-            }
+            _userInfo = await _logInDBService.GetUserByUsername(username).ConfigureAwait(false);
+            return true;
         }
 
         public async Task<bool> VerifyPassword(string password)
@@ -90,17 +81,7 @@ namespace Hospital.Managers
 
         public async Task<bool> LogAction(ActionType action)
         {
-            try
-            {
-                return await _logInDBService.AuthenticationLogService(_userInfo.UserId, action);
-            }
-
-            catch (AuthenticationException e)
-            {
-                Console.WriteLine(e.Message);
-                return false;
-            }
-        }
-            
+            return await _logInDBService.AuthenticationLogService(_userInfo.UserId, action);
+        }  
     }
 }

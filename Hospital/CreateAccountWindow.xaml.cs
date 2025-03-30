@@ -81,5 +81,12 @@ namespace Hospital
                 await validationDialog.ShowAsync();
             }
         }
+
+        private void GoBackButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow main = new MainWindow();
+            main.Activate();
+            this.Close();
+        }
     }
 }

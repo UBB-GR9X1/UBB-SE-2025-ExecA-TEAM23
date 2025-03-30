@@ -120,17 +120,9 @@ namespace Hospital.DatabaseServices
                 return rowsAffected == 1;
 
             }
-
-            catch (SqlException e)
+            catch (SqlException)
             {
-                Console.WriteLine(e.Message);
-                return false;
-            }
-
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return false;
+                throw new AuthenticationException("Error Action Logger");
             }
         }
     }
