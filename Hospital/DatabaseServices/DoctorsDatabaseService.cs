@@ -10,11 +10,11 @@ using Microsoft.Data.SqlClient;
 
 namespace Hospital.DatabaseServices
 {
-    public class SearchDoctorsDatabaseService
+    public class DoctorsDatabaseService
     {
         private readonly Config _config;
 
-        public SearchDoctorsDatabaseService()
+        public DoctorsDatabaseService()
         {
             _config = Config.GetInstance();
         }
