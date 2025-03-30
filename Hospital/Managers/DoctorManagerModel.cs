@@ -11,11 +11,11 @@ using Windows.System;
 
 namespace Hospital.DatabaseServices
 {
-    public class DoctorsDatabaseService
+    public class DoctorManagerModel
     {
         private readonly Config _config;
 
-        public DoctorsDatabaseService()
+        public DoctorManagerModel()
         {
             _config = Config.GetInstance();
         }
