@@ -11,9 +11,9 @@ namespace Hospital.Managers
     public class SearchDoctorsManagerModel
     {
         public List<DoctorDisplayModel> doctorList { get; private set; }
-        private SearchDoctorsDatabaseService _doctorDBService;
+        private DoctorsDatabaseService _doctorDBService;
 
-        public SearchDoctorsManagerModel(SearchDoctorsDatabaseService dbService)
+        public SearchDoctorsManagerModel(DoctorsDatabaseService dbService)
         {
             _doctorDBService = dbService;
             doctorList = new List<DoctorDisplayModel>();
