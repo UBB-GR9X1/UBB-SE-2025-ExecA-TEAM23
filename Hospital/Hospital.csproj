@@ -12,6 +12,11 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="PatientDashboardWindow.xaml" />
+    <None Remove="Views\PatientDashboardControl.xaml" />
+    <None Remove="Views\PatientDashboardWindow.xaml" />
+  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -53,7 +58,16 @@
     <None Update="LogoutWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
+
+    <Page Update="Views\PatientDashboardWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="PatientDashboardWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\PatientDashboardControl.xaml">
     <Page Update="RecommendationView.xaml">
+
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
