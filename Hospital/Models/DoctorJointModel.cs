@@ -41,5 +41,21 @@ namespace Hospital.Models
             RegistrationDate = registrationDate;
         }
 
+        public string GetDoctorName()
+        {
+            return DoctorName;
+        }
+        public double GetDoctorRating()
+        {
+            return Rating;
+        }
+        public DateOnly GetBirthDate()
+        {
+            return BirthDate;
+        }
+        public DateTime GetRegistrationDate()
+        {
+            return RegistrationDate;
+        }
     }
 }

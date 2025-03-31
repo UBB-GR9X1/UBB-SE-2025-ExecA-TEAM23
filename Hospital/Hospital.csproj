@@ -46,6 +46,7 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250310001" />
   </ItemGroup>
   <ItemGroup>
+
     <Folder Include="Commands\" />
     <Folder Include="Exceptions\" />
     <Folder Include="Helpers\" />
@@ -57,6 +58,7 @@
     <None Update="LogoutWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
+
     <Page Update="Views\PatientDashboardWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -64,6 +66,8 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\PatientDashboardControl.xaml">
+    <Page Update="RecommendationView.xaml">
+
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
@@ -71,6 +75,10 @@
     <Page Update="Views\SearchDoctorsView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+
+    <Folder Include="Exceptions\" />
+    <Folder Include="Views\" />
+
   </ItemGroup>
 
   <!--

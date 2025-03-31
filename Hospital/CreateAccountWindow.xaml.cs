@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Hospital.Exceptions;
 using Hospital.ViewModels;
 using Microsoft.Data.SqlClient;
+using Hospital.Models;
 
 namespace Hospital
 {
@@ -27,6 +28,7 @@ namespace Hospital
             string password = PasswordField.Password;
             string mail = EmailTextBox.Text;
             string name = NameTextBox.Text;
+            string emergencyContact = EmergencyContactTextBox.Text;
 
             if (BirthDateCalendarPicker.Date.HasValue)
             {
@@ -35,12 +37,62 @@ namespace Hospital
 
                 string cnp = CNPTextBox.Text;
 
+                BloodType? selectedBloodType = null;
+                if (BloodTypeComboBox.SelectedItem is ComboBoxItem selectedItem)
+                {
+                    string? selectedTag = selectedItem.Tag.ToString();
+                    if (selectedTag != null && Enum.TryParse(selectedTag, out BloodType parsedBloodType))
+                    {
+                        selectedBloodType = parsedBloodType;
+                    }
+                }
+
+                if (selectedBloodType == null)
+                {
+                    var validationDialog = new ContentDialog
+                    {
+                        Title = "Error",
+                        Content = "Please select a blood type.",
+                        CloseButtonText = "OK"
+                    };
+
+                    validationDialog.XamlRoot = this.Content.XamlRoot;
+                    await validationDialog.ShowAsync();
+                    return;
+                }
+
+                bool weightValid = double.TryParse(WeightTextBox.Text, out double weight);
+                bool heightValid = int.TryParse(HeightTextBox.Text, out int height);
+
+                if (!weightValid || !heightValid || weight <= 0 || height <= 0)
+                {
+                    var validationDialog = new ContentDialog
+                    {
+                        Title = "Error",
+                        Content = "Please enter valid Weight (kg) and Height (cm).",
+                        CloseButtonText = "OK"
+                    };
+
+                    validationDialog.XamlRoot = this.Content.XamlRoot;
+                    await validationDialog.ShowAsync();
+                    return;
+                }
+
                 try
                 {
-                    await _viewModel.CreateAccount(username, password, mail, name, birthDate, cnp);
+                    await _viewModel.CreateAccount(username, password, mail, name, birthDate, cnp, (BloodType)selectedBloodType, emergencyContact,weight, height);
+
+                    /*
+                        Here you should open Patient Dashboard, as any new User is considered a Patient
+                    */
+
+                    // Open here window of Patient Dashboard instead of LogoutWindow 
+
                     LogoutWindow log = new LogoutWindow(_viewModel);
                     log.Activate();
                     this.Close();
+
+                    //
                 }
                 catch (AuthenticationException err)
                 {

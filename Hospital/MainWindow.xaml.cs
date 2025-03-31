@@ -1,10 +1,12 @@
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Hospital.DatabaseServices;
+using Hospital.Models;
+using Hospital.Views;
 using Hospital.DatabaseServices;
 using Hospital.Managers;
 using Hospital.ViewModels;
@@ -13,6 +15,13 @@ using Hospital.Exceptions;
 using Hospital.Views;
 using System;
 using Microsoft.Data.SqlClient;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+
+// To learn more about WinUI, the WinUI project structure,
+// and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace Hospital
 {
@@ -38,9 +47,33 @@ namespace Hospital
             try
             {
                 await _viewModel.Login(username, password);
+
+                
+                /*
+                if (_viewModel._authManagerModel._userInfo.Role == "Patient")
+                {
+                    this.Close();
+                    return;
+                }
+
+                else if (_viewModel._authManagerModel._userInfo.Role == "Doctor")
+                {
+
+                }
+
+                //==> Implement like this to open specific Dashboards
+                */
+                 
+                // Open Admin / Doctor / Patient Dashboard instead of LogoutWindow
+
                 LogoutWindow log = new LogoutWindow(_viewModel);
                 log.Activate();
+                // Show Logger window after successful login just for the presentation (uncomment when needed)
+                // LoggerView logger = new LoggerView();
+                // logger.Activate();
                 this.Close();
+
+                //
             }
             catch (AuthenticationException ex)
             {
