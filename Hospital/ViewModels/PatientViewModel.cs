@@ -1,6 +1,8 @@
 ﻿using Hospital.Managers;
+using Hospital.Models;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Hospital.ViewModels
@@ -9,11 +11,12 @@ namespace Hospital.ViewModels
     {
         private readonly PatientManagerModel _patientManagerModel;
 
+
         public PatientViewModel(PatientManagerModel patientManagerModel, int userId)
         {
             _patientManagerModel = patientManagerModel;
             _userId = userId;
-            Task.Run(async () => await LoadPatientInfoByUserId(userId));
+            LoadPatientInfoByUserIdAsync(userId);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -116,15 +119,67 @@ namespace Hospital.ViewModels
             }
         }
 
-        private DateOnly _birthDate;
-        public DateOnly BirthDate
+        // Non-editable fields
+        private string _bloodType;
+        public string BloodType
+        {
+            get => _bloodType;
+            set {
+                if (_bloodType != value)
+                {
+                    _bloodType = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private string _allergies;
+        public string Allergies
+        {
+            get => _allergies;
+            set {
+                if (_allergies != value)
+                {
+                    _allergies = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private DateTime _birthDate;
+        public DateTime BirthDate
         {
             get => _birthDate;
-            set
-            {
+            set {
                 if (_birthDate != value)
                 {
                     _birthDate = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private string _cnp;
+        public string Cnp
+        {
+            get => _cnp;
+            set {
+                if (_cnp != value)
+                {
+                    _cnp = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private DateTime _registrationDate;
+        public DateTime RegistrationDate
+        {
+            get => _registrationDate;
+            set {
+                if (_registrationDate != value)
+                {
+                    _registrationDate = value;
                     OnPropertyChanged();
                 }
             }
@@ -172,31 +227,50 @@ namespace Hospital.ViewModels
             }
         }
 
+        // Password fields
+        private string _password;
+        public string Password
+        {
+            get => _password;
+            set
+            {
+                if (_password != value)
+                {
+                    _password = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         protected virtual void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public async Task<bool> LoadPatientInfoByUserId(int userId)
+        public async Task<bool> LoadPatientInfoByUserIdAsync(int userId)
         {
             try
             {
                 IsLoading = true;
                 bool result = await _patientManagerModel.LoadPatientInfoByUserId(userId);
-
                 if (result && _patientManagerModel._patientInfo != null)
                 {
-                    // Copy properties from _patientInfo into the ViewModel
                     var patient = _patientManagerModel._patientInfo;
                     Name = patient.PatientName;
                     Email = patient.Mail;
+                    Password = patient.Password;
                     Username = patient.Username;
                     Address = patient.Address;
                     PhoneNumber = patient.PhoneNumber;
                     EmergencyContact = patient.EmergencyContact;
-                    BirthDate = patient.BirthDate;
+                    BloodType = patient.BloodType;
+                    Allergies = patient.Allergies;
+                    BirthDate = patient.BirthDate.ToDateTime(TimeOnly.MinValue);
+                    Cnp = patient.Cnp;
+                    RegistrationDate = patient.RegistrationDate;
                     Weight = patient.Weight;
                     Height = patient.Height;
+
                 }
 
                 IsLoading = false;
@@ -294,6 +368,26 @@ namespace Hospital.ViewModels
                 return false;
             }
         }
+        public async Task<bool> UpdatePassword(string password)
+        {
+            try
+            {
+                IsLoading = true;
+                bool result = await _patientManagerModel.UpdatePassword(UserId, password);
+                if (result)
+                {
+                    Password = password;
+                }
+                IsLoading = false;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                IsLoading = false;
+                Console.WriteLine($"Error updating password: {ex.Message}");
+                return false;
+            }
+        }
 
         public async Task<bool> UpdatePhoneNumber(string phoneNumber)
         {
@@ -337,26 +431,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        public async Task<bool> UpdateBirthDate(DateOnly birthDate)
-        {
-            try
-            {
-                IsLoading = true;
-                bool result = await _patientManagerModel.UpdateBirthDate(UserId, birthDate);
-                if (result)
-                {
-                    BirthDate = birthDate;
-                }
-                IsLoading = false;
-                return result;
-            }
-            catch (Exception ex)
-            {
-                IsLoading = false;
-                Console.WriteLine($"Error updating birth date: {ex.Message}");
-                return false;
-            }
-        }
+      
 
         public async Task<bool> UpdateWeight(float weight)
         {

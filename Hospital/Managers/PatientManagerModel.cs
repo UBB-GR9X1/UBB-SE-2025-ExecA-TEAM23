@@ -2,6 +2,7 @@
 using Hospital.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +26,7 @@ namespace Hospital.Managers
         public async Task<bool> LoadPatientInfoByUserId(int userId)
         {
             _patientInfo = await _patientDBService.GetPatientByUserId(userId).ConfigureAwait(false);
+            Debug.WriteLine($"Patient info loaded: {_patientInfo.PatientName}");
             return true;
         }
         public async Task<bool> LoadAllPatients()

@@ -1,3 +1,4 @@
+using Hospital.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -23,9 +24,16 @@ namespace Hospital.Views
     /// </summary>
     public sealed partial class PatientDashboardWindow : Window
     {
-        public PatientDashboardWindow()
+        public PatientDashboardWindow(PatientViewModel patientViewModel)
         {
             this.InitializeComponent();
+
+            // Create the PatientDashboardControl and set its DataContext
+            PatientDashboardControl patientDashboardControl = new PatientDashboardControl(patientViewModel);
+
+            // Add it to the grid
+            PatientDashboard.Content = patientDashboardControl; // PatientDashboard is the x:Name of your Grid
+
         }
     }
 }
