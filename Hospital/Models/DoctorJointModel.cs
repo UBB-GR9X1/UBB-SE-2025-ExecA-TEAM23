@@ -57,5 +57,23 @@ namespace Hospital.Models
         {
             return RegistrationDate;
         }
+        public string GetDoctorDepartment()
+        {
+            return DepartmentId switch
+            {
+                1 => "Cardiology",
+                2 => "Neurology",
+                3 => "Pediatrics",
+                4 => "Ophthalmology",
+                5 => "Gastroenterology",
+                6 => "Orthopedics",
+                7 => "Dermatology",
+                _ => "Unknown"
+            };
+        }
+        public override string ToString()
+        {
+            return $"{DoctorName} (Department ID: {DepartmentId}, Rating: {Rating})";
+        }
     }
 }
