@@ -4,17 +4,18 @@ using Hospital.ViewModels;
 using Hospital.Models;
 using System.Threading.Tasks;
 using Hospital.DatabaseServices;
+using System;
 
 namespace Hospital.Views
 {
     public sealed partial class RecommendationView : Page
     {
-        private RecommendationSystemFormViewModel _formViewModel;
-        private RecommendationSystemModel _recommendationSystem;
+        private readonly RecommendationSystemFormViewModel _formViewModel;
+        private readonly RecommendationSystemModel _recommendationSystem;
 
         public RecommendationView()
         {
-            this.InitializeComponent();  // This initializes the XAML components
+            this.InitializeComponent();
 
             _formViewModel = new RecommendationSystemFormViewModel();
             this.DataContext = _formViewModel;
@@ -23,17 +24,37 @@ namespace Hospital.Views
 
         private async void RecommendButton_Click(object sender, RoutedEventArgs e)
         {
-            DoctorJointModel? recommendedDoctor = await _recommendationSystem.RecommendDoctor(_formViewModel);
+            try
+            {
+                if (sender is Button button) button.IsEnabled = false;
 
-            if (recommendedDoctor != null)
-            {
-                ResultTextBlock.Text = $"Recommended Doctor: {recommendedDoctor.GetDoctorName} (Rating: {recommendedDoctor.GetDoctorRating})";
-                ResultTextBlock.Visibility = Visibility.Visible;
+                var recommendedDoctor = await _recommendationSystem.RecommendDoctor(_formViewModel);
+
+                if (recommendedDoctor != null)
+                {
+                    DoctorNameText.Text = $"Doctor: {recommendedDoctor.GetDoctorName()}";
+                    DepartmentText.Text = $"Department: {recommendedDoctor.GetDoctorDepartment()}";
+                    RatingText.Text = $"Rating: {recommendedDoctor.GetDoctorRating():0.0}";
+                }
+                else
+                {
+                    DoctorNameText.Text = "No suitable doctor found";
+                    DepartmentText.Text = string.Empty;
+                    RatingText.Text = string.Empty;
+                }
+
+                ResultPanel.Visibility = Visibility.Visible;
             }
-            else
+            catch (Exception ex)
             {
-                ResultTextBlock.Text = "No suitable doctor found.";
-                ResultTextBlock.Visibility = Visibility.Visible;
+                DoctorNameText.Text = "Error getting recommendation";
+                DepartmentText.Text = ex.Message;
+                RatingText.Text = string.Empty;
+                ResultPanel.Visibility = Visibility.Visible;
+            }
+            finally
+            {
+                if (sender is Button button) button.IsEnabled = true;
             }
         }
     }
