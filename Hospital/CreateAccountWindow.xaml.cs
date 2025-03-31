@@ -83,18 +83,7 @@ namespace Hospital
                     await _viewModel.CreateAccount(username, password, mail, name, birthDate, cnp, (BloodType)selectedBloodType, emergencyContact,weight, height);
 
                     /*
-                    if (_viewModel._authManagerModel._userInfo.Role == "Patient")
-                    {
-                        this.Close();
-                        return;
-                    }
-
-                    else if (_viewModel._authManagerModel._userInfo.Role == "Doctor")
-                    {
-
-                    }
-
-                     //==> Implement like this to open specific Dashboards
+                        Here you should open Patient Dashboard, as any new User is considered a Patient
                     */
 
                     // Open here window of Patient Dashboard instead of LogoutWindow 
