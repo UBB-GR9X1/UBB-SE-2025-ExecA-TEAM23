@@ -29,11 +29,11 @@
                       SelectedItem="{Binding SelectedSymptom3}"
                       PlaceholderText="Select Symptom 3" />
 
-			<Button x:Name="RecommendButton"
-        Content="Get Recommendation"
-        Click="RecommendButton_Click" />
+            <Button x:Name="RecommendButton"
+			Content="Match Doctor"
+			Click="RecommendButton_Click" />
 
-			<!-- Updated Results Display - Now with three separate TextBlocks -->
+            <!-- Updated Results Display - Now with three separate TextBlocks -->
 			<StackPanel x:Name="ResultPanel" Visibility="Collapsed" Spacing="5">
 				<TextBlock x:Name="DoctorNameText" FontSize="16" FontWeight="SemiBold"/>
 				<TextBlock x:Name="DepartmentText" FontSize="14"/>

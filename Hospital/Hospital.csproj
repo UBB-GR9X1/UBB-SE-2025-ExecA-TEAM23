@@ -57,6 +57,9 @@
 		<None Update="LogoutWindow.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</None>
+		<Page Update="RecommendationWindow.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</Page>
 
 		<Page Update="Views\PatientDashboardWindow.xaml">
 			<Generator>MSBuild:Compile</Generator>

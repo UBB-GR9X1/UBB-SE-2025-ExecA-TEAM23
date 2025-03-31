@@ -107,5 +107,19 @@ namespace Hospital
             createAccWindow.Activate();
             this.Close();
         }
+
+        private void TestPatientDashboardButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (MainFrame != null)
+            {
+                MainFrame.Navigate(typeof(Hospital.Views.RecommendationWindow));
+            }
+        }
+
+
+
+
+
+
     }
 }
