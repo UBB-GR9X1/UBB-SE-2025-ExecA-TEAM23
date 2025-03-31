@@ -49,6 +49,9 @@ namespace Hospital
                 await _viewModel.Login(username, password);
                 LogoutWindow log = new LogoutWindow(_viewModel);
                 log.Activate();
+                // Show Logger window after successful login just for the presentation (uncomment when needed)
+                // LoggerView logger = new LoggerView();
+                // logger.Activate();
                 this.Close();
             }
             catch (AuthenticationException ex)
