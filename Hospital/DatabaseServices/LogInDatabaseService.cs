@@ -102,6 +102,11 @@ namespace Hospital.DatabaseServices
                 return patientResult == 1;
             }
 
+            catch (AuthenticationException err)
+            {
+                throw err;
+            }
+
             catch (Exception)
             {
                 transaction.Rollback();

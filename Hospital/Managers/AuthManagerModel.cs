@@ -84,7 +84,9 @@ namespace Hospital.Managers
 
             bool result = await _logInDBService.CreateAccount(username, password, mail, name, birthDate, cnp, bloodType, emergencyContact, weight, height);
             if (result)
-                return await this.LoadUserByUsername(username);
+                if (await this.LoadUserByUsername(username))
+                    return await LogAction(ActionType.LOGIN);
+
             return result;
         }
 
