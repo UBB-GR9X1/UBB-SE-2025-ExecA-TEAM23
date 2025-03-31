@@ -44,9 +44,9 @@ public class RecommendationSystemModel
 
         // Sorting logic
         return doctors
-            .OrderByDescending(d => d.DoctorRating) // Prefer higher-rated doctors
-            .ThenBy(d => totalPoints >= 0 ? d.BirthDate : DateTime.MaxValue) // Prefer younger if totalPoints >= 0
-            .ThenBy(d => totalPoints < 0 ? d.RegistrationDate : DateTime.MaxValue) // Prefer experienced if totalPoints < 0
+            .OrderByDescending(d => d.GetDoctorRating()) // Prefer higher-rated doctors
+            .ThenBy(d => totalPoints >= 0 ? d.GetBirthDate() : DateOnly.MaxValue) // Prefer younger if totalPoints >= 0
+            .ThenBy(d => totalPoints < 0 ? d.GetRegistrationDate() : DateTime.MaxValue) // Prefer experienced if totalPoints < 0
             .FirstOrDefault(); // Get best match
     }
 

@@ -41,7 +41,6 @@ namespace Hospital.Models
             RegistrationDate = registrationDate;
         }
 
-        // E okey folosesc gettere publice?
         public string GetDoctorName()
         {
             return DoctorName;
@@ -49,6 +48,14 @@ namespace Hospital.Models
         public double GetDoctorRating()
         {
             return Rating;
+        }
+        public DateOnly GetBirthDate()
+        {
+            return BirthDate;
+        }
+        public DateTime GetRegistrationDate()
+        {
+            return RegistrationDate;
         }
     }
 }
