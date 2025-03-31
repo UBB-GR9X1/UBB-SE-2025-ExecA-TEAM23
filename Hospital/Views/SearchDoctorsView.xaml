@@ -8,14 +8,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid x:Name="RootGrid" Padding="20">
+    <Grid x:Name="RootGrid" Padding="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Spacing="10">
-            <TextBlock Text="Search Doctors" Style="{StaticResource TitleTextBlockStyle}"/>
             <TextBox x:Name="SearchTextBox" PlaceholderText="Enter department name" 
                      Margin="0,5,0,10" 
                      TextChanged="SearchTextBox_TextChanged"/>

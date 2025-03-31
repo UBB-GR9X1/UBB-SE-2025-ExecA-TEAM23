@@ -33,7 +33,6 @@ namespace Hospital
         public MainWindow()
         {
             this.InitializeComponent();
-
             LogInDatabaseService logInService = new LogInDatabaseService();
             AuthManagerModel managerModel = new AuthManagerModel(logInService);
             _viewModel = new AuthViewModel(managerModel);
@@ -46,16 +45,21 @@ namespace Hospital
 
             try
             {
-                await _viewModel.Login(username, password);
-
                 
-                /*
+                await _viewModel.Login(username, password);
+                
+
+
                 if (_viewModel._authManagerModel._userInfo.Role == "Patient")
                 {
+                    PatientManagerModel patientManagerModel = new PatientManagerModel();
+                    PatientViewModel patientViewModel = new PatientViewModel(patientManagerModel, _viewModel._authManagerModel._userInfo.UserId);
+                    PatientDashboardWindow patientDashboardWindow = new PatientDashboardWindow(patientViewModel);
+                    patientDashboardWindow.Activate();
                     this.Close();
                     return;
                 }
-
+                /*
                 else if (_viewModel._authManagerModel._userInfo.Role == "Doctor")
                 {
 
@@ -63,7 +67,7 @@ namespace Hospital
 
                 //==> Implement like this to open specific Dashboards
                 */
-                 
+
                 // Open Admin / Doctor / Patient Dashboard instead of LogoutWindow
 
                 LogoutWindow log = new LogoutWindow(_viewModel);
