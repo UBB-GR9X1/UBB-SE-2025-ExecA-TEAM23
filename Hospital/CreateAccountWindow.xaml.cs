@@ -9,6 +9,8 @@ using Hospital.Exceptions;
 using Hospital.ViewModels;
 using Microsoft.Data.SqlClient;
 using Hospital.Models;
+using Hospital.Managers;
+using Hospital.Views;
 
 namespace Hospital
 {
@@ -82,17 +84,13 @@ namespace Hospital
                 {
                     await _viewModel.CreateAccount(username, password, mail, name, birthDate, cnp, (BloodType)selectedBloodType, emergencyContact,weight, height);
 
-                    /*
-                        Here you should open Patient Dashboard, as any new User is considered a Patient
-                    */
-
-                    // Open here window of Patient Dashboard instead of LogoutWindow 
-
-                    LogoutWindow log = new LogoutWindow(_viewModel);
-                    log.Activate();
+                    PatientManagerModel patientManagerModel = new PatientManagerModel();
+                    PatientViewModel patientViewModel = new PatientViewModel(patientManagerModel, _viewModel._authManagerModel._userInfo.UserId);
+                    PatientDashboardWindow patientDashboardWindow = new PatientDashboardWindow(patientViewModel);
+                    patientDashboardWindow.Activate();
                     this.Close();
+                    return;
 
-                    //
                 }
                 catch (AuthenticationException err)
                 {
