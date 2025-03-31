@@ -50,7 +50,7 @@ namespace Hospital.Managers
 
             return result;
         }
-        public async Task<bool> CreateAccount(string username, string password, string mail, string name, DateOnly birthDate, string cnp)
+        public async Task<bool> CreateAccount(string username, string password, string mail, string name, DateOnly birthDate, string cnp, string bloodType, string emergencyContact, double weight, int height)
         {
             if (string.IsNullOrWhiteSpace(username) || username.Contains(" "))
                 throw new AuthenticationException("Invalid username!\nCan't be null or with space");
@@ -73,7 +73,16 @@ namespace Hospital.Managers
                     throw new AuthenticationException("Invalid CNP!\nOnly numbers allowed");
             }
 
-            bool result = await _logInDBService.CreateAccount(username, password, mail, name, birthDate, cnp);
+            if (emergencyContact.Length != 10)
+                throw new AuthenticationException("Invalid emergency contact!\nIt must have length 10");
+
+            foreach (char c in emergencyContact)
+            {
+                if (!char.IsDigit(c))
+                    throw new AuthenticationException("Invalid emergency contact!\nOnly numbers allowed");
+            }
+
+            bool result = await _logInDBService.CreateAccount(username, password, mail, name, birthDate, cnp, bloodType, emergencyContact, weight, height);
             if (result)
                 return await this.LoadUserByUsername(username);
             return result;
