@@ -6,12 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Hospital.Models;
+using System.Text.RegularExpressions;
 
 namespace Hospital.ViewModels
 {
     public class AuthViewModel
     {
-        private AuthManagerModel _authManagerModel;
+        public AuthManagerModel _authManagerModel { get; private set; }
 
         public AuthViewModel (AuthManagerModel auth)
         {
@@ -36,9 +37,35 @@ namespace Hospital.ViewModels
             await _authManagerModel.Logout();
         }
 
-        public async Task CreateAccount(string username, string password, string mail, string name, DateOnly birthDate, string cnp)
+        public async Task CreateAccount(string username, string password, string mail, string name, DateOnly birthDate, string cnp, BloodType bloodType, string emergencyContact, double weight, int height)
         {
-            await _authManagerModel.CreateAccount(username, password, mail, name, birthDate, cnp);
+            switch (bloodType)
+            {
+                case BloodType.A_Positive:
+                    await _authManagerModel.CreateAccount(username, password, mail, name, birthDate, cnp, "A+", emergencyContact, weight, height);
+                    break;
+                case BloodType.A_Negative:
+                    await _authManagerModel.CreateAccount(username, password, mail, name, birthDate, cnp, "A-", emergencyContact, weight, height);
+                    return;
+                case BloodType.B_Positive:
+                    await _authManagerModel.CreateAccount(username, password, mail, name, birthDate, cnp, "B+", emergencyContact, weight, height);
+                    return;
+                case BloodType.B_Negative:
+                    await _authManagerModel.CreateAccount(username, password, mail, name, birthDate, cnp, "B-", emergencyContact, weight, height);
+                    return;
+                case BloodType.AB_Positive:
+                    await _authManagerModel.CreateAccount(username, password, mail, name, birthDate, cnp, "AB+", emergencyContact, weight, height);
+                    return;
+                case BloodType.AB_Negative:
+                    await _authManagerModel.CreateAccount(username, password, mail, name, birthDate, cnp, "AB-", emergencyContact, weight, height);
+                    return;
+                case BloodType.O_Positive:
+                    await _authManagerModel.CreateAccount(username, password, mail, name, birthDate, cnp, "O+", emergencyContact, weight, height);
+                    return;
+                case BloodType.O_Negative:
+                    await _authManagerModel.CreateAccount(username, password, mail, name, birthDate, cnp, "O-", emergencyContact, weight, height);
+                    return;
+            }
         }
     }
 }

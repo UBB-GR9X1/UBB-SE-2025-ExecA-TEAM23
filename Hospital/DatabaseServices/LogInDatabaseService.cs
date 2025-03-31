@@ -39,54 +39,74 @@ namespace Hospital.DatabaseServices
                 string userName = reader.GetString(1);
                 string password = reader.GetString(2);
                 string mail = reader.GetString(3);
+                string role = reader.GetString(4);
                 connection.Close();
-                return new UserAuthModel(userId, userName, password, mail);
+                return new UserAuthModel(userId, userName, password, mail, role);
             }
             connection.Close();
             throw new AuthenticationException("No user found with given username");
         }
 
-        public async Task<bool> CreateAccount(string username, string password, string mail, string name, DateOnly birthDate, string cnp)
+        public async Task<bool> CreateAccount(string username, string password, string mail, string name, DateOnly birthDate, string cnp, string bloodType, string emergencyContact, double weight, int height)
         {
-            // check if there's already a user with given username, mail, cnp
-            string checkQuery = "SELECT COUNT(*) FROM Users WHERE Username = @username OR Mail = @email OR Cnp = @cnp;";
-            using SqlConnection checkConnection = new SqlConnection(_config.DatabaseConnection);
-            await checkConnection.OpenAsync().ConfigureAwait(false);
-            using SqlCommand checkCommand = new SqlCommand(checkQuery, checkConnection);
-            checkCommand.Parameters.AddWithValue("@username", username);
-            checkCommand.Parameters.AddWithValue("@email", mail);
-            checkCommand.Parameters.AddWithValue("@cnp", cnp);
-
-            object? resultCheck = await checkCommand.ExecuteScalarAsync().ConfigureAwait(false);
-
-            if (resultCheck != null && Convert.ToInt32(resultCheck) > 0)
-                throw new AuthenticationException("User already exists!");
-
-            checkConnection.Close();
-
-            // implement actual add
-
-            string query = "INSERT INTO Users(Username, Password, Mail, Name, BirthDate, Cnp) VALUES" +
-                "(@username, @password, @mail, @name, @birthDate, @cnp)";
-
+         
             using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
-
             await connection.OpenAsync().ConfigureAwait(false);
 
-            using SqlCommand command = new SqlCommand(query, connection);
+            using SqlTransaction transaction = connection.BeginTransaction();
+            try
+            {
+                string checkQuery = "SELECT COUNT(*) FROM Users WHERE Username = @username OR Mail = @mail OR Cnp = @cnp;";
+                using SqlCommand checkCommand = new SqlCommand(checkQuery, connection, transaction);
+                checkCommand.Parameters.AddWithValue("@username", username);
+                checkCommand.Parameters.AddWithValue("@mail", mail);
+                checkCommand.Parameters.AddWithValue("@cnp", cnp);
 
-            command.Parameters.AddWithValue("@username", username);
-            command.Parameters.AddWithValue("@password", password);
-            command.Parameters.AddWithValue("@mail", mail);
-            command.Parameters.AddWithValue("@name", name);
-            command.Parameters.AddWithValue("@birthDate", birthDate);
-            command.Parameters.AddWithValue("@cnp", cnp);
+                object? resultCheck = await checkCommand.ExecuteScalarAsync().ConfigureAwait(false);
+                if (resultCheck != null && Convert.ToInt32(resultCheck) > 0)
+                    throw new AuthenticationException("User already exists!");
 
-            int result = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                string insertUserQuery = "INSERT INTO Users(Username, Password, Mail, Role, Name, BirthDate, Cnp) OUTPUT INSERTED.UserId VALUES" +
+                "(@username, @password, @mail, @role, @name, @birthDate, @cnp)";
 
-            connection.Close();
+                using SqlCommand userCommand = new SqlCommand(insertUserQuery, connection, transaction);
+                userCommand.Parameters.AddWithValue("@username", username);
+                userCommand.Parameters.AddWithValue("@password", password);
+                userCommand.Parameters.AddWithValue("@mail", mail);
+                userCommand.Parameters.AddWithValue("@name", name);
+                userCommand.Parameters.AddWithValue("@role", "Patient");
+                userCommand.Parameters.AddWithValue("@birthDate", birthDate);
+                userCommand.Parameters.AddWithValue("@cnp", cnp);
 
-            return result == 1;
+                object? userIdObj = await userCommand.ExecuteScalarAsync().ConfigureAwait(false);
+                if (userIdObj == null)
+                    throw new Exception("User insertion failed.");
+
+                int userId = Convert.ToInt32(userIdObj);
+
+                string insertPatientQuery = @"
+                INSERT INTO Patients (UserId, BloodType, EmergencyContact, Weight, Height)
+                VALUES (@userId, @bloodType, @emergencyContact, @weight, @height);";
+
+                using SqlCommand patientCommand = new SqlCommand(insertPatientQuery, connection, transaction);
+                patientCommand.Parameters.AddWithValue("@userId", userId);
+                patientCommand.Parameters.AddWithValue("@bloodType", bloodType.ToString());
+                patientCommand.Parameters.AddWithValue("@emergencyContact", emergencyContact);
+                patientCommand.Parameters.AddWithValue("@weight", weight);
+                patientCommand.Parameters.AddWithValue("@height", height);
+
+                int patientResult = await patientCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+
+                transaction.Commit();
+
+                return patientResult == 1;
+            }
+
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw new AuthenticationException("Database error");
+            }
         }
 
         public async Task<bool> AuthenticationLogService (int userId, ActionType type)

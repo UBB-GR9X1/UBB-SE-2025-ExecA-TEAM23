@@ -47,12 +47,33 @@ namespace Hospital
             try
             {
                 await _viewModel.Login(username, password);
+
+                
+                /*
+                if (_viewModel._authManagerModel._userInfo.Role == "Patient")
+                {
+                    this.Close();
+                    return;
+                }
+
+                else if (_viewModel._authManagerModel._userInfo.Role == "Doctor")
+                {
+
+                }
+
+                //==> Implement like this to open specific Dashboards
+                */
+                 
+                // Open Admin / Doctor / Patient Dashboard instead of LogoutWindow
+
                 LogoutWindow log = new LogoutWindow(_viewModel);
                 log.Activate();
                 // Show Logger window after successful login just for the presentation (uncomment when needed)
                 // LoggerView logger = new LoggerView();
                 // logger.Activate();
                 this.Close();
+
+                //
             }
             catch (AuthenticationException ex)
             {
