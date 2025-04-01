@@ -21,17 +21,22 @@ namespace Hospital.Views
     {
         private DoctorViewModel _viewModel;
 
-        // Constructor
         public DoctorDashboardControl()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
         public DoctorDashboardControl(DoctorViewModel doctorViewModel)
         {
-            this.InitializeComponent();
+            InitializeComponent();
             _viewModel = doctorViewModel;
-            this.DataContext = _viewModel; // Bind the ViewModel to the UserControl
+            this.DataContext = _viewModel;
+
+            // Refresh data when loaded
+            this.Loaded += async (sender, e) =>
+            {
+                await _viewModel.LoadDoctorInfoByUserIdAsync(_viewModel.UserId);
+            };
         }
 
         // Update Button Click Handler

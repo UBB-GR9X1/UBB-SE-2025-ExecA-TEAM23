@@ -2,6 +2,7 @@ using Hospital.Managers;
 using Hospital.Models;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Hospital.ViewModels
@@ -9,12 +10,23 @@ namespace Hospital.ViewModels
     public class DoctorViewModel : INotifyPropertyChanged
     {
         private readonly DoctorManagerModel _doctorManagerModel;
-
+        
         public DoctorViewModel(DoctorManagerModel doctorManagerModel, int userId)
         {
             _doctorManagerModel = doctorManagerModel;
             _userId = userId;
-            LoadDoctorInfoByUserIdAsync(userId);
+
+            // Initialize with default values
+            DoctorName = "Loading...";
+            DepartmentName = "Loading department...";
+            Rating = 0;
+            CareerInfo = "Loading career information...";
+            AvatarUrl = "/Assets/default-avatar.png";
+            PhoneNumber = "Loading phone...";
+            Mail = "Loading email...";
+
+            // Start async load
+            _ = LoadDoctorInfoByUserIdAsync(userId);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -169,28 +181,43 @@ namespace Hospital.ViewModels
             try
             {
                 IsLoading = true;
-                bool result = await _doctorManagerModel.LoadDoctorInfoByUserId(userId);
+
+                var result = await _doctorManagerModel.LoadDoctorInfoByUserId(userId);
                 if (result && _doctorManagerModel._doctorInfo != null)
                 {
                     var doctor = _doctorManagerModel._doctorInfo;
-                    DoctorName = doctor.DoctorName;
+
+                    DoctorName = doctor.DoctorName ?? "Not specified";
                     DepartmentId = doctor.DepartmentId;
-                    DepartmentName = doctor.DepartmentName;
-                    Rating = (decimal)doctor.Rating;
-                    CareerInfo = doctor.CareerInfo;
-                    AvatarUrl = doctor.AvatarUrl;
-                    PhoneNumber = doctor.PhoneNumber;
-                    Mail = doctor.Mail;
+                    DepartmentName = doctor.DepartmentName ?? "No department";
+                    Rating = (decimal)(doctor.Rating > 0 ? doctor.Rating : 0);
+                    CareerInfo = doctor.CareerInfo ?? "No career information";
+                    AvatarUrl = doctor.AvatarUrl ?? "/Assets/default-avatar.png";
+                    PhoneNumber = doctor.PhoneNumber ?? "Not provided";
+                    Mail = doctor.Mail ?? "Not provided";
+
+                    return true;
                 }
 
-                IsLoading = false;
-                return result;
+                // Set not found state
+                DoctorName = "Doctor profile not found";
+                DepartmentName = "N/A";
+                return false;
             }
             catch (Exception ex)
             {
-                IsLoading = false;
-                Console.WriteLine($"Error loading doctor info: {ex.Message}");
+                Debug.WriteLine($"Error in ViewModel: {ex.Message}");
+
+                // Set error state
+                DoctorName = "Error loading profile";
+                DepartmentName = "Error";
+                CareerInfo = "Please try again later";
+
                 return false;
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
 

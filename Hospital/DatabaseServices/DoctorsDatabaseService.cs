@@ -20,6 +20,49 @@ namespace Hospital.DatabaseServices
             _config = Config.GetInstance();
         }
 
+        public async Task<DoctorDisplayModel> GetDoctorByUserId(int userId)
+        {
+            const string query = @"
+        SELECT d.DoctorId, u.Name AS DoctorName, 
+               d.DepartmentId, dept.DepartmentName, d.DoctorRating,
+               d.CareerInfo, u.AvatarUrl, u.PhoneNumber, u.Mail
+        FROM Doctors d
+        JOIN Users u ON d.UserId = u.UserId
+        LEFT JOIN Departments dept ON d.DepartmentId = dept.DepartmentId
+        WHERE u.UserId = @userId";
+
+            try
+            {
+                using var connection = new SqlConnection(_config.DatabaseConnection);
+                await connection.OpenAsync();
+
+                using var cmd = new SqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@userId", userId);
+
+                using var reader = await cmd.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
+                {
+                    return new DoctorDisplayModel(
+                        reader.GetInt32(0),
+                        reader.GetString(1),
+                        reader.GetInt32(2),
+                        reader.IsDBNull(3) ? null : reader.GetString(3),
+                        reader.GetDouble(4),
+                        reader.IsDBNull(5) ? null : reader.GetString(5),
+                        reader.IsDBNull(6) ? null : reader.GetString(6),
+                        reader.IsDBNull(7) ? null : reader.GetString(7),
+                        reader.IsDBNull(8) ? null : reader.GetString(8)
+                    );
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error getting doctor by user ID: {ex.Message}");
+                return null;
+            }
+        }
+
         public async Task<List<DoctorDisplayModel>> GetDoctorsByDepartmentPartialName(string departmentPartialName)
         {
             const string querySelectDoctors = @"

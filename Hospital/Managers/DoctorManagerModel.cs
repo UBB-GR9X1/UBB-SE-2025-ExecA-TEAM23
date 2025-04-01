@@ -174,23 +174,15 @@ namespace Hospital.Managers
         {
             try
             {
-                // First get all doctors, then find the one matching userId
-                _doctorList = await _doctorDBService.GetDoctorsByPartialDoctorName("");
-                foreach (var doctor in _doctorList)
-                {
-                    int doctorUserId = await _doctorDBService.GetDoctorUserId(doctor.DoctorId);
-                    if (doctorUserId == userId)
-                    {
-                        _doctorInfo = doctor;
-                        break;
-                    }
-                }
+                _doctorInfo = await _doctorDBService.GetDoctorByUserId(userId);
 
                 if (_doctorInfo != null)
                 {
-                    Debug.WriteLine($"Doctor info loaded: {_doctorInfo.DoctorName}");
+                    Debug.WriteLine($"Successfully loaded doctor: {_doctorInfo.DoctorName}");
                     return true;
                 }
+
+                Debug.WriteLine($"No doctor found for user ID: {userId}");
                 return false;
             }
             catch (Exception ex)
