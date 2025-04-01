@@ -8,10 +8,10 @@
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Spacing="10">
             <TextBox x:Name="UsernameField" Header="Username" PlaceholderText="Enter username"/>
             <PasswordBox x:Name="PasswordField" Header="Password" PlaceholderText="Enter password"/>
-			<TextBox x:Name="EmailTextBox" PlaceholderText="Enter your email" InputScope="EmailSmtpAddress" />
-			<TextBox x:Name="NameTextBox" PlaceholderText="Enter your full name" />
+			<TextBox x:Name="EmailTextBox" Header="Email" PlaceholderText="Enter your email" InputScope="EmailSmtpAddress" />
+			<TextBox x:Name="NameTextBox" Header="Full Name" PlaceholderText="Enter your full name" />
 			<CalendarDatePicker x:Name="BirthDateCalendarPicker" />
-			<TextBox x:Name="CNPTextBox" PlaceholderText="Enter your CNP" MaxLength="13" InputScope="Number" />
+			<TextBox x:Name="CNPTextBox" Header="CNP" PlaceholderText="Enter your CNP" MaxLength="13" InputScope="Number" />
             <ComboBox x:Name="BloodTypeComboBox" Width="200" PlaceholderText="Select Blood Type">
                 <ComboBoxItem Content="A+" Tag="A_Positive"/>
                 <ComboBoxItem Content="A-" Tag="A_Negative"/>
@@ -22,9 +22,9 @@
                 <ComboBoxItem Content="O+" Tag="O_Positive"/>
                 <ComboBoxItem Content="O-" Tag="O_Negative"/>
             </ComboBox>
-            <TextBox x:Name="EmergencyContactTextBox" PlaceholderText="Emergency Contact" Margin="0,5"/>
-            <TextBox x:Name="WeightTextBox" PlaceholderText="Weight (kg)" Margin="0,5"/>
-            <TextBox x:Name="HeightTextBox" PlaceholderText="Height (cm)" Margin="0,5"/>
+            <TextBox x:Name="EmergencyContactTextBox" Header="Emergency Contact" PlaceholderText="Enter emergency contact" Margin="0,5" MaxLength="10"/>
+            <TextBox x:Name="WeightTextBox" Header="Weight" PlaceholderText="Weight (kg)" Margin="0,5"/>
+            <TextBox x:Name="HeightTextBox" Header="Height" PlaceholderText="Height (cm)" Margin="0,5"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
 				<Button x:Name="CreateAccountButton" Content="Create Account" Click="CreateAccountButton_Click"/>
 				<Button x:Name="GoBackButton" Content="Go Back" Click="GoBackButton_Click" />
