@@ -50,7 +50,7 @@
             <Grid>
                 <Frame x:Name="MainFrame"/>
 
-                <Button Content="Open Patient Dashboard"
+                <Button Content="Doctor Guide"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Bottom"
                 Click="TestPatientDashboardButton_Click"/>
