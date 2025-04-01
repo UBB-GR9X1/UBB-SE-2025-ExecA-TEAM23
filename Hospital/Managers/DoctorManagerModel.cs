@@ -3,11 +3,7 @@ using Hospital.Models;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
-using Windows.System;
 
 namespace Hospital.DatabaseServices
 {

@@ -1,8 +1,6 @@
 ﻿using Hospital.Managers;
-using Hospital.Models;
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Hospital.ViewModels

@@ -1,12 +1,7 @@
 ﻿using Hospital.Exceptions;
 using Hospital.Managers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Hospital.Models;
-using System.Text.RegularExpressions;
 
 namespace Hospital.ViewModels
 {
