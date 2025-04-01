@@ -80,7 +80,7 @@ namespace Hospital
 
                 try
                 {
-                    await _viewModel.CreateAccount(username, password, mail, name, birthDate, cnp, (BloodType)selectedBloodType, emergencyContact,weight, height);
+                    await _viewModel.CreateAccount(new UserCreateAccountModel(username, password, mail, name, birthDate, cnp, (BloodType)selectedBloodType, emergencyContact,weight, height));
 
                     /*
                         Here you should open Patient Dashboard, as any new User is considered a Patient
