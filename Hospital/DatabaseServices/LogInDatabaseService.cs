@@ -1,5 +1,6 @@
 ﻿using Hospital.Configs;
 using Hospital.Exceptions;
+using Hospital.Managers;
 using Hospital.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.UI.Xaml;
@@ -47,9 +48,36 @@ namespace Hospital.DatabaseServices
             throw new AuthenticationException("No user found with given username");
         }
 
-        public async Task<bool> CreateAccount(string username, string password, string mail, string name, DateOnly birthDate, string cnp, string bloodType, string emergencyContact, double weight, int height)
+        public async Task<bool> CreateAccount(UserCreateAccountModel model)
         {
-         
+            string? bloodType = null;
+            switch (model.BloodType)
+            {
+                case BloodType.A_Positive:
+                    bloodType = "A+";
+                    break;
+                case BloodType.A_Negative:
+                    bloodType = "A-";
+                    break;
+                case BloodType.B_Positive:
+                    bloodType = "B+";
+                    break;
+                case BloodType.B_Negative:
+                    bloodType = "B-";
+                    break;
+                case BloodType.AB_Positive:
+                    bloodType = "AB+";
+                    break;
+                case BloodType.AB_Negative:
+                    bloodType = "AB-";
+                    break;
+                case BloodType.O_Positive:
+                    bloodType = "O+";
+                    break;
+                case BloodType.O_Negative:
+                    bloodType = "O-";
+                    break;
+            }
             using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
             await connection.OpenAsync().ConfigureAwait(false);
 
@@ -58,9 +86,9 @@ namespace Hospital.DatabaseServices
             {
                 string checkQuery = "SELECT COUNT(*) FROM Users WHERE Username = @username OR Mail = @mail OR Cnp = @cnp;";
                 using SqlCommand checkCommand = new SqlCommand(checkQuery, connection, transaction);
-                checkCommand.Parameters.AddWithValue("@username", username);
-                checkCommand.Parameters.AddWithValue("@mail", mail);
-                checkCommand.Parameters.AddWithValue("@cnp", cnp);
+                checkCommand.Parameters.AddWithValue("@username", model.Username);
+                checkCommand.Parameters.AddWithValue("@mail", model.Mail);
+                checkCommand.Parameters.AddWithValue("@cnp", model.Cnp);
 
                 object? resultCheck = await checkCommand.ExecuteScalarAsync().ConfigureAwait(false);
                 if (resultCheck != null && Convert.ToInt32(resultCheck) > 0)
@@ -70,13 +98,13 @@ namespace Hospital.DatabaseServices
                 "(@username, @password, @mail, @role, @name, @birthDate, @cnp)";
 
                 using SqlCommand userCommand = new SqlCommand(insertUserQuery, connection, transaction);
-                userCommand.Parameters.AddWithValue("@username", username);
-                userCommand.Parameters.AddWithValue("@password", password);
-                userCommand.Parameters.AddWithValue("@mail", mail);
-                userCommand.Parameters.AddWithValue("@name", name);
+                userCommand.Parameters.AddWithValue("@username", model.Username);
+                userCommand.Parameters.AddWithValue("@password", model.Password);
+                userCommand.Parameters.AddWithValue("@mail", model.Mail);
+                userCommand.Parameters.AddWithValue("@name", model.Name);
                 userCommand.Parameters.AddWithValue("@role", "Patient");
-                userCommand.Parameters.AddWithValue("@birthDate", birthDate);
-                userCommand.Parameters.AddWithValue("@cnp", cnp);
+                userCommand.Parameters.AddWithValue("@birthDate", model.BirthDate);
+                userCommand.Parameters.AddWithValue("@cnp", model.Cnp);
 
                 object? userIdObj = await userCommand.ExecuteScalarAsync().ConfigureAwait(false);
                 if (userIdObj == null)
@@ -90,10 +118,11 @@ namespace Hospital.DatabaseServices
 
                 using SqlCommand patientCommand = new SqlCommand(insertPatientQuery, connection, transaction);
                 patientCommand.Parameters.AddWithValue("@userId", userId);
-                patientCommand.Parameters.AddWithValue("@bloodType", bloodType.ToString());
-                patientCommand.Parameters.AddWithValue("@emergencyContact", emergencyContact);
-                patientCommand.Parameters.AddWithValue("@weight", weight);
-                patientCommand.Parameters.AddWithValue("@height", height);
+                if (bloodType != null)
+                    patientCommand.Parameters.AddWithValue("@bloodType", bloodType);
+                patientCommand.Parameters.AddWithValue("@emergencyContact", model.EmergencyContact);
+                patientCommand.Parameters.AddWithValue("@weight", model.Weight);
+                patientCommand.Parameters.AddWithValue("@height", model.Height);
 
                 int patientResult = await patientCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
 
