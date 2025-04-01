@@ -2,13 +2,8 @@
 using Hospital.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
-using System.ComponentModel;
-using Microsoft.UI.Composition;
-using System.Diagnostics;
 
 namespace Hospital.DatabaseServices
 {
@@ -120,14 +115,14 @@ namespace Hospital.DatabaseServices
                     DateTime birthDateTime = reader.GetDateTime(4);
                     DateOnly birthDate = DateOnly.FromDateTime(birthDateTime);
                     string mail = reader.GetString(5);
-                    string phoneNumber = reader.IsDBNull(6) ? null : reader.GetString(6);
-                    string address = reader.IsDBNull(7) ? null : reader.GetString(7);
+                    string? phoneNumber = reader.IsDBNull(6) ? null : reader.GetString(6);
+                    string? address = reader.IsDBNull(7) ? null : reader.GetString(7);
                     string cnp = reader.GetString(8);
                     DateTime registrationDate = reader.GetDateTime(9);
                     string avatarUrl = reader.IsDBNull(10) ? "" : reader.GetString(10);
                     string bloodType = reader.GetString(11);
                     string emergencyContact = reader.GetString(12);
-                    string allergies = reader.IsDBNull(13) ? null : reader.GetString(13);
+                    string? allergies = reader.IsDBNull(13) ? null : reader.GetString(13);
                     float weight = Convert.ToSingle(reader[14]);
                     int height = reader.GetInt32(15);
                     string password = reader.GetString(16);
