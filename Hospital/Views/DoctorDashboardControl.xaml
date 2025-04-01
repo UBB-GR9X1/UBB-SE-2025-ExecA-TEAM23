@@ -25,9 +25,6 @@
 
         <!-- Nav Buttons in the Top Row -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10">
-            <Canvas Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent" ZIndex="2">
-                <views:SearchPatientsView x:Name="searchPatientsView" Width="600" Height="400" Canvas.Left="-620" Canvas.Top="0" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Visible"/>
-            </Canvas>
             <Button Content="Home" Width="80" Margin="5" VerticalAlignment="Top"/>
             <Button Content="Profile" Width="80" Margin="5" VerticalAlignment="Top"/>
             <Button Content="Appointments" Width="120" Margin="5" VerticalAlignment="Top"/>
