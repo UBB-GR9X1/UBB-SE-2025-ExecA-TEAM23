@@ -170,19 +170,18 @@ namespace Hospital.Managers
             }
         }
 
-        public async Task<bool> LoadDoctorInfoByUserId(int userId)
+        public async Task<bool> LoadDoctorInfoByUserId(int doctorId)
         {
             try
             {
-                _doctorInfo = await _doctorDBService.GetDoctorByUserId(userId);
+                _doctorInfo = await _doctorDBService.GetDoctorById(doctorId);
 
                 if (_doctorInfo != null)
                 {
                     Debug.WriteLine($"Successfully loaded doctor: {_doctorInfo.DoctorName}");
                     return true;
                 }
-
-                Debug.WriteLine($"No doctor found for user ID: {userId}");
+                Debug.WriteLine($"No doctor found for user ID: {doctorId}");
                 return false;
             }
             catch (Exception ex)

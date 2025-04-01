@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using System.Diagnostics;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace Hospital.DatabaseServices
@@ -20,45 +21,67 @@ namespace Hospital.DatabaseServices
             _config = Config.GetInstance();
         }
 
-        public async Task<DoctorDisplayModel> GetDoctorByUserId(int userId)
+        public async Task<DoctorDisplayModel> GetDoctorById(int doctorId)
         {
             const string query = @"
-        SELECT d.DoctorId, u.Name AS DoctorName, 
-               d.DepartmentId, dept.DepartmentName, d.DoctorRating,
-               d.CareerInfo, u.AvatarUrl, u.PhoneNumber, u.Mail
+        SELECT 
+            d.userId,
+            u.Name AS DoctorName,
+            d.DepartmentId,
+            dept.DepartmentName,
+            d.DoctorRating,
+            d.CareerInfo,
+            u.AvatarUrl,
+            u.PhoneNumber,
+            u.Mail,
+            d.LicenseNumber,
+            u.BirthDate,
+            u.Cnp,
+            u.Address,
+            u.RegistrationDate
         FROM Doctors d
-        JOIN Users u ON d.UserId = u.UserId
-        LEFT JOIN Departments dept ON d.DepartmentId = dept.DepartmentId
-        WHERE u.UserId = @userId";
+        WHERE u.DoctorId = @doctorId";
 
             try
             {
-                using var connection = new SqlConnection(_config.DatabaseConnection);
-                await connection.OpenAsync();
+                // Add to your try block
 
-                using var cmd = new SqlCommand(query, connection);
-                cmd.Parameters.AddWithValue("@userId", userId);
+                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                await connection.OpenAsync().ConfigureAwait(false);
 
-                using var reader = await cmd.ExecuteReaderAsync();
-                if (await reader.ReadAsync())
+                using SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@doctorId", doctorId);
+
+                using SqlDataReader reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+                System.Diagnostics.Debug.WriteLine(reader);
+
+                if (await reader.ReadAsync().ConfigureAwait(false))
                 {
+                    Console.WriteLine($"Doctor found: {reader.GetString(1)}"); // Fixed log message
+
                     return new DoctorDisplayModel(
-                        reader.GetInt32(0),
-                        reader.GetString(1),
-                        reader.GetInt32(2),
-                        reader.IsDBNull(3) ? null : reader.GetString(3),
-                        reader.GetDouble(4),
-                        reader.IsDBNull(5) ? null : reader.GetString(5),
-                        reader.IsDBNull(6) ? null : reader.GetString(6),
-                        reader.IsDBNull(7) ? null : reader.GetString(7),
-                        reader.IsDBNull(8) ? null : reader.GetString(8)
+                        doctorId: reader.GetInt32(0),
+                        doctorName: reader.GetString(1),
+                        departmentId: reader.GetInt32(2),
+                        departmentName: reader.IsDBNull(3) ? "" : reader.GetString(3),
+                        rating: reader.GetDouble(4),
+                        careerInfo: reader.IsDBNull(5) ? "" : reader.GetString(5),
+                        avatarUrl: reader.IsDBNull(6) ? "" : reader.GetString(6),
+                        phoneNumber: reader.GetString(7),
+                        mail: reader.GetString(8)
                     );
                 }
+
                 return null;
             }
-            catch (Exception ex)
+            catch (SqlException e)
             {
-                Debug.WriteLine($"Error getting doctor by user ID: {ex.Message}");
+                Console.WriteLine($"SQL Error: {e.Message}");
+                return null;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error: {e.Message}");
                 return null;
             }
         }
