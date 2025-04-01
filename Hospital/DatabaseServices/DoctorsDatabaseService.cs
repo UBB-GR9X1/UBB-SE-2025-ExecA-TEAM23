@@ -153,5 +153,303 @@ namespace Hospital.DatabaseServices
             }
         }
 
+        public async Task<bool> UpdateDoctorName(int doctorId, string newName)
+        {
+            const string queryUpdateDoctorName = @"
+            UPDATE Users
+            SET Name = @NewName
+            FROM Users u
+            INNER JOIN Doctors d ON u.UserId = d.UserId
+            WHERE d.DoctorId = @DoctorId";
+
+            try
+            {
+                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                await connection.OpenAsync().ConfigureAwait(false);
+
+                SqlCommand updateCommand = new SqlCommand(queryUpdateDoctorName, connection);
+                updateCommand.Parameters.AddWithValue("@NewName", newName);
+                updateCommand.Parameters.AddWithValue("@DoctorId", doctorId);
+
+                int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return rowsAffected > 0;
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateDoctorDepartment(int doctorId, int newDepartmentId)
+        {
+            const string queryUpdateDepartment = @"
+            UPDATE Doctors
+            SET DepartmentId = @NewDepartmentId
+            WHERE DoctorId = @DoctorId";
+
+            try
+            {
+                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                await connection.OpenAsync().ConfigureAwait(false);
+
+                SqlCommand updateCommand = new SqlCommand(queryUpdateDepartment, connection);
+                updateCommand.Parameters.AddWithValue("@NewDepartmentId", newDepartmentId);
+                updateCommand.Parameters.AddWithValue("@DoctorId", doctorId);
+
+                int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return rowsAffected > 0;
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateDoctorRating(int doctorId, double newRating)
+        {
+            const string queryUpdateRating = @"
+            UPDATE Doctors
+            SET DoctorRating = @NewRating
+            WHERE DoctorId = @DoctorId";
+
+            try
+            {
+                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                await connection.OpenAsync().ConfigureAwait(false);
+
+                SqlCommand updateCommand = new SqlCommand(queryUpdateRating, connection);
+                updateCommand.Parameters.AddWithValue("@NewRating", newRating);
+                updateCommand.Parameters.AddWithValue("@DoctorId", doctorId);
+
+                int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return rowsAffected > 0;
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateDoctorCareerInfo(int doctorId, string newCareerInfo)
+        {
+            const string queryUpdateCareerInfo = @"
+            UPDATE Doctors
+            SET CareerInfo = @NewCareerInfo
+            WHERE DoctorId = @DoctorId";
+
+            try
+            {
+                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                await connection.OpenAsync().ConfigureAwait(false);
+
+                SqlCommand updateCommand = new SqlCommand(queryUpdateCareerInfo, connection);
+                updateCommand.Parameters.AddWithValue("@NewCareerInfo", (object)newCareerInfo ?? DBNull.Value);
+                updateCommand.Parameters.AddWithValue("@DoctorId", doctorId);
+
+                int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return rowsAffected > 0;
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateDoctorAvatarUrl(int doctorId, string newAvatarUrl)
+        {
+            const string queryUpdateAvatarUrl = @"
+            UPDATE Users
+            SET AvatarUrl = @NewAvatarUrl
+            FROM Users u
+            INNER JOIN Doctors d ON u.UserId = d.UserId
+            WHERE d.DoctorId = @DoctorId";
+
+            try
+            {
+                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                await connection.OpenAsync().ConfigureAwait(false);
+
+                SqlCommand updateCommand = new SqlCommand(queryUpdateAvatarUrl, connection);
+                updateCommand.Parameters.AddWithValue("@NewAvatarUrl", (object)newAvatarUrl ?? DBNull.Value);
+                updateCommand.Parameters.AddWithValue("@DoctorId", doctorId);
+
+                int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return rowsAffected > 0;
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateDoctorPhoneNumber(int doctorId, string newPhoneNumber)
+        {
+            const string queryUpdatePhoneNumber = @"
+            UPDATE Users
+            SET PhoneNumber = @NewPhoneNumber
+            FROM Users u
+            INNER JOIN Doctors d ON u.UserId = d.UserId
+            WHERE d.DoctorId = @DoctorId";
+
+            try
+            {
+                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                await connection.OpenAsync().ConfigureAwait(false);
+
+                SqlCommand updateCommand = new SqlCommand(queryUpdatePhoneNumber, connection);
+                updateCommand.Parameters.AddWithValue("@NewPhoneNumber", (object)newPhoneNumber ?? DBNull.Value);
+                updateCommand.Parameters.AddWithValue("@DoctorId", doctorId);
+
+                int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return rowsAffected > 0;
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateDoctorEmail(int doctorId, string newEmail)
+        {
+            const string queryUpdateEmail = @"
+            UPDATE Users
+            SET Mail = @NewEmail
+            FROM Users u
+            INNER JOIN Doctors d ON u.UserId = d.UserId
+            WHERE d.DoctorId = @DoctorId";
+
+            try
+            {
+                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                await connection.OpenAsync().ConfigureAwait(false);
+
+                SqlCommand updateCommand = new SqlCommand(queryUpdateEmail, connection);
+                updateCommand.Parameters.AddWithValue("@NewEmail", (object)newEmail ?? DBNull.Value);
+                updateCommand.Parameters.AddWithValue("@DoctorId", doctorId);
+
+                int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return rowsAffected > 0;
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
+
+        // A comprehensive method to update multiple doctor properties at once
+        public async Task<bool> UpdateDoctorInfo(DoctorDisplayModel doctor)
+        {
+            // We'll need two separate queries since the data is split across two tables
+            const string queryUpdateDoctorTable = @"
+            UPDATE Doctors
+            SET DepartmentId = @DepartmentId,
+                DoctorRating = @Rating,
+                CareerInfo = @CareerInfo
+            WHERE DoctorId = @DoctorId";
+
+            const string queryUpdateUserTable = @"
+            UPDATE Users
+            SET Name = @DoctorName,
+                AvatarUrl = @AvatarUrl,
+                PhoneNumber = @PhoneNumber,
+                Mail = @Mail
+            FROM Users u
+            INNER JOIN Doctors d ON u.UserId = d.UserId
+            WHERE d.DoctorId = @DoctorId";
+
+            try
+            {
+                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                await connection.OpenAsync().ConfigureAwait(false);
+                
+                // Start a transaction to ensure both updates succeed or fail together
+                SqlTransaction transaction = connection.BeginTransaction();
+
+                try
+                {
+                    // Update Doctors table
+                    SqlCommand updateDoctorCommand = new SqlCommand(queryUpdateDoctorTable, connection, transaction);
+                    updateDoctorCommand.Parameters.AddWithValue("@DepartmentId", doctor.DepartmentId);
+                    updateDoctorCommand.Parameters.AddWithValue("@Rating", (object)doctor.Rating ?? DBNull.Value);
+                    updateDoctorCommand.Parameters.AddWithValue("@CareerInfo", (object)doctor.CareerInfo ?? DBNull.Value);
+                    updateDoctorCommand.Parameters.AddWithValue("@DoctorId", doctor.DoctorId);
+
+                    await updateDoctorCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+
+                    // Update Users table
+                    SqlCommand updateUserCommand = new SqlCommand(queryUpdateUserTable, connection, transaction);
+                    updateUserCommand.Parameters.AddWithValue("@DoctorName", doctor.DoctorName);
+                    updateUserCommand.Parameters.AddWithValue("@AvatarUrl", (object)doctor.AvatarUrl ?? DBNull.Value);
+                    updateUserCommand.Parameters.AddWithValue("@PhoneNumber", (object)doctor.PhoneNumber ?? DBNull.Value);
+                    updateUserCommand.Parameters.AddWithValue("@Mail", (object)doctor.Mail ?? DBNull.Value);
+                    updateUserCommand.Parameters.AddWithValue("@DoctorId", doctor.DoctorId);
+
+                    await updateUserCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+
+                    // Commit the transaction
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    // Roll back the transaction if something fails
+                    transaction.Rollback();
+                    Console.WriteLine(e.Message);
+                    return false;
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
     }
 }
