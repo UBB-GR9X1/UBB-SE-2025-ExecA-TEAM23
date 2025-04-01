@@ -108,6 +108,7 @@ namespace Hospital
             this.Close();
         }
 
+        /*
         private void TestPatientDashboardButton_Click(object sender, RoutedEventArgs e)
         {
             if (MainFrame != null)
@@ -116,7 +117,7 @@ namespace Hospital
             }
         }
 
-
+        */
 
 
 

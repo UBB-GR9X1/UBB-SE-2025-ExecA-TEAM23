@@ -46,7 +46,7 @@
                 </Button>
                 
             </StackPanel>
-            <!-- TESTING RECOMMENDSYS -->
+            <!-- TESTING RECOMMENDSYS
             <Grid>
                 <Frame x:Name="MainFrame"/>
 
@@ -54,7 +54,7 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Bottom"
                 Click="TestPatientDashboardButton_Click"/>
-            </Grid>
+            </Grid>-->
 
         </StackPanel>
         
