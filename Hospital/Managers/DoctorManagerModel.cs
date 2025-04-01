@@ -95,8 +95,9 @@ namespace Hospital.DatabaseServices
                 Console.WriteLine($"General Exception: {e.Message}");
                 return new List<DoctorJointModel>();
             }
-            public async Task<List<DoctorJointModel>> GetAllDoctors()
-            {
+        }
+        public async Task<List<DoctorJointModel>> GetAllDoctors()
+        {
             const string querySelectAllDoctors = @"SELECT
                 d.DoctorId,
                 d.UserId,
@@ -162,3 +163,5 @@ namespace Hospital.DatabaseServices
             }
         }
     }
+
+}
