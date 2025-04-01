@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Windows.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
@@ -21,7 +22,7 @@ namespace Hospital.Views
     public sealed partial class PatientDashboardControl : UserControl
     {
         private PatientViewModel _viewModel;
-
+        public event Action LogoutButtonClicked;
         // Constructor
         public PatientDashboardControl()
         {
@@ -139,6 +140,10 @@ namespace Hospital.Views
             }
 
             // Add additional handling (e.g., show a message to the user after all fields are updated)
+        }
+        private void Logout(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            LogoutButtonClicked?.Invoke();
         }
 
     }
