@@ -46,7 +46,7 @@
     <Folder Include="Helpers\" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="CreateAccountWindow.xaml">
+    <None Update="CreateAccountView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
     <None Update="LogoutWindow.xaml">

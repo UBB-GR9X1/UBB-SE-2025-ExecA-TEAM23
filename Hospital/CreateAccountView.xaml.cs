@@ -12,11 +12,11 @@ using Hospital.Models;
 
 namespace Hospital
 {
-    public sealed partial class CreateAccountWindow : Window
+    public sealed partial class CreateAccountView : Window
     {
 
         private readonly AuthViewModel _viewModel;
-        public CreateAccountWindow(AuthViewModel viewModel)
+        public CreateAccountView(AuthViewModel viewModel)
         {
             this.InitializeComponent();
             _viewModel = viewModel;

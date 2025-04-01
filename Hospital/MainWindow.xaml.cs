@@ -91,7 +91,7 @@ namespace Hospital
 
         private void CreateAccountButton_Click(object sender, RoutedEventArgs e)
         {
-            CreateAccountWindow createAccWindow = new CreateAccountWindow(_viewModel);
+            CreateAccountView createAccWindow = new CreateAccountView(_viewModel);
             createAccWindow.Activate();
             this.Close();
         }
