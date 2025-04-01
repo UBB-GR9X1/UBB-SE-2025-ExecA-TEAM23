@@ -1,12 +1,9 @@
 ﻿using Hospital.Configs;
 using Hospital.Exceptions;
-using Hospital.Managers;
 using Hospital.Models;
 using Microsoft.Data.SqlClient;
-using Microsoft.UI.Xaml;
 using System;
 using System.Threading.Tasks;
-using Windows.Storage.AccessCache;
 
 namespace Hospital.DatabaseServices
 {

@@ -1,22 +1,10 @@
-
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Hospital.DatabaseServices;
-using Hospital.Models;
 using Hospital.Views;
-using Hospital.DatabaseServices;
 using Hospital.Managers;
 using Hospital.ViewModels;
-using System.Threading.Tasks;
 using Hospital.Exceptions;
-using Hospital.Views;
-using System;
 using Microsoft.Data.SqlClient;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Diagnostics;

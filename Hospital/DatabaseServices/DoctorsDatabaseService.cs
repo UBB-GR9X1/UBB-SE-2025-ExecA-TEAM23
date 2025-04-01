@@ -2,8 +2,6 @@
 using Hospital.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 
@@ -58,10 +56,10 @@ namespace Hospital.DatabaseServices
                     int departmentId = reader.GetInt32(2);
                     string departmentName = reader.GetString(3);
                     double rating = reader.IsDBNull(4) ? 0.0 : reader.GetDouble(4);
-                    string careerInfo = reader.IsDBNull(5) ? null : reader.GetString(5);
-                    string avatarUrl = reader.IsDBNull(6) ? null : reader.GetString(6);
-                    string phoneNumber = reader.IsDBNull(7) ? null : reader.GetString(7);
-                    string mail = reader.IsDBNull(8) ? null : reader.GetString(8);
+                    string? careerInfo = reader.IsDBNull(5) ? null : reader.GetString(5);
+                    string? avatarUrl = reader.IsDBNull(6) ? null : reader.GetString(6);
+                    string? phoneNumber = reader.IsDBNull(7) ? null : reader.GetString(7);
+                    string? mail = reader.IsDBNull(8) ? null : reader.GetString(8);
 
                     DoctorDisplayModel doctor = new DoctorDisplayModel(
                         doctorId, doctorName,
