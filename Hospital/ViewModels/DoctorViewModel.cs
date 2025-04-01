@@ -1,4 +1,4 @@
-using Hospital.Managers;
+using Hospital.DoctorManagerModel;
 using Hospital.Models;
 using System;
 using System.ComponentModel;
