@@ -82,6 +82,50 @@ namespace Hospital.Managers
                     throw new AuthenticationException("Invalid emergency contact!\nOnly numbers allowed");
             }
 
+            // check if model is at least 14 years old
+            DateOnly todayDate = DateOnly.FromDateTime(DateTime.Now);
+            DateOnly minValidDate = todayDate.AddYears(-14);
+            if (model.BirthDate > minValidDate)
+                throw new AuthenticationException("Invalid Date\nPatient must be at least 14 years old!");
+
+            // check if valid gender
+            switch (model.BirthDate.Year <= 1999)
+            {
+                case true:
+                    if (model.Cnp[0] != '1' && model.Cnp[0] != '2')
+                        throw new AuthenticationException("CNP gender is invalid");
+                    break;
+                case false:
+                    if (model.Cnp[0] != '5' && model.Cnp[0] != '6')
+                        throw new AuthenticationException("CNP gender is invalid");
+                    break;
+            }
+
+            if (model.BirthDate.Year.ToString().Length != 4)
+                throw new AuthenticationException("CNP birth year errorYou may be old, but you surely aren't this old :)!");
+
+            // check if valid match between birth date and CNP birth date
+            if (model.BirthDate.Year.ToString().Substring(2, 2) != model.Cnp.Substring(1, 2))
+                throw new AuthenticationException("Mismatch between Birth year and CNP birth year");
+            if (model.BirthDate.Month.ToString().Length == 1)
+            {
+                if (model.BirthDate.Month.ToString()[0] != model.Cnp[4] || model.Cnp[3] != '0')
+                    throw new AuthenticationException("Mismatch between Birth Month and CNP birth month");
+            }
+
+            else
+                if (model.BirthDate.Month.ToString() != model.Cnp.Substring(3, 2))
+                throw new AuthenticationException("Mismatch between Birth Month and CNP birth month");
+
+            if (model.BirthDate.Day.ToString().Length == 1)
+            {
+                if (model.BirthDate.Day.ToString()[0] != model.Cnp[6] || model.Cnp[5] != '0')
+                    throw new AuthenticationException("Mismatch between Birth Day and CNP birth day");
+            }
+            else
+                if (model.BirthDate.Day.ToString() != model.Cnp.Substring(5, 2))
+                    throw new AuthenticationException("Mismatch between Birth Day and CNP birth day");
+
             bool result = await _logInDBService.CreateAccount(model);
             if (result)
                 if (await this.LoadUserByUsername(model.Username))
