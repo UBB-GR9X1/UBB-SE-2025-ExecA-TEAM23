@@ -96,7 +96,7 @@ namespace Hospital.DatabaseServices
                 return new List<DoctorJointModel>();
             }
         }
-            public async Task<List<DoctorJointModel>> GetAllDoctors()
+        public async Task<List<DoctorJointModel>> GetAllDoctors()
         {
             const string querySelectAllDoctors = @"SELECT
                 d.DoctorId,
@@ -163,4 +163,5 @@ namespace Hospital.DatabaseServices
             }
         }
     }
-  }
+
+}
