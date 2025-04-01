@@ -50,41 +50,41 @@ namespace Hospital.Managers
 
             return result;
         }
-        public async Task<bool> CreateAccount(string username, string password, string mail, string name, DateOnly birthDate, string cnp, string bloodType, string emergencyContact, double weight, int height)
+        public async Task<bool> CreateAccount(UserCreateAccountModel model)
         {
-            if (string.IsNullOrWhiteSpace(username) || username.Contains(" "))
+            if (string.IsNullOrWhiteSpace(model.Username) || model.Username.Contains(" "))
                 throw new AuthenticationException("Invalid username!\nCan't be null or with space");
 
-            if (string.IsNullOrEmpty(password) || password.Contains(" "))
+            if (string.IsNullOrEmpty(model.Password) || model.Password.Contains(" "))
                 throw new AuthenticationException("Invalid password!\nCan't be null or with space");
 
-            if (string.IsNullOrEmpty(mail) || !mail.Contains("@") || !mail.Contains("."))
+            if (string.IsNullOrEmpty(model.Mail) || !model.Mail.Contains("@") || !model.Mail.Contains("."))
                 throw new AuthenticationException("Invalid mail!\nCan't be null, has to contain '@' and '.'");
 
-            if (string.IsNullOrEmpty(name) || !name.Contains(" "))
+            if (string.IsNullOrEmpty(model.Name) || !model.Name.Contains(" "))
                 throw new AuthenticationException("Invalid name!\nCan't be null, has to contain space");
 
-            if (cnp.Length != 13)
+            if (model.Cnp.Length != 13)
                 throw new AuthenticationException("Invalid CNP!\nHas to have length 13");
 
-            foreach (char c in cnp)
+            foreach (char c in model.Cnp)
             {
                 if (!char.IsDigit(c))
                     throw new AuthenticationException("Invalid CNP!\nOnly numbers allowed");
             }
 
-            if (emergencyContact.Length != 10)
+            if (model.EmergencyContact.Length != 10)
                 throw new AuthenticationException("Invalid emergency contact!\nIt must have length 10");
 
-            foreach (char c in emergencyContact)
+            foreach (char c in model.EmergencyContact)
             {
                 if (!char.IsDigit(c))
                     throw new AuthenticationException("Invalid emergency contact!\nOnly numbers allowed");
             }
 
-            bool result = await _logInDBService.CreateAccount(username, password, mail, name, birthDate, cnp, bloodType, emergencyContact, weight, height);
+            bool result = await _logInDBService.CreateAccount(model);
             if (result)
-                if (await this.LoadUserByUsername(username))
+                if (await this.LoadUserByUsername(model.Username))
                     return await LogAction(ActionType.LOGIN);
 
             return result;

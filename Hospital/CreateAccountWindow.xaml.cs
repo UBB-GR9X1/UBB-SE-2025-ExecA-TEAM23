@@ -82,7 +82,7 @@ namespace Hospital
 
                 try
                 {
-                    await _viewModel.CreateAccount(username, password, mail, name, birthDate, cnp, (BloodType)selectedBloodType, emergencyContact,weight, height);
+                    await _viewModel.CreateAccount(new UserCreateAccountModel(username, password, mail, name, birthDate, cnp, (BloodType)selectedBloodType, emergencyContact,weight, height));
 
                     PatientManagerModel patientManagerModel = new PatientManagerModel();
                     PatientViewModel patientViewModel = new PatientViewModel(patientManagerModel, _viewModel._authManagerModel._userInfo.UserId);
