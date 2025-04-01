@@ -1,4 +1,4 @@
-using Hospital.DoctorManagerModel;
+using Hospital.Managers;
 using Hospital.Models;
 using System;
 using System.ComponentModel;
@@ -176,7 +176,7 @@ namespace Hospital.ViewModels
                     DoctorName = doctor.DoctorName;
                     DepartmentId = doctor.DepartmentId;
                     DepartmentName = doctor.DepartmentName;
-                    Rating = doctor.Rating;
+                    Rating = (decimal)doctor.Rating;
                     CareerInfo = doctor.CareerInfo;
                     AvatarUrl = doctor.AvatarUrl;
                     PhoneNumber = doctor.PhoneNumber;
@@ -305,7 +305,7 @@ namespace Hospital.ViewModels
             try
             {
                 IsLoading = true;
-                bool result = await _doctorManagerModel.UpdateMail(UserId, mail);
+                bool result = await _doctorManagerModel.UpdateEmail(UserId, mail);
                 if (result)
                 {
                     Mail = mail;

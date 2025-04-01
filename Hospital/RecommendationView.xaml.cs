@@ -2,6 +2,8 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Hospital.ViewModels;
 using Hospital.Models;
+using Hospital.Managers;
+
 using System.Threading.Tasks;
 using Hospital.DatabaseServices;
 using System;
@@ -18,7 +20,8 @@ namespace Hospital.Views
             _formViewModel = new RecommendationSystemFormViewModel();
             this.DataContext = _formViewModel;
             this.InitializeComponent();
-            _recommendationSystem = new RecommendationSystemModel(new DoctorManagerModel());
+            var doctorDBService = new DoctorsDatabaseService(); // Assuming you have a default constructor or create an instance as needed
+            _recommendationSystem = new RecommendationSystemModel(new DoctorManagerModel(doctorDBService));
 
         }
 

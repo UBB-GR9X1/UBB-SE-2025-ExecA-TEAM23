@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
+using System.Diagnostics;
 
 
 namespace Hospital.DatabaseServices
@@ -342,6 +343,28 @@ namespace Hospital.DatabaseServices
             {
                 Console.WriteLine(e.Message);
                 return false;
+            }
+        }
+
+        public async Task<int> GetDoctorUserId(int doctorId)
+        {
+            const string query = "SELECT UserId FROM Doctors WHERE DoctorId = @doctorId";
+
+            try
+            {
+                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                await connection.OpenAsync().ConfigureAwait(false);
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@doctorId", doctorId);
+
+                var result = await command.ExecuteScalarAsync().ConfigureAwait(false);
+                return result != null ? Convert.ToInt32(result) : -1;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error getting doctor user ID: {ex.Message}");
+                return -1;
             }
         }
 
