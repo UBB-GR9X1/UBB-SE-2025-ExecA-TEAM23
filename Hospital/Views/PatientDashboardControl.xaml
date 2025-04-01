@@ -34,6 +34,9 @@
             <Button Content="Medical History" Width="120" Margin="5" VerticalAlignment="Top"/>
             <Button Content="Billing" Width="80" Margin="5" VerticalAlignment="Top"/>
             <Button Content="Settings" Width="80" Margin="5" VerticalAlignment="Top"/>
+            <Canvas Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent" ZIndex="2">
+                <views:RecommendationView x:Name="recommendationView" Width="600" Height="400" HorizontalAlignment="Right" VerticalAlignment="Top" Visibility="Visible" Canvas.Top="-20" Canvas.Left="140"/>
+            </Canvas>
         </StackPanel>
 
         <!-- Image Row: Profile Image or Placeholder -->
