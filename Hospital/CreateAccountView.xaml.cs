@@ -86,7 +86,7 @@ namespace Hospital
 
                     PatientManagerModel patientManagerModel = new PatientManagerModel();
                     PatientViewModel patientViewModel = new PatientViewModel(patientManagerModel, _viewModel._authManagerModel._userInfo.UserId);
-                    PatientDashboardWindow patientDashboardWindow = new PatientDashboardWindow(patientViewModel);
+                    PatientDashboardWindow patientDashboardWindow = new PatientDashboardWindow(patientViewModel, _viewModel);
                     patientDashboardWindow.Activate();
                     this.Close();
                     return;

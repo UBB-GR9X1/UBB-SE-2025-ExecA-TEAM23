@@ -50,9 +50,9 @@ namespace Hospital.Configs
         // Microsoft.Data.SqlClient uses Encrypted=true by default, so we need to add TrustServerCertificate=True
         // _databaseConnection = "Data Source={SERVER NAME};Initial Catalog={DATABASE_NAME};Integrated Security=True;TrustServerCertificate=True"
         // private string _databaseConnection = "Data Source=LAPTOP-ANDU\\SQLEXPRESS;Initial Catalog=HospitalDB;Integrated Security=True;TrustServerCertificate=True";
-        // private string _databaseConnection = "Data Source=DESKTOP-B33HRLE;Initial Catalog=HospitalDB;Integrated Security=True;TrustServerCertificate=True";
+         private string _databaseConnection = "Data Source=DESKTOP-M2TF6Q6\\SQLEXPRESS;Initial Catalog=HospitalApp;Integrated Security=True;TrustServerCertificate=True";
 
-        private string _databaseConnection = "Data Source=DESKTOP-DK2UM26;Initial Catalog=HospitalApp;Integrated Security=True;TrustServerCertificate=True";
+        //private string _databaseConnection = "Data Source=DESKTOP-5A6VJDA;Initial Catalog=HospitalDB;Integrated Security=True;TrustServerCertificate=True";
 
         public string DatabaseConnection { get { return _databaseConnection; } }
 

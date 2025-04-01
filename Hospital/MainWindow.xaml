@@ -44,8 +44,21 @@
                 Background="#0078D7" Foreground="White"
                 Padding="10" FontWeight="Bold" Click="CreateAccountButton_Click">
                 </Button>
+                
             </StackPanel>
+            <!-- TESTING RECOMMENDSYS
+            <Grid>
+                <Frame x:Name="MainFrame"/>
+
+                <Button Content="Doctor Guide"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Bottom"
+                Click="TestPatientDashboardButton_Click"/>
+            </Grid>-->
+
         </StackPanel>
+        
+
 
         <!-- IMPORTANT: I COMMENTED THIS CODE TO HAVE THE AUTHENTICATION ON MAIN WINDOW !!!
     xmlns:local="using:Hospital"

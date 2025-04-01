@@ -9,31 +9,31 @@
 			<TextBlock Text="Select Symptoms" FontSize="20" FontWeight="Bold" />
 
 			<!-- Symptom selection controls remain the same -->
-			<ComboBox ItemsSource="{Binding SymptomStartOptions}"
-                      SelectedItem="{Binding SelectedSymptomStart}"
-                      PlaceholderText="When did symptoms start?" />
-
-			<ComboBox ItemsSource="{Binding SymptomDiscomfortAreas}"
-                      SelectedItem="{Binding SelectedDiscomfortArea}"
+            <ComboBox ItemsSource="{Binding SymptomStartOptions}"
+                      SelectedItem="{Binding SelectedSymptomStart, Mode=TwoWay}"
+                      PlaceholderText="When did symptoms start?"/>
+            
+            <ComboBox ItemsSource="{Binding SymptomDiscomfortAreas}"
+                      SelectedItem="{Binding SelectedDiscomfortArea, Mode=TwoWay}"
                       PlaceholderText="Affected Body Part" />
 
 			<ComboBox ItemsSource="{Binding SymptomTypes}"
-                      SelectedItem="{Binding SelectedSymptom1}"
+                      SelectedItem="{Binding SelectedSymptom1, Mode=TwoWay}"
                       PlaceholderText="Select Symptom 1" />
 
 			<ComboBox ItemsSource="{Binding SymptomTypes}"
-                      SelectedItem="{Binding SelectedSymptom2}"
+                      SelectedItem="{Binding SelectedSymptom2, Mode=TwoWay}"
                       PlaceholderText="Select Symptom 2" />
 
 			<ComboBox ItemsSource="{Binding SymptomTypes}"
-                      SelectedItem="{Binding SelectedSymptom3}"
+                      SelectedItem="{Binding SelectedSymptom3, Mode=TwoWay}"
                       PlaceholderText="Select Symptom 3" />
 
-			<Button x:Name="RecommendButton"
-        Content="Get Recommendation"
-        Click="RecommendButton_Click" />
+            <Button x:Name="RecommendButton"
+			Content="Match Doctor"
+			Click="RecommendButton_Click" />
 
-			<!-- Updated Results Display - Now with three separate TextBlocks -->
+            <!-- Updated Results Display - Now with three separate TextBlocks -->
 			<StackPanel x:Name="ResultPanel" Visibility="Collapsed" Spacing="5">
 				<TextBlock x:Name="DoctorNameText" FontSize="16" FontWeight="SemiBold"/>
 				<TextBlock x:Name="DepartmentText" FontSize="14"/>

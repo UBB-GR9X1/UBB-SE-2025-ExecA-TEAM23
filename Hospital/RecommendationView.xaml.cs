@@ -15,11 +15,11 @@ namespace Hospital.Views
 
         public RecommendationView()
         {
-            this.InitializeComponent();
-
             _formViewModel = new RecommendationSystemFormViewModel();
             this.DataContext = _formViewModel;
+            this.InitializeComponent();
             _recommendationSystem = new RecommendationSystemModel(new DoctorManagerModel());
+
         }
 
         private async void RecommendButton_Click(object sender, RoutedEventArgs e)

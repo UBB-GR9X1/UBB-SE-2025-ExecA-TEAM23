@@ -19,7 +19,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-
+using System.Diagnostics;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
@@ -47,16 +47,17 @@ namespace Hospital
             {
                 
                 await _viewModel.Login(username, password);
-                
+                Debug.WriteLine("Login successful");
 
 
                 if (_viewModel._authManagerModel._userInfo.Role == "Patient")
                 {
                     PatientManagerModel patientManagerModel = new PatientManagerModel();
                     PatientViewModel patientViewModel = new PatientViewModel(patientManagerModel, _viewModel._authManagerModel._userInfo.UserId);
-                    PatientDashboardWindow patientDashboardWindow = new PatientDashboardWindow(patientViewModel);
+                    PatientDashboardWindow patientDashboardWindow = new PatientDashboardWindow(patientViewModel, _viewModel);
                     patientDashboardWindow.Activate();
                     this.Close();
+                    
                     return;
                 }
                 /*
@@ -111,5 +112,20 @@ namespace Hospital
             createAccWindow.Activate();
             this.Close();
         }
+
+        /*
+        private void TestPatientDashboardButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (MainFrame != null)
+            {
+                MainFrame.Navigate(typeof(Hospital.Views.RecommendationWindow));
+            }
+        }
+
+        */
+
+
+
+
     }
 }
