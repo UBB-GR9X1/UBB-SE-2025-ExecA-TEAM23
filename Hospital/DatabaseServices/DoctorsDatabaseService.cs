@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using System.Diagnostics;
 using static System.Runtime.InteropServices.JavaScript.JSType;
-
+using System.Text.RegularExpressions;
 
 namespace Hospital.DatabaseServices
 {
@@ -20,58 +20,52 @@ namespace Hospital.DatabaseServices
         {
             _config = Config.GetInstance();
         }
-
-        public async Task<DoctorDisplayModel> GetDoctorById(int doctorId)
+        
+        public async Task<DoctorDisplayModel> GetDoctorById(int userId)
         {
-            const string query = @"
-        SELECT 
-            d.userId,
-            u.Name AS DoctorName,
-            d.DepartmentId,
-            dept.DepartmentName,
-            d.DoctorRating,
-            d.CareerInfo,
-            u.AvatarUrl,
-            u.PhoneNumber,
-            u.Mail,
-            d.LicenseNumber,
-            u.BirthDate,
-            u.Cnp,
-            u.Address,
-            u.RegistrationDate
-        FROM Doctors d
-        WHERE u.DoctorId = @doctorId";
-
+            const string query = @"SELECT 
+                d.DoctorId,
+                u.Name AS DoctorName,
+                d.DepartmentId,
+                dep.DepartmentName,
+                d.DoctorRating,
+                d.CareerInfo,
+                u.AvatarUrl, 
+                u.PhoneNumber,
+                u.Mail
+            FROM Doctors d
+            INNER JOIN Users u ON d.UserId = u.UserId
+            LEFT JOIN Departments dep ON d.DepartmentId = dep.DepartmentId
+            WHERE d.UserId = @userId";
+            
             try
             {
-                // Add to your try block
-
                 using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
                 await connection.OpenAsync().ConfigureAwait(false);
 
                 using SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@doctorId", doctorId);
+                command.Parameters.AddWithValue("@userId", userId);
 
                 using SqlDataReader reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
-                System.Diagnostics.Debug.WriteLine(reader);
-
+                
                 if (await reader.ReadAsync().ConfigureAwait(false))
                 {
-                    Console.WriteLine($"Doctor found: {reader.GetString(1)}"); // Fixed log message
+                    Console.WriteLine($"Doctor found with user ID: {userId}");
 
                     return new DoctorDisplayModel(
                         doctorId: reader.GetInt32(0),
                         doctorName: reader.GetString(1),
                         departmentId: reader.GetInt32(2),
                         departmentName: reader.IsDBNull(3) ? "" : reader.GetString(3),
-                        rating: reader.GetDouble(4),
+                        rating: reader.IsDBNull(4) ? 0.0 : reader.GetDouble(4),
                         careerInfo: reader.IsDBNull(5) ? "" : reader.GetString(5),
                         avatarUrl: reader.IsDBNull(6) ? "" : reader.GetString(6),
-                        phoneNumber: reader.GetString(7),
+                        phoneNumber: reader.IsDBNull(7) ? "" : reader.GetString(7),
                         mail: reader.GetString(8)
                     );
                 }
 
+                Console.WriteLine($"No doctor found with user ID: {userId}");
                 return null;
             }
             catch (SqlException e)
@@ -155,20 +149,20 @@ namespace Hospital.DatabaseServices
         public async Task<List<DoctorDisplayModel>> GetDoctorsByPartialDoctorName(string doctorPartialName)
         {
             const string querySelectDoctors = @"
-    SELECT 
-        d.DoctorId,
-        u.Name AS DoctorName,
-        d.DepartmentId,
-        dept.DepartmentName,
-        d.DoctorRating AS Rating,
-        d.CareerInfo,
-        u.AvatarUrl,
-        u.PhoneNumber,
-        u.Mail
-    FROM Doctors d
-    INNER JOIN Users u ON d.UserId = u.UserId
-    INNER JOIN Departments dept ON d.DepartmentId = dept.DepartmentId
-    WHERE u.Name LIKE '%' + @doctorNamePartial + '%'";
+            SELECT 
+                d.DoctorId,
+                u.Name AS DoctorName,
+                d.DepartmentId,
+                dept.DepartmentName,
+                d.DoctorRating AS Rating,
+                d.CareerInfo,
+                u.AvatarUrl,
+                u.PhoneNumber,
+                u.Mail
+            FROM Doctors d
+            INNER JOIN Users u ON d.UserId = u.UserId
+            INNER JOIN Departments dept ON d.DepartmentId = dept.DepartmentId
+            WHERE u.Name LIKE '%' + @doctorNamePartial + '%'";
 
             try
             {
@@ -222,6 +216,24 @@ namespace Hospital.DatabaseServices
 
         public async Task<bool> UpdateDoctorName(int doctorId, string newName)
         {
+            if (doctorId <= 0)
+            {
+                Console.WriteLine("Invalid doctor ID");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(newName))
+            {
+                Console.WriteLine("Doctor name cannot be empty");
+                return false;
+            }
+
+            if (newName.Length > 100)
+            {
+                Console.WriteLine("Doctor name is too long");
+                return false;
+            }
+
             const string queryUpdateDoctorName = @"
             UPDATE Users
             SET Name = @NewName
@@ -255,6 +267,18 @@ namespace Hospital.DatabaseServices
 
         public async Task<bool> UpdateDoctorDepartment(int doctorId, int newDepartmentId)
         {
+            if (doctorId <= 0)
+            {
+                Console.WriteLine("Invalid doctor ID");
+                return false;
+            }
+
+            if (newDepartmentId <= 0)
+            {
+                Console.WriteLine("Invalid department ID");
+                return false;
+            }
+
             const string queryUpdateDepartment = @"
             UPDATE Doctors
             SET DepartmentId = @NewDepartmentId
@@ -286,6 +310,18 @@ namespace Hospital.DatabaseServices
 
         public async Task<bool> UpdateDoctorRating(int doctorId, double newRating)
         {
+            if (doctorId <= 0)
+            {
+                Console.WriteLine("Invalid doctor ID");
+                return false;
+            }
+
+            if (newRating < 0 || newRating > 5)
+            {
+                Console.WriteLine("Rating must be between 0 and 5");
+                return false;
+            }
+
             const string queryUpdateRating = @"
             UPDATE Doctors
             SET DoctorRating = @NewRating
@@ -317,6 +353,18 @@ namespace Hospital.DatabaseServices
 
         public async Task<bool> UpdateDoctorCareerInfo(int doctorId, string newCareerInfo)
         {
+            if (doctorId <= 0)
+            {
+                Console.WriteLine("Invalid doctor ID");
+                return false;
+            }
+
+            if (newCareerInfo != null && newCareerInfo.Length > 2000)
+            {
+                Console.WriteLine("Career info is too long");
+                return false;
+            }
+
             const string queryUpdateCareerInfo = @"
             UPDATE Doctors
             SET CareerInfo = @NewCareerInfo
@@ -348,6 +396,27 @@ namespace Hospital.DatabaseServices
 
         public async Task<bool> UpdateDoctorAvatarUrl(int doctorId, string newAvatarUrl)
         {
+            if (doctorId <= 0)
+            {
+                Console.WriteLine("Invalid doctor ID");
+                return false;
+            }
+
+            if (newAvatarUrl != null)
+            {
+                if (newAvatarUrl.Length > 500)
+                {
+                    Console.WriteLine("Avatar URL is too long");
+                    return false;
+                }
+
+                if (!Uri.IsWellFormedUriString(newAvatarUrl, UriKind.Absolute))
+                {
+                    Console.WriteLine("Invalid avatar URL format");
+                    return false;
+                }
+            }
+
             const string queryUpdateAvatarUrl = @"
             UPDATE Users
             SET AvatarUrl = @NewAvatarUrl
@@ -381,6 +450,27 @@ namespace Hospital.DatabaseServices
 
         public async Task<bool> UpdateDoctorPhoneNumber(int doctorId, string newPhoneNumber)
         {
+            if (doctorId <= 0)
+            {
+                Console.WriteLine("Invalid doctor ID");
+                return false;
+            }
+
+            if (newPhoneNumber != null)
+            {
+                if (newPhoneNumber.Length > 20)
+                {
+                    Console.WriteLine("Phone number is too long");
+                    return false;
+                }
+
+                if (!Regex.IsMatch(newPhoneNumber, @"^[+\d\s\-\(\)]+$"))
+                {
+                    Console.WriteLine("Invalid phone number format");
+                    return false;
+                }
+            }
+
             const string queryUpdatePhoneNumber = @"
             UPDATE Users
             SET PhoneNumber = @NewPhoneNumber
@@ -436,6 +526,39 @@ namespace Hospital.DatabaseServices
 
         public async Task<bool> UpdateDoctorEmail(int doctorId, string newEmail)
         {
+            if (doctorId <= 0)
+            {
+                Console.WriteLine("Invalid doctor ID");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(newEmail))
+            {
+                Console.WriteLine("Email cannot be empty");
+                return false;
+            }
+
+            if (newEmail.Length > 100)
+            {
+                Console.WriteLine("Email is too long");
+                return false;
+            }
+
+            try
+            {
+                var email = new System.Net.Mail.MailAddress(newEmail);
+                if (email.Address != newEmail)
+                {
+                    Console.WriteLine("Invalid email format");
+                    return false;
+                }
+            }
+            catch
+            {
+                Console.WriteLine("Invalid email format");
+                return false;
+            }
+
             const string queryUpdateEmail = @"
             UPDATE Users
             SET Mail = @NewEmail
@@ -467,10 +590,77 @@ namespace Hospital.DatabaseServices
             }
         }
 
-        // A comprehensive method to update multiple doctor properties at once
         public async Task<bool> UpdateDoctorInfo(DoctorDisplayModel doctor)
         {
-            // We'll need two separate queries since the data is split across two tables
+            if (doctor == null)
+            {
+                Console.WriteLine("Doctor model cannot be null");
+                return false;
+            }
+
+            if (doctor.DoctorId <= 0)
+            {
+                Console.WriteLine("Invalid doctor ID");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(doctor.DoctorName))
+            {
+                Console.WriteLine("Doctor name cannot be empty");
+                return false;
+            }
+
+            if (doctor.DepartmentId <= 0)
+            {
+                Console.WriteLine("Invalid department ID");
+                return false;
+            }
+
+            if (doctor.Rating < 0 || doctor.Rating > 5)
+            {
+                Console.WriteLine("Rating must be between 0 and 5");
+                return false;
+            }
+
+            if (doctor.CareerInfo != null && doctor.CareerInfo.Length > 2000)
+            {
+                Console.WriteLine("Career info is too long");
+                return false;
+            }
+
+            if (doctor.AvatarUrl != null && doctor.AvatarUrl.Length > 500)
+            {
+                Console.WriteLine("Avatar URL is too long");
+                return false;
+            }
+
+            if (doctor.PhoneNumber != null && doctor.PhoneNumber.Length > 20)
+            {
+                Console.WriteLine("Phone number is too long");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(doctor.Mail))
+            {
+                Console.WriteLine("Email cannot be empty");
+                return false;
+            }
+
+            try
+            {
+                var email = new System.Net.Mail.MailAddress(doctor.Mail);
+                if (email.Address != doctor.Mail)
+                {
+                    Console.WriteLine("Invalid email format");
+                    return false;
+                }
+            }
+            catch
+            {
+                Console.WriteLine("Invalid email format");
+                return false;
+            }
+
             const string queryUpdateDoctorTable = @"
             UPDATE Doctors
             SET DepartmentId = @DepartmentId,
@@ -493,12 +683,10 @@ namespace Hospital.DatabaseServices
                 using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
                 await connection.OpenAsync().ConfigureAwait(false);
                 
-                // Start a transaction to ensure both updates succeed or fail together
                 SqlTransaction transaction = connection.BeginTransaction();
 
                 try
                 {
-                    // Update Doctors table
                     SqlCommand updateDoctorCommand = new SqlCommand(queryUpdateDoctorTable, connection, transaction);
                     updateDoctorCommand.Parameters.AddWithValue("@DepartmentId", doctor.DepartmentId);
                     updateDoctorCommand.Parameters.AddWithValue("@Rating", (object)doctor.Rating ?? DBNull.Value);
@@ -507,7 +695,6 @@ namespace Hospital.DatabaseServices
 
                     await updateDoctorCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
 
-                    // Update Users table
                     SqlCommand updateUserCommand = new SqlCommand(queryUpdateUserTable, connection, transaction);
                     updateUserCommand.Parameters.AddWithValue("@DoctorName", doctor.DoctorName);
                     updateUserCommand.Parameters.AddWithValue("@AvatarUrl", (object)doctor.AvatarUrl ?? DBNull.Value);
@@ -517,13 +704,11 @@ namespace Hospital.DatabaseServices
 
                     await updateUserCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
 
-                    // Commit the transaction
                     transaction.Commit();
                     return true;
                 }
                 catch (Exception e)
                 {
-                    // Roll back the transaction if something fails
                     transaction.Rollback();
                     Console.WriteLine(e.Message);
                     return false;
