@@ -107,11 +107,6 @@ namespace Hospital.Managers
                 {
                     throw new Exception("Avatar URL is too long");
                 }
-
-                if (!Uri.IsWellFormedUriString(avatarUrl, UriKind.Absolute))
-                {
-                    throw new Exception("Invalid avatar URL format");
-                }
             }
 
             avatarUrl ??= "";

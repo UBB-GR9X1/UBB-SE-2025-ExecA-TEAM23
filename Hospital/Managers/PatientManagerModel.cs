@@ -49,6 +49,10 @@ namespace Hospital.Managers
         {
             if (string.IsNullOrWhiteSpace(email) || !email.Contains("@") || !email.Contains("."))
                 throw new InputProfileException("Invalid email format.");
+
+            if (email.Length > 100)
+                throw new InputProfileException("Invalid mail\nCan't be more than 100 characters");
+
             return await _patientDBService.UpdateEmail(userId, email);
         }
 
@@ -68,6 +72,9 @@ namespace Hospital.Managers
             if (string.IsNullOrWhiteSpace(name) || name.Any(char.IsDigit))
                 throw new InputProfileException("Name cannot be empty.");
 
+            if (name.Length > 100)
+                throw new InputProfileException("Invalid name!\nName has to be at most 100 characters long");
+
             return await _patientDBService.UpdateName(userId, name);
         }
 
@@ -80,6 +87,9 @@ namespace Hospital.Managers
         {
             if (string.IsNullOrWhiteSpace(address))
                 address = "";
+
+            if (address.Length > 255)
+                throw new InputProfileException("Invalid address\nCan't be more than 255 characters");
 
             return await _patientDBService.UpdateAddress(userId, address);
         }
