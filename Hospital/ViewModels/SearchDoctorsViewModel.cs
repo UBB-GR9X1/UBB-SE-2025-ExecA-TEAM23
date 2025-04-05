@@ -12,7 +12,7 @@ namespace Hospital.ViewModels
     {
         public readonly SearchDoctorsManagerModel _searchDoctorsManager;
         private string _departmentPartialName;
-        private DoctorDisplayModel _selectedDoctor;
+        private DoctorDisplayModel _selectedDoctor = DoctorDisplayModel.Default;
         private bool _isProfileOpen;
 
         private ObservableCollection<DoctorDisplayModel> _doctorList;
@@ -93,13 +93,13 @@ namespace Hospital.ViewModels
         public void CloseDoctorProfile()
         {
             IsProfileOpen = false;
-            SelectedDoctor = null;
+            SelectedDoctor = DoctorDisplayModel.Default;
         }
 
         // INotifyPropertyChanged implementation
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 public class RecommendationSystemFormViewModel : INotifyPropertyChanged
 {
@@ -11,35 +11,35 @@ public class RecommendationSystemFormViewModel : INotifyPropertyChanged
     public ObservableCollection<string> SymptomDiscomfortAreas { get; set; }
     public ObservableCollection<string> SymptomTypes { get; set; }
 
-    private string _selectedSymptomStart;
+    private string _selectedSymptomStart = "";
     public string SelectedSymptomStart
     {
         get => _selectedSymptomStart;
         set { _selectedSymptomStart = value; OnPropertyChanged(); }
     }
 
-    private string _selectedDiscomfortArea;
+    private string _selectedDiscomfortArea = "";
     public string SelectedDiscomfortArea
     {
         get => _selectedDiscomfortArea;
         set { _selectedDiscomfortArea = value; OnPropertyChanged(); }
     }
 
-    private string _selectedSymptom1;
+    private string _selectedSymptom1 = "";
     public string SelectedSymptom1
     {
         get => _selectedSymptom1;
         set { _selectedSymptom1 = value; OnPropertyChanged(); }
     }
 
-    private string _selectedSymptom2;
+    private string _selectedSymptom2 = "";
     public string SelectedSymptom2
     {
         get => _selectedSymptom2;
         set { _selectedSymptom2 = value; OnPropertyChanged(); }
     }
 
-    private string _selectedSymptom3;
+    private string _selectedSymptom3 = "";
     public string SelectedSymptom3
     {
         get => _selectedSymptom3;
@@ -68,13 +68,13 @@ public class RecommendationSystemFormViewModel : INotifyPropertyChanged
 
         // Here wecan create default values for the fields
         // I opted to use the placeholder text in the XAML file instead since I think it is nicer
-        
+
         //SelectedSymptomStart = SymptomStartOptions[1];
         //SelectedDiscomfortArea = SymptomDiscomfortAreas[4];
         SelectedSymptom1 = SymptomTypes[7];
         SelectedSymptom2 = SymptomTypes[7];
         SelectedSymptom3 = SymptomTypes[7];
-        
+
     }
 
     private void ValidateSymptoms()

@@ -1,13 +1,9 @@
 ﻿using Hospital.Configs;
 using Hospital.Models;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Data.SqlClient;
-using System.Diagnostics;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Text.RegularExpressions;
-using System.Linq;
 
 namespace Hospital.DatabaseServices
 {
@@ -19,7 +15,7 @@ namespace Hospital.DatabaseServices
         {
             _config = Config.GetInstance();
         }
-        
+
         public async Task<DoctorDisplayModel> GetDoctorById(int userId)
         {
             const string query = @"SELECT 
@@ -36,7 +32,7 @@ namespace Hospital.DatabaseServices
             INNER JOIN Users u ON d.UserId = u.UserId
             LEFT JOIN Departments dep ON d.DepartmentId = dep.DepartmentId
             WHERE d.UserId = @userId";
-            
+
             try
             {
                 using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
@@ -46,7 +42,7 @@ namespace Hospital.DatabaseServices
                 command.Parameters.AddWithValue("@userId", userId);
 
                 using SqlDataReader reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
-                
+
                 if (await reader.ReadAsync().ConfigureAwait(false))
                 {
                     Console.WriteLine($"Doctor found with user ID: {userId}");
@@ -171,7 +167,7 @@ namespace Hospital.DatabaseServices
 
                 SqlDataReader reader = await selectCommand.ExecuteReaderAsync().ConfigureAwait(false);
                 List<DoctorDisplayModel> doctorList = new List<DoctorDisplayModel>();
-                if(departmentPartialName == "")
+                if (departmentPartialName == "")
                 {
                     return doctorList;
                 }
@@ -182,10 +178,10 @@ namespace Hospital.DatabaseServices
                     int departmentId = reader.GetInt32(2);
                     string departmentName = reader.GetString(3);
                     double rating = reader.GetDouble(4);
-                    string? careerInfo = reader.IsDBNull(5) ? null : reader.GetString(5);
-                    string? avatarUrl = reader.IsDBNull(6) ? null : reader.GetString(6);
-                    string? phoneNumber = reader.IsDBNull(7) ? null : reader.GetString(7);
-                    string? mail = reader.IsDBNull(8) ? null : reader.GetString(8);
+                    string? careerInfo = reader.IsDBNull(5) ? "" : reader.GetString(5);
+                    string? avatarUrl = reader.IsDBNull(6) ? "" : reader.GetString(6);
+                    string? phoneNumber = reader.IsDBNull(7) ? "" : reader.GetString(7);
+                    string? mail = reader.GetString(8);
 
                     DoctorDisplayModel doctor = new DoctorDisplayModel(
                         doctorId, doctorName,
@@ -449,7 +445,7 @@ namespace Hospital.DatabaseServices
         }
 
         public async Task<bool> UpdateDoctorCareerInfo(int userId, string newCareerInfo)
-        { 
+        {
             const string queryUpdateCareerInfo = @"
             UPDATE Doctors
             SET CareerInfo = @newCareerInfo

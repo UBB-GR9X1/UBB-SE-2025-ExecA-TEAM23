@@ -1,11 +1,10 @@
-﻿using Hospital.Models;
-using Hospital.Managers;
+﻿using Hospital.Managers;
+using Hospital.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Hospital.DatabaseServices;
-using System.Diagnostics;
 
 public class RecommendationSystemModel
 {
@@ -15,6 +14,7 @@ public class RecommendationSystemModel
     public RecommendationSystemModel(DoctorManagerModel doctorManager)
     {
         _doctorManager = doctorManager;
+        _symptomDepartmentScores = new Dictionary<string, Dictionary<int, int>>();
         InitializeSymptomScores();
     }
 
@@ -51,7 +51,7 @@ public class RecommendationSystemModel
 
     public async Task<DoctorJointModel?> RecommendDoctor(RecommendationSystemFormViewModel formViewModel)
     {
-        Dictionary<int, int> departmentScores = new();
+        Dictionary<int, int> departmentScores = new Dictionary<int, int>();
 
         void AddPoints(string symptom)
         {
@@ -117,7 +117,7 @@ public class RecommendationSystemModel
             .ThenBy(d => d.GetBirthDate()) // Prefer younger doctors
             .ThenBy(d => d.GetDoctorRating()) // Prefer experienced doctors
             .FirstOrDefault();
-            //.LastOrDefault();
+        //.LastOrDefault();
 
         // Debug output
         //Console.WriteLine($"Recommended Doctor: {recommendedDoctor?.GetDoctorName() ?? "None"} (Department {recommendedDepartment})");

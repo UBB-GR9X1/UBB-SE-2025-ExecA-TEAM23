@@ -14,10 +14,10 @@ namespace Hospital.Managers
         private readonly PatientsDatabaseService _patientDBService;
 
         //Use this if you want to work on a specific patient
-        public PatientJointModel _patientInfo { get; private set; }
+        public PatientJointModel _patientInfo { get; private set; } = PatientJointModel.Default;
 
         //Use this if you want to work with more patients
-        public List<PatientJointModel> _patientList { get; private set; }
+        public List<PatientJointModel> _patientList { get; private set; } = new List<PatientJointModel>();
         public PatientManagerModel()
         {
             _patientDBService = new PatientsDatabaseService();

@@ -1,13 +1,12 @@
-﻿using System;
+﻿using Hospital.Managers;
+using Hospital.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-
-using Hospital.Managers;
-using Hospital.Models;
 
 namespace Hospital.ViewModels
 {
@@ -24,7 +23,7 @@ namespace Hospital.ViewModels
         public ICommand LoadLogsByActionTypeCommand { get; }
         public ICommand LoadLogsWithParametersCommand { get; }
 
-        private string _userIdInput;
+        private string _userIdInput = "";
 
         private ActionType _selectedActionType;
         public List<ActionType> ActionTypes { get; } = Enum.GetValues(typeof(ActionType)).Cast<ActionType>().ToList();

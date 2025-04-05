@@ -1,16 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital.Exceptions
 {
-    class AuthenticationException : Exception
+    class AuthenticationException(string message) : Exception(message)
     {
-        public AuthenticationException(string message) : base(message)
-        {
-
-        }
     }
 }

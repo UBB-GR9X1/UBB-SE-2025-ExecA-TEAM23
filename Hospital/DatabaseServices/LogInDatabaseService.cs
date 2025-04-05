@@ -22,7 +22,7 @@ namespace Hospital.DatabaseServices
 
             using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
 
-                // Open the database connection asynchronously
+            // Open the database connection asynchronously
             await connection.OpenAsync().ConfigureAwait(false);
 
             using SqlCommand selectCommand = new SqlCommand(query, connection);
@@ -130,7 +130,7 @@ namespace Hospital.DatabaseServices
 
             catch (AuthenticationException err)
             {
-                throw err;
+                throw new AuthenticationException(err.Message);
             }
 
             catch (Exception)
@@ -140,7 +140,7 @@ namespace Hospital.DatabaseServices
             }
         }
 
-        public async Task<bool> AuthenticationLogService (int userId, ActionType type)
+        public async Task<bool> AuthenticationLogService(int userId, ActionType type)
         {
             string query = "INSERT INTO Logs (UserId, ActionType) VALUES (@userId, @type)";
             try
@@ -178,4 +178,3 @@ namespace Hospital.DatabaseServices
         }
     }
 }
- 

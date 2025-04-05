@@ -7,8 +7,8 @@ namespace Hospital.Views
 {
     public sealed partial class PatientDashboardControl : UserControl
     {
-        private PatientViewModel _viewModel;
-        public event Action LogoutButtonClicked;
+        private PatientViewModel? _viewModel;
+        public event Action? LogoutButtonClicked;
         // Constructor
         public PatientDashboardControl()
         {
@@ -28,6 +28,9 @@ namespace Hospital.Views
             try
             {
                 bool changeMade = false;
+
+                if (_viewModel == null)
+                    throw new Exception("Patient is not initialized");
 
                 // Update Name
                 if (_viewModel.Name != _viewModel._originalPatient.PatientName)
@@ -145,25 +148,29 @@ namespace Hospital.Views
             }
             catch (Exception ex)
             {
-                _viewModel.Name = _viewModel._originalPatient.PatientName;
-                _viewModel.Email = _viewModel._originalPatient.Mail;
-                _viewModel.Username = _viewModel._originalPatient.Username;
-                _viewModel.Address = _viewModel._originalPatient.Address;
-                _viewModel.PhoneNumber = _viewModel._originalPatient.PhoneNumber;
-                _viewModel.EmergencyContact = _viewModel._originalPatient.EmergencyContact;
-                _viewModel.Weight = _viewModel._originalPatient.Weight;
-                _viewModel.Height = _viewModel._originalPatient.Height;
-                _viewModel.Password = _viewModel._originalPatient.Password;
-                var validationDialog = new ContentDialog
+                if (_viewModel != null)
                 {
-                    Title = "Error",
-                    Content = $"{ex.Message}",
-                    CloseButtonText = "OK"
-                };
+                    _viewModel.Name = _viewModel._originalPatient.PatientName;
+                    _viewModel.Email = _viewModel._originalPatient.Mail;
+                    _viewModel.Username = _viewModel._originalPatient.Username;
+                    _viewModel.Address = _viewModel._originalPatient.Address;
+                    _viewModel.PhoneNumber = _viewModel._originalPatient.PhoneNumber;
+                    _viewModel.EmergencyContact = _viewModel._originalPatient.EmergencyContact;
+                    _viewModel.Weight = _viewModel._originalPatient.Weight;
+                    _viewModel.Height = _viewModel._originalPatient.Height;
+                    _viewModel.Password = _viewModel._originalPatient.Password;
 
-                validationDialog.XamlRoot = this.Content.XamlRoot;
-                await validationDialog.ShowAsync();
-                await _viewModel.LoadPatientInfoByUserIdAsync(_viewModel.UserId);
+                    var validationDialog = new ContentDialog
+                    {
+                        Title = "Error",
+                        Content = $"{ex.Message}",
+                        CloseButtonText = "OK"
+                    };
+
+                    validationDialog.XamlRoot = this.Content.XamlRoot;
+                    await validationDialog.ShowAsync();
+                    await _viewModel.LoadPatientInfoByUserIdAsync(_viewModel.UserId);
+                }
             }
             // Add additional handling (e.g., show a message to the user after all fields are updated)
         }

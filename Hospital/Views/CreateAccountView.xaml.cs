@@ -94,10 +94,9 @@ namespace Hospital
                     {
                         Title = "Error",
                         Content = $"{err.Message}",
-                        CloseButtonText = "OK"
+                        CloseButtonText = "OK",
+                        XamlRoot = this.Content.XamlRoot
                     };
-
-                    validationDialog.XamlRoot = this.Content.XamlRoot;
                     await validationDialog.ShowAsync();
                 }
 
@@ -107,10 +106,9 @@ namespace Hospital
                     {
                         Title = "Error",
                         Content = $"Database Error",
-                        CloseButtonText = "OK"
+                        CloseButtonText = "OK",
+                        XamlRoot = this.Content.XamlRoot
                     };
-
-                    validationDialog.XamlRoot = this.Content.XamlRoot;
                     await validationDialog.ShowAsync();
                 }
             }

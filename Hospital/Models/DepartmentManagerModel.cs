@@ -1,7 +1,7 @@
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using Hospital.Models;
 using Hospital.Services;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 public class DepartmentManagerModel
 {
@@ -18,7 +18,7 @@ public class DepartmentManagerModel
     {
         var departments = await _departmentsDBService.GetDepartmentsFromDB();
         _s_departmentList.Clear();
-        foreach(var department in departments)
+        foreach (var department in departments)
         {
             _s_departmentList.Add(department);
         }

@@ -1,23 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.UI.Xaml.Navigation;
-
-using Hospital.ViewModels;
+using Hospital.DatabaseServices;
 using Hospital.Managers;
 using Hospital.Models;
-using Hospital.DatabaseServices;
+using Hospital.ViewModels;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media.Imaging;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,7 +17,7 @@ namespace Hospital.Views
         public SearchDoctorsViewModel ViewModel { get; private set; }
 
         // For debouncing search input
-        private CancellationTokenSource _debounceTokenSource;
+        private CancellationTokenSource? _debounceTokenSource;
         private readonly int _debounceDelay = 300; // milliseconds
 
         public SearchDoctorsView()
@@ -48,7 +37,7 @@ namespace Hospital.Views
             _ = ViewModel.LoadDoctors();
         }
 
-        private void ViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(ViewModel.SelectedDoctor) || e.PropertyName == nameof(ViewModel.IsProfileOpen))
             {
@@ -103,7 +92,7 @@ namespace Hospital.Views
             try
             {
                 var doctor = ViewModel.SelectedDoctor;
-                if (doctor != null && ViewModel.IsProfileOpen)
+                if (doctor != DoctorDisplayModel.Default && ViewModel.IsProfileOpen)
                 {
                     // Set doctor profile image
                     try
@@ -161,7 +150,7 @@ namespace Hospital.Views
         private void ProfileOverlay_Tapped(object sender, TappedRoutedEventArgs e)
         {
             // Make sure this event is only triggered when tapping the overlay itself
-            if (sender == ProfileOverlay)
+            if ((Grid)sender == ProfileOverlay)
             {
                 // Close profile when clicking outside the profile panel
                 ViewModel.CloseDoctorProfile();

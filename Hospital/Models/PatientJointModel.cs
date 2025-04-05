@@ -21,7 +21,7 @@ namespace Hospital.Models
         public string PhoneNumber { get; set; }
         public DateTime RegistrationDate { get; set; }
 
-
+        public static readonly PatientJointModel Default = new PatientJointModel(-1, -1, "", "", "", "", -1, -1, "", "", "", DateOnly.MaxValue, "", "", "", DateTime.Now);
         public PatientJointModel(int userId, int patientId, string patientName, string bloodType, string emergencyContact, string allergies, double weight, int height, string username, string password, string mail, DateOnly birthDate, string cnp, string address, string phoneNumber, DateTime registrationDate)
         {
             UserId = userId;

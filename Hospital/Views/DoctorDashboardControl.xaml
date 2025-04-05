@@ -86,7 +86,7 @@
                  AcceptsReturn="True" TextWrapping="Wrap" Height="100"/>
 
             <TextBlock Text="Phone Number" Foreground="White" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="30,0,30,0"/>
-            <TextBox Text="{Binding PhoneNumber, Mode=TwoWay}" Width="300" Grid.Row="3" Grid.Column="1" Margin="30,0,30,30"/>
+            <TextBox Text="{Binding PhoneNumber, Mode=TwoWay}" Width="300" MaxLength="10" Grid.Row="3" Grid.Column="1" Margin="30,0,30,30"/>
 
             <TextBlock Text="Email" Foreground="White" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" Margin="30,0,30,0"/>
             <TextBox Text="{Binding Mail, Mode=TwoWay}" Width="300" Grid.Row="3" Grid.Column="2" Margin="30,0,30,30"/>

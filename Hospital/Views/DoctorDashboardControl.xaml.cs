@@ -6,8 +6,8 @@ namespace Hospital.Views
 {
     public sealed partial class DoctorDashboardControl : UserControl
     {
-        private DoctorViewModel _viewModel;
-        public event Action LogoutButtonClicked;
+        private DoctorViewModel? _viewModel;
+        public event Action? LogoutButtonClicked;
 
         public DoctorDashboardControl()
         {
@@ -32,6 +32,10 @@ namespace Hospital.Views
         {
             try
             {
+
+                if (_viewModel == null)
+                    throw new Exception("Doctor is not initialized");
+
                 bool changeMade = false;
 
                 // Update Doctor Name
@@ -119,12 +123,15 @@ namespace Hospital.Views
             }
             catch (Exception ex)
             {
-                _viewModel.DoctorName = _viewModel._originalDoctor.DoctorName;
-                _viewModel.DepartmentName = _viewModel._originalDoctor.DepartmentName;
-                _viewModel.CareerInfo = _viewModel._originalDoctor.CareerInfo;
-                _viewModel.AvatarUrl = _viewModel._originalDoctor.AvatarUrl;
-                _viewModel.PhoneNumber = _viewModel._originalDoctor.PhoneNumber;
-                _viewModel.Mail = _viewModel._originalDoctor.Mail;
+                if (_viewModel != null)
+                {
+                    _viewModel.DoctorName = _viewModel._originalDoctor.DoctorName;
+                    _viewModel.DepartmentName = _viewModel._originalDoctor.DepartmentName;
+                    _viewModel.CareerInfo = _viewModel._originalDoctor.CareerInfo;
+                    _viewModel.AvatarUrl = _viewModel._originalDoctor.AvatarUrl;
+                    _viewModel.PhoneNumber = _viewModel._originalDoctor.PhoneNumber;
+                    _viewModel.Mail = _viewModel._originalDoctor.Mail;
+                }
                 var validationDialog = new ContentDialog
                 {
                     Title = "Error",

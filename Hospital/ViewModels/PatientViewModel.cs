@@ -10,15 +10,15 @@ namespace Hospital.ViewModels
     {
         private readonly PatientManagerModel _patientManagerModel;
 
-
         public PatientViewModel(PatientManagerModel patientManagerModel, int userId)
         {
             _patientManagerModel = patientManagerModel;
             _userId = userId;
-            LoadPatientInfoByUserIdAsync(userId);
+            _originalPatient = PatientJointModel.Default;
+            _ = LoadPatientInfoByUserIdAsync(userId);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         public PatientJointModel _originalPatient { get; private set; }
 
@@ -36,7 +36,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _name;
+        private string _name = "";
         public string Name
         {
             get => _name;
@@ -50,7 +50,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _email;
+        private string _email = "";
         public string Email
         {
             get => _email;
@@ -64,7 +64,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _username;
+        private string _username = "";
         public string Username
         {
             get => _username;
@@ -78,7 +78,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _address;
+        private string _address = "";
         public string Address
         {
             get => _address;
@@ -92,7 +92,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _phoneNumber;
+        private string _phoneNumber = "";
         public string PhoneNumber
         {
             get => _phoneNumber;
@@ -106,7 +106,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _emergencyContact;
+        private string _emergencyContact = "";
         public string EmergencyContact
         {
             get => _emergencyContact;
@@ -121,7 +121,7 @@ namespace Hospital.ViewModels
         }
 
         // Non-editable fields
-        private string _bloodType;
+        private string _bloodType = "";
         public string BloodType
         {
             get => _bloodType;
@@ -135,7 +135,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _allergies;
+        private string _allergies = "";
         public string Allergies
         {
             get => _allergies;
@@ -163,7 +163,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _cnp;
+        private string _cnp = "";
         public string Cnp
         {
             get => _cnp;
@@ -234,7 +234,7 @@ namespace Hospital.ViewModels
         }
 
         // Password fields
-        private string _password;
+        private string _password = "";
         public string Password
         {
             get => _password;
@@ -259,7 +259,7 @@ namespace Hospital.ViewModels
             {
                 IsLoading = true;
                 bool result = await _patientManagerModel.LoadPatientInfoByUserId(userId);
-                if (result && _patientManagerModel._patientInfo != null)
+                if (result && _patientManagerModel._patientInfo != PatientJointModel.Default)
                 {
                     var patient = _patientManagerModel._patientInfo;
                     Name = patient.PatientName;

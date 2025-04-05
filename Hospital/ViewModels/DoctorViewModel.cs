@@ -10,7 +10,7 @@ namespace Hospital.ViewModels
     public class DoctorViewModel : INotifyPropertyChanged
     {
         private readonly DoctorManagerModel _doctorManagerModel;
-        
+
         public DoctorViewModel(DoctorManagerModel doctorManagerModel, int userId)
         {
             _doctorManagerModel = doctorManagerModel;
@@ -26,10 +26,11 @@ namespace Hospital.ViewModels
             Mail = "Loading email...";
 
             // Start async load
+            _originalDoctor = DoctorDisplayModel.Default;
             _ = LoadDoctorInfoByUserIdAsync(userId);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         public DoctorDisplayModel _originalDoctor { get; private set; }
 
@@ -47,7 +48,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _doctorName;
+        private string _doctorName = "";
         public string DoctorName
         {
             get => _doctorName;
@@ -75,7 +76,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _departmentName;
+        private string _departmentName = "";
         public string DepartmentName
         {
             get => _departmentName;
@@ -103,7 +104,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _careerInfo;
+        private string _careerInfo = "";
         public string CareerInfo
         {
             get => _careerInfo;
@@ -117,7 +118,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _avatarUrl;
+        private string _avatarUrl = "";
         public string AvatarUrl
         {
             get => _avatarUrl;
@@ -131,7 +132,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _phoneNumber;
+        private string _phoneNumber = "";
         public string PhoneNumber
         {
             get => _phoneNumber;
@@ -145,7 +146,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _mail;
+        private string _mail = "";
         public string Mail
         {
             get => _mail;

@@ -10,7 +10,7 @@ namespace Hospital.Managers
     public class SearchDoctorsManagerModel
     {
         public List<DoctorDisplayModel> doctorList { get; private set; }
-        private DoctorsDatabaseService _doctorDBService;
+        private readonly DoctorsDatabaseService _doctorDBService;
 
         public SearchDoctorsManagerModel(DoctorsDatabaseService dbService)
         {
