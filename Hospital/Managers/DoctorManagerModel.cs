@@ -1,20 +1,30 @@
 using Hospital.Configs;
+using Hospital.DatabaseServices;
 using Hospital.Models;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace Hospital.DatabaseServices
+namespace Hospital.Managers
 {
     public class DoctorManagerModel
     {
-        private readonly Config _config;
+        private readonly DoctorsDatabaseService _doctorDBService;
 
-        public DoctorManagerModel()
+        public DoctorManagerModel(DoctorsDatabaseService doctorDBService)
         {
-            _config = Config.GetInstance();
+            _doctorDBService = doctorDBService ?? throw new ArgumentNullException(nameof(doctorDBService));
         }
+
+        private readonly Config _config;
+        public DoctorDisplayModel _doctorInfo { get; private set; }
+        public List<DoctorDisplayModel> _doctorList { get; private set; }
+
 
         // This method will be used to get the doctors from the database
         public async Task<List<DoctorJointModel>> GetDoctorsByDepartment(int departmentId)
@@ -158,6 +168,78 @@ namespace Hospital.DatabaseServices
                 return new List<DoctorJointModel>();
             }
         }
-    }
 
+        public async Task<bool> LoadDoctorInfoByUserId(int doctorId)
+        {
+            try
+            {
+                _doctorInfo = await _doctorDBService.GetDoctorById(doctorId);
+
+                if (_doctorInfo != null)
+                {
+                    Debug.WriteLine($"Successfully loaded doctor: {_doctorInfo.DoctorName}");
+                    return true;
+                }
+                Debug.WriteLine($"No doctor found for user ID: {doctorId}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error loading doctor info: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<bool> SearchDoctorsByDepartment(string departmentPartialName)
+        {
+            _doctorList = await _doctorDBService.GetDoctorsByDepartmentPartialName(departmentPartialName);
+            return _doctorList != null;
+        }
+
+        public async Task<bool> SearchDoctorsByName(string namePartial)
+        {
+            _doctorList = await _doctorDBService.GetDoctorsByPartialDoctorName(namePartial);
+            return _doctorList != null;
+        }
+
+        public async Task<bool> UpdateDoctorName(int doctorId, string name)
+        {
+            return await _doctorDBService.UpdateDoctorName(doctorId, name);
+        }
+
+        public async Task<bool> UpdateDepartment(int doctorId, int departmentId)
+        {
+            return await _doctorDBService.UpdateDoctorDepartment(doctorId, departmentId);
+        }
+
+        public async Task<bool> UpdateRating(int doctorId, double rating)
+        {
+            return await _doctorDBService.UpdateDoctorRating(doctorId, rating);
+        }
+
+        public async Task<bool> UpdateCareerInfo(int doctorId, string careerInfo)
+        {
+            return await _doctorDBService.UpdateDoctorCareerInfo(doctorId, careerInfo);
+        }
+
+        public async Task<bool> UpdateAvatarUrl(int doctorId, string avatarUrl)
+        {
+            return await _doctorDBService.UpdateDoctorAvatarUrl(doctorId, avatarUrl);
+        }
+
+        public async Task<bool> UpdatePhoneNumber(int doctorId, string phoneNumber)
+        {
+            return await _doctorDBService.UpdateDoctorPhoneNumber(doctorId, phoneNumber);
+        }
+
+        public async Task<bool> UpdateEmail(int doctorId, string email)
+        {
+            return await _doctorDBService.UpdateDoctorEmail(doctorId, email);
+        }
+
+        public async Task<bool> UpdateDoctorInfo(DoctorDisplayModel doctor)
+        {
+            return await _doctorDBService.UpdateDoctorInfo(doctor);
+        }
+    }
 }
