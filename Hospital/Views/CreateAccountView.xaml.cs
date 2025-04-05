@@ -1,12 +1,12 @@
-﻿using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml;
-using System;
-using Hospital.Exceptions;
-using Hospital.ViewModels;
-using Microsoft.Data.SqlClient;
-using Hospital.Models;
+﻿using Hospital.Exceptions;
 using Hospital.Managers;
+using Hospital.Models;
+using Hospital.ViewModels;
 using Hospital.Views;
+using Microsoft.Data.SqlClient;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using System;
 
 namespace Hospital
 {
@@ -78,7 +78,7 @@ namespace Hospital
 
                 try
                 {
-                    await _viewModel.CreateAccount(new UserCreateAccountModel(username, password, mail, name, birthDate, cnp, (BloodType)selectedBloodType, emergencyContact,weight, height));
+                    await _viewModel.CreateAccount(new UserCreateAccountModel(username, password, mail, name, birthDate, cnp, (BloodType)selectedBloodType, emergencyContact, weight, height));
 
                     PatientManagerModel patientManagerModel = new PatientManagerModel();
                     PatientViewModel patientViewModel = new PatientViewModel(patientManagerModel, _viewModel._authManagerModel._userInfo.UserId);

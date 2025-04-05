@@ -31,6 +31,8 @@ namespace Hospital.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public DoctorDisplayModel _originalDoctor { get; private set; }
+
         private int _userId;
         public int UserId
         {
@@ -87,8 +89,8 @@ namespace Hospital.ViewModels
             }
         }
 
-        private decimal _rating;
-        public decimal Rating
+        private double _rating;
+        public double Rating
         {
             get => _rating;
             set
@@ -183,18 +185,21 @@ namespace Hospital.ViewModels
                 IsLoading = true;
 
                 var result = await _doctorManagerModel.LoadDoctorInfoByUserId(userId);
-                if (result && _doctorManagerModel._doctorInfo != null)
+                if (result && _doctorManagerModel._doctorInfo != DoctorDisplayModel.Default)
                 {
                     var doctor = _doctorManagerModel._doctorInfo;
 
                     DoctorName = doctor.DoctorName ?? "Not specified";
                     DepartmentId = doctor.DepartmentId;
                     DepartmentName = doctor.DepartmentName ?? "No department";
-                    Rating = (decimal)(doctor.Rating > 0 ? doctor.Rating : 0);
+                    Rating = (double)(doctor.Rating > 0 ? doctor.Rating : 0);
                     CareerInfo = doctor.CareerInfo ?? "No career information";
                     AvatarUrl = doctor.AvatarUrl ?? "/Assets/default-avatar.png";
                     PhoneNumber = doctor.PhoneNumber ?? "Not provided";
                     Mail = doctor.Mail ?? "Not provided";
+
+                    _originalDoctor = new DoctorDisplayModel(-1, DoctorName, DepartmentId, DepartmentName, Rating, CareerInfo, AvatarUrl,
+                        PhoneNumber, Mail);
 
                     return true;
                 }
@@ -230,6 +235,9 @@ namespace Hospital.ViewModels
                 if (result)
                 {
                     DoctorName = name;
+                    _originalDoctor = new DoctorDisplayModel(_originalDoctor.DoctorId, name, _originalDoctor.DepartmentId,
+    _originalDoctor.DepartmentName, _originalDoctor.Rating, _originalDoctor.CareerInfo, _originalDoctor.AvatarUrl,
+    _originalDoctor.PhoneNumber, _originalDoctor.Mail);
                 }
                 IsLoading = false;
                 return result;
@@ -237,8 +245,7 @@ namespace Hospital.ViewModels
             catch (Exception ex)
             {
                 IsLoading = false;
-                Console.WriteLine($"Error updating doctor name: {ex.Message}");
-                return false;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -252,6 +259,9 @@ namespace Hospital.ViewModels
                 {
                     DepartmentId = departmentId;
                     // Note: You might need to update DepartmentName separately
+                    _originalDoctor = new DoctorDisplayModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, departmentId,
+    _originalDoctor.DepartmentName, _originalDoctor.Rating, _originalDoctor.CareerInfo, _originalDoctor.AvatarUrl,
+    _originalDoctor.PhoneNumber, _originalDoctor.Mail);
                 }
                 IsLoading = false;
                 return result;
@@ -259,8 +269,7 @@ namespace Hospital.ViewModels
             catch (Exception ex)
             {
                 IsLoading = false;
-                Console.WriteLine($"Error updating department: {ex.Message}");
-                return false;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -273,6 +282,9 @@ namespace Hospital.ViewModels
                 if (result)
                 {
                     CareerInfo = careerInfo;
+                    _originalDoctor = new DoctorDisplayModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, _originalDoctor.DepartmentId,
+    _originalDoctor.DepartmentName, _originalDoctor.Rating, careerInfo, _originalDoctor.AvatarUrl,
+    _originalDoctor.PhoneNumber, _originalDoctor.Mail);
                 }
                 IsLoading = false;
                 return result;
@@ -280,8 +292,7 @@ namespace Hospital.ViewModels
             catch (Exception ex)
             {
                 IsLoading = false;
-                Console.WriteLine($"Error updating career info: {ex.Message}");
-                return false;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -294,6 +305,9 @@ namespace Hospital.ViewModels
                 if (result)
                 {
                     AvatarUrl = avatarUrl;
+                    _originalDoctor = new DoctorDisplayModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, _originalDoctor.DepartmentId,
+    _originalDoctor.DepartmentName, _originalDoctor.Rating, _originalDoctor.CareerInfo, _originalDoctor.AvatarUrl,
+    _originalDoctor.PhoneNumber, _originalDoctor.Mail);
                 }
                 IsLoading = false;
                 return result;
@@ -301,8 +315,7 @@ namespace Hospital.ViewModels
             catch (Exception ex)
             {
                 IsLoading = false;
-                Console.WriteLine($"Error updating avatar URL: {ex.Message}");
-                return false;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -315,6 +328,9 @@ namespace Hospital.ViewModels
                 if (result)
                 {
                     PhoneNumber = phoneNumber;
+                    _originalDoctor = new DoctorDisplayModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, _originalDoctor.DepartmentId,
+                        _originalDoctor.DepartmentName, _originalDoctor.Rating, _originalDoctor.CareerInfo, _originalDoctor.AvatarUrl,
+                        phoneNumber, _originalDoctor.Mail);
                 }
                 IsLoading = false;
                 return result;
@@ -322,8 +338,7 @@ namespace Hospital.ViewModels
             catch (Exception ex)
             {
                 IsLoading = false;
-                Console.WriteLine($"Error updating phone number: {ex.Message}");
-                return false;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -336,6 +351,9 @@ namespace Hospital.ViewModels
                 if (result)
                 {
                     Mail = mail;
+                    _originalDoctor = new DoctorDisplayModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, _originalDoctor.DepartmentId,
+                    _originalDoctor.DepartmentName, _originalDoctor.Rating, _originalDoctor.CareerInfo, _originalDoctor.AvatarUrl,
+                    _originalDoctor.PhoneNumber, mail);
                 }
                 IsLoading = false;
                 return result;
@@ -343,8 +361,7 @@ namespace Hospital.ViewModels
             catch (Exception ex)
             {
                 IsLoading = false;
-                Console.WriteLine($"Error updating mail: {ex.Message}");
-                return false;
+                throw new Exception(ex.Message);
             }
         }
     }

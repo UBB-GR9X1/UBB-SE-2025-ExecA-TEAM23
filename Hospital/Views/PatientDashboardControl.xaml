@@ -53,15 +53,15 @@
             <!-- Define the grid columns (4 columns for titles and input fields) -->
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="5*" />
+                <ColumnDefinition Width="3*" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <!-- Define row heights -->
@@ -80,10 +80,10 @@
             <TextBox Text="{Binding Name, Mode=TwoWay}" Width="300" Grid.Row="1" Grid.Column="0" Margin="30,0,30,30"/>
 
             <TextBlock Text="Email" Foreground="White" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="30,0,30,0"/>
-            <TextBox Text="{Binding Email, Mode=TwoWay}" Width="300" Grid.Row="1" Grid.Column="1" Margin="30,0,30,30"/>
+            <TextBox Text="{Binding Email, Mode=TwoWay}" Width="400" Grid.Row="1" Grid.Column="1" Margin="30,0,30,30"/>
 
             <TextBlock Text="Password" Foreground="White" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" Margin="30,0,30,0"/>
-            <TextBox Text="{Binding Password, Mode=TwoWay}" Width="300" Grid.Row="1" Grid.Column="2" Margin="30,0,30,30"/>
+            <TextBox Text="{Binding Password, Mode=TwoWay}" Width="400" Grid.Row="1" Grid.Column="2" Margin="30,0,30,30"/>
 
             <TextBlock Text="Username" Foreground="White" Grid.Row="0" Grid.Column="3" VerticalAlignment="Center" Margin="30,0,30,0"/>
             <TextBox Text="{Binding Username, Mode=TwoWay}" Width="300" Grid.Row="1" Grid.Column="3" Margin="30,0,30,30"/>
@@ -93,10 +93,10 @@
             <TextBox Text="{Binding Address, Mode=TwoWay}" Width="300" Grid.Row="3" Grid.Column="0" Margin="30,0,30,30"/>
 
             <TextBlock Text="Phone Number" Foreground="White" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="30,0,30,0"/>
-            <TextBox Text="{Binding PhoneNumber, Mode=TwoWay}" Width="300" Grid.Row="3" Grid.Column="1" Margin="30,0,30,30"/>
+            <TextBox Text="{Binding PhoneNumber, Mode=TwoWay}" Width="400" Grid.Row="3" Grid.Column="1" Margin="30,0,30,30"/>
 
             <TextBlock Text="Emergency Contact" Foreground="White" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" Margin="30,0,30,0"/>
-            <TextBox Text="{Binding EmergencyContact, Mode=TwoWay}" Width="300" Grid.Row="3" Grid.Column="2" Margin="30,0,30,30"/>
+            <TextBox Text="{Binding EmergencyContact, Mode=TwoWay}" Width="400" Grid.Row="3" Grid.Column="2" Margin="30,0,30,30"/>
 
             <TextBlock Text="Weight" Foreground="White" Grid.Row="2" Grid.Column="3" VerticalAlignment="Center" Margin="30,0,30,0"/>
             <TextBox Text="{Binding Weight, Mode=TwoWay}" Width="300" Grid.Row="3" Grid.Column="3" Margin="30,0,30,30"/>
@@ -116,7 +116,7 @@
 
             <!-- Row 4 -->
             <TextBlock Text="CNP" Foreground="White" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="30,0,30,0"/>
-            <TextBlock Text="{Binding Cnp}" Width="300" Grid.Row="7" Grid.Column="0" Margin="30,0,30,30"/>
+            <TextBlock Text="{Binding Cnp}" Width="400" Grid.Row="7" Grid.Column="0" Margin="30,0,30,30"/>
 
             <TextBlock Text="Registration Date" Foreground="White" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" Margin="30,0,30,0"/>
             <TextBlock Text="{Binding RegistrationDate}" Width="300" Grid.Row="7" Grid.Column="1" Margin="30,0,30,0"/>

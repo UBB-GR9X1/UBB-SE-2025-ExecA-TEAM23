@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Hospital.DatabaseServices;
 using Hospital.Models;
 using Hospital.Exceptions;
+using Windows.Services.Maps;
 
 namespace Hospital.Managers
 {
@@ -48,17 +49,29 @@ namespace Hospital.Managers
         }
         public async Task<bool> CreateAccount(UserCreateAccountModel model)
         {
-            if (string.IsNullOrWhiteSpace(model.Username) || model.Username.Contains(" "))
+            if (string.IsNullOrWhiteSpace(model.Username) || model.Username.Contains(' '))
                 throw new AuthenticationException("Invalid username!\nCan't be null or with space");
 
-            if (string.IsNullOrEmpty(model.Password) || model.Password.Contains(" "))
+            if (model.Username.Length > 50)
+                throw new AuthenticationException("Invalid username!\nCan't be more than 50 characters");
+
+            if (string.IsNullOrEmpty(model.Password) || model.Password.Contains(' '))
                 throw new AuthenticationException("Invalid password!\nCan't be null or with space");
 
-            if (string.IsNullOrEmpty(model.Mail) || !model.Mail.Contains("@") || !model.Mail.Contains("."))
+            if (model.Password.Length > 255)
+                throw new AuthenticationException("Invalid password!\nCan't be more than 255 characters");
+
+            if (string.IsNullOrEmpty(model.Mail) || !model.Mail.Contains('@') || !model.Mail.Contains('.'))
                 throw new AuthenticationException("Invalid mail!\nCan't be null, has to contain '@' and '.'");
 
-            if (string.IsNullOrEmpty(model.Name) || !model.Name.Contains(" "))
+            if (model.Mail.Length > 100)
+                throw new AuthenticationException("Invalid mail!\nCan't be more than 100 characters");
+
+            if (string.IsNullOrEmpty(model.Name) || !model.Name.Contains(' '))
                 throw new AuthenticationException("Invalid name!\nCan't be null, has to contain space");
+
+            if (model.Name.Length > 100)
+                throw new AuthenticationException("Invalid name!\nCan't be more than 100 characters");
 
             if (model.Cnp.Length != 13)
                 throw new AuthenticationException("Invalid CNP!\nHas to have length 13");

@@ -1,4 +1,5 @@
 ﻿using Hospital.Managers;
+using Hospital.Models;
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -18,6 +19,8 @@ namespace Hospital.ViewModels
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public PatientJointModel _originalPatient { get; private set; }
 
         private int _userId;
         public int UserId
@@ -122,7 +125,8 @@ namespace Hospital.ViewModels
         public string BloodType
         {
             get => _bloodType;
-            set {
+            set
+            {
                 if (_bloodType != value)
                 {
                     _bloodType = value;
@@ -135,7 +139,8 @@ namespace Hospital.ViewModels
         public string Allergies
         {
             get => _allergies;
-            set {
+            set
+            {
                 if (_allergies != value)
                 {
                     _allergies = value;
@@ -148,7 +153,8 @@ namespace Hospital.ViewModels
         public DateTime BirthDate
         {
             get => _birthDate;
-            set {
+            set
+            {
                 if (_birthDate != value)
                 {
                     _birthDate = value;
@@ -161,7 +167,8 @@ namespace Hospital.ViewModels
         public string Cnp
         {
             get => _cnp;
-            set {
+            set
+            {
                 if (_cnp != value)
                 {
                     _cnp = value;
@@ -174,7 +181,8 @@ namespace Hospital.ViewModels
         public DateTime RegistrationDate
         {
             get => _registrationDate;
-            set {
+            set
+            {
                 if (_registrationDate != value)
                 {
                     _registrationDate = value;
@@ -183,8 +191,8 @@ namespace Hospital.ViewModels
             }
         }
 
-        private float _weight;
-        public float Weight
+        private double _weight;
+        public double Weight
         {
             get => _weight;
             set
@@ -269,6 +277,9 @@ namespace Hospital.ViewModels
                     Weight = patient.Weight;
                     Height = patient.Height;
 
+                    _originalPatient = new PatientJointModel(userId, -1, Name, BloodType, EmergencyContact, Allergies, Weight, Height,
+                        Username, Password, Email, patient.BirthDate, Cnp, Address, PhoneNumber, RegistrationDate);
+
                 }
 
                 IsLoading = false;
@@ -292,6 +303,7 @@ namespace Hospital.ViewModels
                 if (result)
                 {
                     Name = name;
+                    _originalPatient.PatientName = name;
                 }
                 IsLoading = false;
                 return result;
@@ -299,8 +311,7 @@ namespace Hospital.ViewModels
             catch (Exception ex)
             {
                 IsLoading = false;
-                Console.WriteLine($"Error updating name: {ex.Message}");
-                return false;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -313,6 +324,7 @@ namespace Hospital.ViewModels
                 if (result)
                 {
                     Email = email;
+                    _originalPatient.Mail = email;
                 }
                 IsLoading = false;
                 return result;
@@ -320,8 +332,7 @@ namespace Hospital.ViewModels
             catch (Exception ex)
             {
                 IsLoading = false;
-                Console.WriteLine($"Error updating email: {ex.Message}");
-                return false;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -334,6 +345,7 @@ namespace Hospital.ViewModels
                 if (result)
                 {
                     Username = username;
+                    _originalPatient.Username = username;
                 }
                 IsLoading = false;
                 return result;
@@ -341,8 +353,7 @@ namespace Hospital.ViewModels
             catch (Exception ex)
             {
                 IsLoading = false;
-                Console.WriteLine($"Error updating username: {ex.Message}");
-                return false;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -355,6 +366,7 @@ namespace Hospital.ViewModels
                 if (result)
                 {
                     Address = address;
+                    _originalPatient.Address = address;
                 }
                 IsLoading = false;
                 return result;
@@ -362,8 +374,7 @@ namespace Hospital.ViewModels
             catch (Exception ex)
             {
                 IsLoading = false;
-                Console.WriteLine($"Error updating address: {ex.Message}");
-                return false;
+                throw new Exception(ex.Message);
             }
         }
         public async Task<bool> UpdatePassword(string password)
@@ -375,6 +386,7 @@ namespace Hospital.ViewModels
                 if (result)
                 {
                     Password = password;
+                    _originalPatient.Password = password;
                 }
                 IsLoading = false;
                 return result;
@@ -382,8 +394,7 @@ namespace Hospital.ViewModels
             catch (Exception ex)
             {
                 IsLoading = false;
-                Console.WriteLine($"Error updating password: {ex.Message}");
-                return false;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -396,6 +407,7 @@ namespace Hospital.ViewModels
                 if (result)
                 {
                     PhoneNumber = phoneNumber;
+                    _originalPatient.PhoneNumber = phoneNumber;
                 }
                 IsLoading = false;
                 return result;
@@ -403,8 +415,7 @@ namespace Hospital.ViewModels
             catch (Exception ex)
             {
                 IsLoading = false;
-                Console.WriteLine($"Error updating phone number: {ex.Message}");
-                return false;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -417,6 +428,7 @@ namespace Hospital.ViewModels
                 if (result)
                 {
                     EmergencyContact = emergencyContact;
+                    _originalPatient.EmergencyContact = emergencyContact;
                 }
                 IsLoading = false;
                 return result;
@@ -424,14 +436,11 @@ namespace Hospital.ViewModels
             catch (Exception ex)
             {
                 IsLoading = false;
-                Console.WriteLine($"Error updating emergency contact: {ex.Message}");
-                return false;
+                throw new Exception(ex.Message);
             }
         }
 
-      
-
-        public async Task<bool> UpdateWeight(float weight)
+        public async Task<bool> UpdateWeight(double weight)
         {
             try
             {
@@ -440,6 +449,7 @@ namespace Hospital.ViewModels
                 if (result)
                 {
                     Weight = weight;
+                    _originalPatient.Weight = weight;
                 }
                 IsLoading = false;
                 return result;
@@ -447,8 +457,7 @@ namespace Hospital.ViewModels
             catch (Exception ex)
             {
                 IsLoading = false;
-                Console.WriteLine($"Error updating weight: {ex.Message}");
-                return false;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -461,6 +470,7 @@ namespace Hospital.ViewModels
                 if (result)
                 {
                     Height = height;
+                    _originalPatient.Height = height;
                 }
                 IsLoading = false;
                 return result;
@@ -468,8 +478,7 @@ namespace Hospital.ViewModels
             catch (Exception ex)
             {
                 IsLoading = false;
-                Console.WriteLine($"Error updating height: {ex.Message}");
-                return false;
+                throw new Exception(ex.Message);
             }
         }
 

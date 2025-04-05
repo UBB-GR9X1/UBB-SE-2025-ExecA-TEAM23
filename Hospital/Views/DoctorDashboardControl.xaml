@@ -26,7 +26,7 @@
         <!-- Nav Buttons in the Top Row -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10">
             <Canvas Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent" ZIndex="2">
-                <views:SearchDoctorsView x:Name="searchDoctorsView" Width="500" Height="400" Canvas.Left="-420" Canvas.Top="0" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Visible"/>
+                <views:SearchDoctorsView x:Name="searchDoctorsView" Width="400" Height="400" Canvas.Left="-420" Canvas.Top="0" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Visible"/>
             </Canvas>
             <Button Content="Home" Width="80" Margin="5" VerticalAlignment="Top"/>
             <Button Content="Profile" Width="80" Margin="5" VerticalAlignment="Top"/>
@@ -34,6 +34,7 @@
             <Button Content="Patients" Width="80" Margin="5" VerticalAlignment="Top"/>
             <Button Content="Schedule" Width="80" Margin="5" VerticalAlignment="Top"/>
             <Button Content="Settings" Width="80" Margin="5" VerticalAlignment="Top"/>
+            <Button Content="Log Out" Width="80" Margin="5" VerticalAlignment="Top" Click="OnLogOutButtonClick"/>
         </StackPanel>
 
         <!-- Image Row: Profile Image or Placeholder -->
@@ -74,11 +75,7 @@
             <TextBox Text="{Binding DoctorName, Mode=TwoWay}" Width="300" Grid.Row="1" Grid.Column="0" Margin="30,0,30,30"/>
 
             <TextBlock Text="Department" Foreground="White" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="30,0,30,0"/>
-            <ComboBox ItemsSource="{Binding Departments}" 
-                  SelectedValue="{Binding DepartmentId, Mode=TwoWay}"
-                  SelectedValuePath="DepartmentId"
-                  DisplayMemberPath="DepartmentName"
-                  Width="300" Grid.Row="1" Grid.Column="1" Margin="30,0,30,30"/>
+            <TextBox Text="{Binding DepartmentName}" IsReadOnly="True" Width="300" Grid.Row="1" Grid.Column="1" Margin="30,0,30,30"/>
 
             <TextBlock Text="Rating" Foreground="White" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" Margin="30,0,30,0"/>
             <TextBlock Text="{Binding Rating}" Width="300" Grid.Row="1" Grid.Column="2" Margin="30,0,30,30"/>

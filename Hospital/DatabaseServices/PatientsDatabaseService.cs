@@ -1,9 +1,9 @@
 ﻿using Hospital.Configs;
 using Hospital.Models;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Data.SqlClient;
 
 namespace Hospital.DatabaseServices
 {
@@ -61,7 +61,7 @@ namespace Hospital.DatabaseServices
                     string bloodType = reader.GetString(11);
                     string emergencyContact = reader.GetString(12);
                     string allergies = reader.GetString(13);
-                    float weight = reader.GetFloat(14);
+                    double weight = reader.GetDouble(14);
                     int height = reader.GetInt32(15);
                     string password = reader.GetString(16);
                     PatientJointModel patient = new PatientJointModel(userId, patientId, name, bloodType, emergencyContact, allergies, weight, height, username, password, mail, birthDate, cnp, address, phoneNumber, registrationDate);
@@ -123,7 +123,7 @@ namespace Hospital.DatabaseServices
                     string bloodType = reader.GetString(11);
                     string emergencyContact = reader.GetString(12);
                     string? allergies = reader.IsDBNull(13) ? null : reader.GetString(13);
-                    float weight = Convert.ToSingle(reader[14]);
+                    double weight = reader.GetDouble(14);
                     int height = reader.GetInt32(15);
                     string password = reader.GetString(16);
                     return new PatientJointModel(userId, patientId, name, bloodType, emergencyContact, allergies, weight, height, username, password, mail, birthDate, cnp, address, phoneNumber, registrationDate);
@@ -289,7 +289,7 @@ namespace Hospital.DatabaseServices
             }
         }
 
-        public async Task<bool> UpdateWeight(int UserId, float Weight)
+        public async Task<bool> UpdateWeight(int UserId, double Weight)
         {
             const string queryUpdateWeight = @"UPDATE Patients SET Weight = @Weight WHERE UserId = @UserId;";
             try

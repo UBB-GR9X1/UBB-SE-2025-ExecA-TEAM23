@@ -10,7 +10,7 @@ namespace Hospital.Models
         public string BloodType { get; set; }
         public string EmergencyContact { get; set; }
         public string Allergies { get; set; }
-        public float Weight { get; set; }
+        public double Weight { get; set; }
         public int Height { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
@@ -22,7 +22,7 @@ namespace Hospital.Models
         public DateTime RegistrationDate { get; set; }
 
 
-        public PatientJointModel(int userId, int patientId, string patientName, string bloodType, string emergencyContact, string allergies, float weight, int height, string username, string password, string mail, DateOnly birthDate, string cnp, string address, string phoneNumber, DateTime registrationDate)
+        public PatientJointModel(int userId, int patientId, string patientName, string bloodType, string emergencyContact, string allergies, double weight, int height, string username, string password, string mail, DateOnly birthDate, string cnp, string address, string phoneNumber, DateTime registrationDate)
         {
             UserId = userId;
             PatientId = patientId;

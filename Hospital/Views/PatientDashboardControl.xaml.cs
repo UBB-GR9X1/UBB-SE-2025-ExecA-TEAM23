@@ -1,8 +1,6 @@
-using Hospital.Exceptions;
 using Hospital.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Linq;
 
 
 namespace Hospital.Views
@@ -29,125 +27,133 @@ namespace Hospital.Views
         {
             try
             {
-                
+                bool changeMade = false;
+
                 // Update Name
-                if (string.IsNullOrWhiteSpace(_viewModel.Name) || _viewModel.Name.Any(char.IsDigit))
-                    throw new InputProfileException("Name cannot be empty.");
-                bool isNameUpdated = await _viewModel.UpdateName(_viewModel.Name);
-                if (isNameUpdated)
+                if (_viewModel.Name != _viewModel._originalPatient.PatientName)
                 {
-                    // Optionally show a message or do something on success
-                }
-                else
-                {
-                    // Optionally show an error message if the update fails
+                    bool isNameUpdated = await _viewModel.UpdateName(_viewModel.Name);
+                    if (isNameUpdated)
+                    {
+                        changeMade = true;
+                    }
                 }
 
                 // Update Email
-                if (string.IsNullOrWhiteSpace(_viewModel.Email) || !_viewModel.Email.Contains("@"))
-                    throw new InputProfileException("Invalid email format.");
-                bool isEmailUpdated = await _viewModel.UpdateEmail(_viewModel.Email);
-                if (isEmailUpdated)
+                if (_viewModel.Email != _viewModel._originalPatient.Mail)
                 {
-                    // Success message or action
-                }
-                else
-                {
-                    // Error handling
+                    bool isEmailUpdated = await _viewModel.UpdateEmail(_viewModel.Email);
+                    if (isEmailUpdated)
+                    {
+                        changeMade = true;
+                    }
                 }
 
                 // Update Username
-                if (string.IsNullOrWhiteSpace(_viewModel.Username))
-                    throw new InputProfileException("Username cannot be empty.");
-                bool isUsernameUpdated = await _viewModel.UpdateUsername(_viewModel.Username);
-                if (isUsernameUpdated)
+                if (_viewModel.Username != _viewModel._originalPatient.Username)
                 {
-                    // Success message or action
-                }
-                else
-                {
-                    // Error handling
+                    bool isUsernameUpdated = await _viewModel.UpdateUsername(_viewModel.Username);
+                    if (isUsernameUpdated)
+                    {
+                        changeMade = true;
+                    }
                 }
 
                 // Update Address
-                if (string.IsNullOrWhiteSpace(_viewModel.Address))
-                    throw new InputProfileException("Address cannot be empty.");
-                bool isAddressUpdated = await _viewModel.UpdateAddress(_viewModel.Address);
-                if (isAddressUpdated)
+                if (_viewModel.Address != _viewModel._originalPatient.Address)
                 {
-                    // Success message or action
-                }
-                else
-                {
-                    // Error handling
+                    bool isAddressUpdated = await _viewModel.UpdateAddress(_viewModel.Address);
+                    if (isAddressUpdated)
+                    {
+                        changeMade = true;
+                    }
                 }
 
                 // Update Phone Number
-                if (string.IsNullOrWhiteSpace(_viewModel.PhoneNumber) || _viewModel.PhoneNumber.Length < 10 )
-                    throw new InputProfileException("Invalid phone number.");
-                bool isPhoneNumberUpdated = await _viewModel.UpdatePhoneNumber(_viewModel.PhoneNumber);
-                if (isPhoneNumberUpdated)
+                if (_viewModel.PhoneNumber != _viewModel._originalPatient.PhoneNumber)
                 {
-                    // Success message or action
-                }
-                else
-                {
-                    // Error handling
+                    bool isPhoneNumberUpdated = await _viewModel.UpdatePhoneNumber(_viewModel.PhoneNumber);
+                    if (isPhoneNumberUpdated)
+                    {
+                        changeMade = true;
+                    }
                 }
 
                 // Update Emergency Contact
-                if (string.IsNullOrWhiteSpace(_viewModel.EmergencyContact) || _viewModel.EmergencyContact.Length < 10)
-                    throw new InputProfileException("Invalid emergency contact.");
-                bool isEmergencyContactUpdated = await _viewModel.UpdateEmergencyContact(_viewModel.EmergencyContact);
-                if (isEmergencyContactUpdated)
+                if (_viewModel.EmergencyContact != _viewModel._originalPatient.EmergencyContact)
                 {
-                    // Success message or action
-                }
-                else
-                {
-                    // Error handling
+                    bool isEmergencyContactUpdated = await _viewModel.UpdateEmergencyContact(_viewModel.EmergencyContact);
+                    if (isEmergencyContactUpdated)
+                    {
+                        changeMade = true;
+                    }
                 }
 
                 // Update Weight
-                if(_viewModel.Weight <= 0 )
-                    throw new InputProfileException("Weight must be greater than 0");
-                bool isWeightUpdated = await _viewModel.UpdateWeight(_viewModel.Weight);
-                if (isWeightUpdated)
+                if (_viewModel.Weight != _viewModel._originalPatient.Weight)
                 {
-                    // Success message or action
-                }
-                else
-                {
-                    // Error handling
+                    bool isWeightUpdated = await _viewModel.UpdateWeight(_viewModel.Weight);
+                    if (isWeightUpdated)
+                    {
+                        changeMade = true;
+                    }
                 }
 
                 // Update Height
-                if (_viewModel.Height <= 0)
-                    throw new InputProfileException("Height must be greater than 0.");
-                bool isHeightUpdated = await _viewModel.UpdateHeight(_viewModel.Height);
-                if (isHeightUpdated)
+                if (_viewModel.Height != _viewModel._originalPatient.Height)
                 {
-                    // Success message or action
-                }
-                else
-                {
-                    // Error handling
+                    bool isHeightUpdated = await _viewModel.UpdateHeight(_viewModel.Height);
+                    if (isHeightUpdated)
+                    {
+                        changeMade = true;
+                    }
                 }
 
-                if (string.IsNullOrWhiteSpace(_viewModel.Password) || _viewModel.Password.Length < 6)
-                    throw new InputProfileException("Password must be at least 6 characters long.");
-                bool isPasswordUpdated = await _viewModel.UpdatePassword(_viewModel.Password);
-                if (isPasswordUpdated)
+                // Update Password
+                if (_viewModel.Password != _viewModel._originalPatient.Password)
                 {
-                    // Success message or action
+                    bool isPasswordUpdated = await _viewModel.UpdatePassword(_viewModel.Password);
+                    if (isPasswordUpdated)
+                    {
+                        changeMade = true;
+                    }
                 }
+
+                if (changeMade)
+                {
+                    var validationDialog = new ContentDialog
+                    {
+                        Title = "Success",
+                        Content = "Changes applied successfully",
+                        CloseButtonText = "OK",
+                        XamlRoot = this.Content.XamlRoot
+                    };
+                    await validationDialog.ShowAsync();
+                }
+
                 else
                 {
-                    // Error handling
+                    var validationDialog = new ContentDialog
+                    {
+                        Title = "No changes made",
+                        Content = "Please modify the fields you want to update",
+                        CloseButtonText = "OK",
+                        XamlRoot = this.Content.XamlRoot
+                    };
+                    await validationDialog.ShowAsync();
                 }
             }
-            catch (InputProfileException ex)
+            catch (Exception ex)
             {
+                _viewModel.Name = _viewModel._originalPatient.PatientName;
+                _viewModel.Email = _viewModel._originalPatient.Mail;
+                _viewModel.Username = _viewModel._originalPatient.Username;
+                _viewModel.Address = _viewModel._originalPatient.Address;
+                _viewModel.PhoneNumber = _viewModel._originalPatient.PhoneNumber;
+                _viewModel.EmergencyContact = _viewModel._originalPatient.EmergencyContact;
+                _viewModel.Weight = _viewModel._originalPatient.Weight;
+                _viewModel.Height = _viewModel._originalPatient.Height;
+                _viewModel.Password = _viewModel._originalPatient.Password;
                 var validationDialog = new ContentDialog
                 {
                     Title = "Error",

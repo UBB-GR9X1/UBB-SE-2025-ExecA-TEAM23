@@ -12,6 +12,8 @@
         public string PhoneNumber { get; private set; }
         public string Mail { get; private set; }
 
+        public static readonly DoctorDisplayModel Default = new DoctorDisplayModel(0, "Guest", 0, "Department", 0.0f, "", "", "", "");
+
         public DoctorDisplayModel(int doctorId, string doctorName, 
             int departmentId, string departmentName,
             double rating, string careerInfo,

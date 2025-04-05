@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Hospital.Managers
@@ -15,158 +16,23 @@ namespace Hospital.Managers
     public class DoctorManagerModel
     {
         private readonly DoctorsDatabaseService _doctorDBService;
+        public DoctorDisplayModel _doctorInfo { get; private set; } = DoctorDisplayModel.Default;
+        public List<DoctorDisplayModel> _doctorList { get; private set; }
 
         public DoctorManagerModel(DoctorsDatabaseService doctorDBService)
         {
-            _doctorDBService = doctorDBService ?? throw new ArgumentNullException(nameof(doctorDBService));
+            _doctorDBService = doctorDBService;
+            _doctorList = new List<DoctorDisplayModel>();
         }
 
-        private readonly Config _config;
-        public DoctorDisplayModel _doctorInfo { get; private set; }
-        public List<DoctorDisplayModel> _doctorList { get; private set; }
-
-
-        // This method will be used to get the doctors from the database
         public async Task<List<DoctorJointModel>> GetDoctorsByDepartment(int departmentId)
         {
-            const string querySelectDepartments = @"SELECT
-                d.DoctorId,
-                d.UserId,
-                u.Username,
-                d.DepartmentId,
-                d.DoctorRating, 
-                d.LicenseNumber,
-                u.Password,
-                u.Mail,
-                u.BirthDate,
-                u.Cnp,
-                u.Address,
-                u.PhoneNumber,
-                u.RegistrationDate
-                FROM Doctors d
-                INNER JOIN Users u
-                ON d.UserId = u.UserId
-                WHERE DepartmentId = @departmentId";
-
-            try
-            {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
-                await connection.OpenAsync().ConfigureAwait(false);
-
-                //Prepare the command
-                SqlCommand selectCommand = new SqlCommand(querySelectDepartments, connection);
-
-                //Insert parameters
-                selectCommand.Parameters.AddWithValue("@departmentId", departmentId);
-
-                SqlDataReader reader = await selectCommand.ExecuteReaderAsync().ConfigureAwait(false);
-
-
-                //Prepare the list of doctors
-                List<DoctorJointModel> doctorList = new List<DoctorJointModel>();
-
-                //Read the data from the database
-                while (await reader.ReadAsync().ConfigureAwait(false))
-                {
-                    int doctorId = reader.GetInt32(0);
-                    int userId = reader.GetInt32(1);
-                    string username = reader.GetString(2);
-                    int depId = reader.GetInt32(3);
-                    double rating = reader.GetDouble(4);
-                    string licenseNumber = reader.GetString(5);
-                    string password = reader.GetString(6);
-                    string mail = reader.GetString(7);
-                    DateOnly birthDate = reader.GetFieldValue<DateOnly>(8);
-                    string cnp = reader.GetString(9);
-                    string address = reader.GetString(10);
-                    string phoneNumber = reader.GetString(11);
-                    DateTime registrationDate = reader.GetDateTime(12);
-
-                    DoctorJointModel doctor = new DoctorJointModel(
-                        doctorId, userId, username, depId, rating, licenseNumber,
-                        username, password, mail, birthDate, cnp, address, phoneNumber, registrationDate
-                    );
-
-                    doctorList.Add(doctor);
-                }
-                return doctorList;
-            }
-            catch (SqlException e)
-            {
-                Console.WriteLine($"SQL Exception: {e.Message}");
-                return new List<DoctorJointModel>();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"General Exception: {e.Message}");
-                return new List<DoctorJointModel>();
-            }
+            return await _doctorDBService.GetDoctorsByDepartment(departmentId);
         }
+
         public async Task<List<DoctorJointModel>> GetAllDoctors()
         {
-            const string querySelectAllDoctors = @"SELECT
-                d.DoctorId,
-                d.UserId,
-                u.Username,
-                d.DepartmentId,
-                d.DoctorRating, 
-                d.LicenseNumber,
-                u.Password,
-                u.Mail,
-                u.BirthDate,
-                u.Cnp,
-                u.Address,
-                u.PhoneNumber,
-                u.RegistrationDate
-                FROM Doctors d
-                INNER JOIN Users u
-                ON d.UserId = u.UserId";
-
-            try
-            {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
-                await connection.OpenAsync().ConfigureAwait(false);
-
-                SqlCommand selectCommand = new SqlCommand(querySelectAllDoctors, connection);
-                SqlDataReader reader = await selectCommand.ExecuteReaderAsync().ConfigureAwait(false);
-
-                List<DoctorJointModel> doctorList = new List<DoctorJointModel>();
-
-                while (await reader.ReadAsync().ConfigureAwait(false))
-                {
-                    int doctorId = reader.GetInt32(0);
-                    int userId = reader.GetInt32(1);
-                    string username = reader.GetString(2);
-                    int depId = reader.GetInt32(3);
-                    double rating = reader.GetDouble(4);
-                    string licenseNumber = reader.GetString(5);
-                    string password = reader.GetString(6);
-                    string mail = reader.GetString(7);
-                    DateOnly birthDate = reader.GetFieldValue<DateOnly>(8);
-                    string cnp = reader.GetString(9);
-                    string address = reader.GetString(10);
-                    string phoneNumber = reader.GetString(11);
-                    DateTime registrationDate = reader.GetDateTime(12);
-
-                    DoctorJointModel doctor = new DoctorJointModel(
-                        doctorId, userId, username, depId, rating, licenseNumber,
-                        username, password, mail, birthDate, cnp, address, phoneNumber, registrationDate
-                    );
-
-                    doctorList.Add(doctor);
-                }
-                return doctorList;
-            }
-            catch (SqlException e)
-            {
-                Console.WriteLine($"SQL Exception: {e.Message}");
-                return new List<DoctorJointModel>();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"General Exception: {e.Message}");
-                return new List<DoctorJointModel>();
-            }
+            return await _doctorDBService.GetAllDoctors();
         }
 
         public async Task<bool> LoadDoctorInfoByUserId(int doctorId)
@@ -175,18 +41,15 @@ namespace Hospital.Managers
             {
                 _doctorInfo = await _doctorDBService.GetDoctorById(doctorId);
 
-                if (_doctorInfo != null)
+                if (_doctorInfo != DoctorDisplayModel.Default)
                 {
-                    Debug.WriteLine($"Successfully loaded doctor: {_doctorInfo.DoctorName}");
                     return true;
                 }
-                Debug.WriteLine($"No doctor found for user ID: {doctorId}");
-                return false;
+                throw new Exception($"No doctor found for user ID: {doctorId}");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error loading doctor info: {ex.Message}");
-                return false;
+                throw new Exception($"Error loading doctor info: {ex.Message}");
             }
         }
 
@@ -202,44 +65,105 @@ namespace Hospital.Managers
             return _doctorList != null;
         }
 
-        public async Task<bool> UpdateDoctorName(int doctorId, string name)
+        public async Task<bool> UpdateDoctorName(int userId, string name)
         {
-            return await _doctorDBService.UpdateDoctorName(doctorId, name);
+            if (string.IsNullOrWhiteSpace(name) || !name.Contains(' '))
+            {
+                throw new Exception("Doctor name cannot be empty and has to contain space");
+            }
+
+            if (name.Length > 100)
+            {
+                throw new Exception("Doctor name is too long");
+            }
+            return await _doctorDBService.UpdateDoctorName(userId, name);
         }
 
-        public async Task<bool> UpdateDepartment(int doctorId, int departmentId)
+        public async Task<bool> UpdateDepartment(int userId, int departmentId)
         {
-            return await _doctorDBService.UpdateDoctorDepartment(doctorId, departmentId);
+            return await _doctorDBService.UpdateDoctorDepartment(userId, departmentId);
         }
 
-        public async Task<bool> UpdateRating(int doctorId, double rating)
+        public async Task<bool> UpdateRating(int userId, double rating)
         {
-            return await _doctorDBService.UpdateDoctorRating(doctorId, rating);
+            if (rating < 0.0 || rating > 5.0)
+            {
+                throw new Exception("Rating must be between 0 and 5");
+            }
+
+            return await _doctorDBService.UpdateDoctorRating(userId, rating);
         }
 
-        public async Task<bool> UpdateCareerInfo(int doctorId, string careerInfo)
+        public async Task<bool> UpdateCareerInfo(int userId, string careerInfo)
         {
-            return await _doctorDBService.UpdateDoctorCareerInfo(doctorId, careerInfo);
+            if (careerInfo != null && careerInfo.Length > int.MaxValue)
+            {
+                throw new Exception("Career info is too long");
+            }
+
+            careerInfo ??= "";
+
+            return await _doctorDBService.UpdateDoctorCareerInfo(userId, careerInfo);
         }
 
-        public async Task<bool> UpdateAvatarUrl(int doctorId, string avatarUrl)
+        public async Task<bool> UpdateAvatarUrl(int userId, string avatarUrl)
         {
-            return await _doctorDBService.UpdateDoctorAvatarUrl(doctorId, avatarUrl);
+            if (avatarUrl != null)
+            {
+                if (avatarUrl.Length > 255)
+                {
+                    throw new Exception("Avatar URL is too long");
+                }
+
+                if (!Uri.IsWellFormedUriString(avatarUrl, UriKind.Absolute))
+                {
+                    throw new Exception("Invalid avatar URL format");
+                }
+            }
+
+            avatarUrl ??= "";
+
+            return await _doctorDBService.UpdateDoctorAvatarUrl(userId, avatarUrl);
         }
 
-        public async Task<bool> UpdatePhoneNumber(int doctorId, string phoneNumber)
+        public async Task<bool> UpdatePhoneNumber(int userId, string phoneNumber)
         {
-            return await _doctorDBService.UpdateDoctorPhoneNumber(doctorId, phoneNumber);
+            if (phoneNumber != null)
+            {
+                if (phoneNumber.Length != 10)
+                {
+                    throw new Exception("Phone number must have length 10");
+                }
+
+                foreach (char c in phoneNumber)
+                {
+                    if (!char.IsDigit(c))
+                        throw new Exception("Phone numbers must contain only digits");
+                }
+            }
+
+            phoneNumber ??= "";
+
+            return await _doctorDBService.UpdateDoctorPhoneNumber(userId, phoneNumber);
         }
 
-        public async Task<bool> UpdateEmail(int doctorId, string email)
+        public async Task<bool> UpdateEmail(int userId, string email)
         {
-            return await _doctorDBService.UpdateDoctorEmail(doctorId, email);
+            if (string.IsNullOrEmpty(email))
+            {
+                throw new Exception("Email cannot be empty");
+            }
+
+            if (email.Length > 100)
+            {
+                throw new Exception("Email is too long");
+            }
+
+            if (!email.Contains('@') || !email.Contains('.'))
+                throw new Exception("Invalid email format!\nNeeds to have @ and .");
+
+            return await _doctorDBService.UpdateDoctorEmail(userId, email);
         }
 
-        public async Task<bool> UpdateDoctorInfo(DoctorDisplayModel doctor)
-        {
-            return await _doctorDBService.UpdateDoctorInfo(doctor);
-        }
     }
 }

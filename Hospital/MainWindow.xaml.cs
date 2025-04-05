@@ -52,7 +52,7 @@ namespace Hospital
                     DoctorsDatabaseService doctorDBService = new DoctorsDatabaseService();
                     DoctorManagerModel doctorManagerModel = new DoctorManagerModel(doctorDBService);
                     DoctorViewModel doctorViewModel = new DoctorViewModel(doctorManagerModel, _viewModel._authManagerModel._userInfo.UserId);
-                    DoctorDashboardWindow doctorDashboardWindow = new DoctorDashboardWindow(doctorViewModel);
+                    DoctorDashboardWindow doctorDashboardWindow = new DoctorDashboardWindow(doctorViewModel, _viewModel);
                     doctorDashboardWindow.Activate();
                     this.Close();
                     return;

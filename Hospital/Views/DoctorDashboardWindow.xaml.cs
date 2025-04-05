@@ -1,4 +1,6 @@
+using Hospital.Exceptions;
 using Hospital.ViewModels;
+using Microsoft.Data.SqlClient;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -24,7 +26,8 @@ namespace Hospital.Views
     /// </summary>
     public sealed partial class DoctorDashboardWindow : Window
     {
-        public DoctorDashboardWindow(DoctorViewModel doctorViewModel)
+        private readonly AuthViewModel _authViewModel;
+        public DoctorDashboardWindow(DoctorViewModel doctorViewModel, AuthViewModel authViewModel)
         {
             this.InitializeComponent();
 
@@ -33,7 +36,44 @@ namespace Hospital.Views
 
             // Add it to the grid
             DoctorDashboard.Content = doctorDashboardControl; // DoctorDashboard is the x:Name of your Grid
+            _authViewModel = authViewModel;
+            doctorDashboardControl.LogoutButtonClicked += Logout; // Add the event handler for the Logout button
 
         }
+
+        private async void Logout()
+        {
+            try
+            {
+                await _authViewModel.Logout(); // Log out the user
+                MainWindow main = new MainWindow();
+                main.Activate();
+                this.Close(); // Close logout window after successful logout
+            }
+            catch (AuthenticationException ex)
+            {
+                var dialog = new ContentDialog
+                {
+                    Title = "Error",
+                    Content = $"{ex.Message}",
+                    CloseButtonText = "OK",
+                    XamlRoot = this.Content.XamlRoot
+                };
+                await dialog.ShowAsync();
+            }
+            catch (SqlException err)
+            {
+                var validationDialog = new ContentDialog
+                {
+                    Title = "Error",
+                    Content = $"{err.Message}",
+                    CloseButtonText = "OK"
+                };
+
+                validationDialog.XamlRoot = this.Content.XamlRoot;
+                await validationDialog.ShowAsync();
+            }
+        }
     }
+
 }
