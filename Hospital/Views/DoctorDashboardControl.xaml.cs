@@ -99,6 +99,7 @@ namespace Hospital.Views
 
                 if (changeMade)
                 {
+                    await _viewModel.LogUpdate(_viewModel.UserId, Models.ActionType.UPDATE_PROFILE);
                     var validationDialog = new ContentDialog
                     {
                         Title = "Success",

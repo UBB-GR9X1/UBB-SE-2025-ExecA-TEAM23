@@ -559,5 +559,39 @@ namespace Hospital.DatabaseServices
                 throw new Exception(e.Message);
             }
         }
+
+        public async Task<bool> UpdateLogService(int userId, ActionType type)
+        {
+            string query = "INSERT INTO Logs (UserId, ActionType) VALUES (@userId, @type)";
+            try
+            {
+                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+
+                await connection.OpenAsync().ConfigureAwait(false);
+
+                using SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@userId", userId);
+
+                switch (type)
+                {
+                    case ActionType.UPDATE_PROFILE:
+                        command.Parameters.AddWithValue("@type", "UPDATE_PROFILE");
+                        break;
+                    default:
+                        throw new Exception("Invalid type for Update Log");
+                }
+
+                int rowsAffected = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                connection.Close();
+
+                return rowsAffected == 1;
+
+            }
+            catch (SqlException)
+            {
+                throw new Exception("Error Action Logger");
+            }
+        }
     }
 }

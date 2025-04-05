@@ -1,3 +1,4 @@
+using Hospital.Models;
 using Hospital.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -113,17 +114,23 @@ namespace Hospital.Views
                 }
 
                 // Update Password
+                bool passwordChanged = false;
                 if (_viewModel.Password != _viewModel._originalPatient.Password)
                 {
                     bool isPasswordUpdated = await _viewModel.UpdatePassword(_viewModel.Password);
                     if (isPasswordUpdated)
                     {
                         changeMade = true;
+                        passwordChanged = true;
                     }
                 }
 
                 if (changeMade)
                 {
+                    if (passwordChanged)
+                        await _viewModel.LogUpdate(_viewModel.UserId, ActionType.CHANGE_PASSWORD);
+                    else
+                        await _viewModel.LogUpdate(_viewModel.UserId, ActionType.UPDATE_PROFILE);
                     var validationDialog = new ContentDialog
                     {
                         Title = "Success",

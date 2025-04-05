@@ -1,14 +1,7 @@
-using Hospital.Configs;
 using Hospital.DatabaseServices;
 using Hospital.Models;
-using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Hospital.Managers
@@ -164,6 +157,9 @@ namespace Hospital.Managers
 
             return await _doctorDBService.UpdateDoctorEmail(userId, email);
         }
-
+        public async Task<bool> LogUpdate(int userId, ActionType action)
+        {
+            return await _doctorDBService.UpdateLogService(userId, action);
+        }
     }
 }

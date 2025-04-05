@@ -127,5 +127,10 @@ namespace Hospital.Managers
 
             return await _patientDBService.UpdateHeight(userId, height);
         }
+
+        public async Task<bool> LogUpdate(int userId, ActionType action)
+        {
+            return await _patientDBService.LogUpdate(userId, action);
+        }
     }
 }

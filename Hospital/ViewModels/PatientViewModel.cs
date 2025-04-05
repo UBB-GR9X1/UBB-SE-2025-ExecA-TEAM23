@@ -482,5 +482,9 @@ namespace Hospital.ViewModels
             }
         }
 
+        public async Task<bool> LogUpdate(int userId, ActionType action)
+        {
+            return await _patientManagerModel.LogUpdate(userId, action);
+        }
     }
 }

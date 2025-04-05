@@ -365,5 +365,9 @@ namespace Hospital.ViewModels
                 throw new Exception(ex.Message);
             }
         }
+        public async Task<bool> LogUpdate(int userId, ActionType action)
+        {
+            return await _doctorManagerModel.LogUpdate(userId, action);
+        }
     }
 }

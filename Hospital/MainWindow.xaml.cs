@@ -1,13 +1,12 @@
-using System;
 using Hospital.DatabaseServices;
-using Hospital.Views;
+using Hospital.Exceptions;
 using Hospital.Managers;
 using Hospital.ViewModels;
-using Hospital.Exceptions;
+using Hospital.Views;
 using Microsoft.Data.SqlClient;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System.Diagnostics;
+using System;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
@@ -34,7 +33,6 @@ namespace Hospital
             try
             {
                 await _viewModel.Login(username, password);
-                Debug.WriteLine("Login successful");
 
 
                 if (_viewModel._authManagerModel._userInfo.Role == "Patient")
@@ -44,7 +42,7 @@ namespace Hospital
                     PatientDashboardWindow patientDashboardWindow = new PatientDashboardWindow(patientViewModel, _viewModel);
                     patientDashboardWindow.Activate();
                     this.Close();
-                    
+
                     return;
                 }
                 else if (_viewModel._authManagerModel._userInfo.Role == "Doctor")
@@ -98,20 +96,5 @@ namespace Hospital
             createAccWindow.Activate();
             this.Close();
         }
-
-        /*
-        private void TestPatientDashboardButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (MainFrame != null)
-            {
-                MainFrame.Navigate(typeof(Hospital.Views.RecommendationWindow));
-            }
-        }
-
-        */
-
-
-
-
     }
 }
