@@ -138,7 +138,10 @@ namespace Hospital.Managers
             bool result = await _logInDBService.CreateAccount(model);
             if (result)
                 if (await this.LoadUserByUsername(model.Username))
+                {
+                    await LogAction(ActionType.CREATE_ACCOUNT);
                     return await LogAction(ActionType.LOGIN);
+                }
 
             return result;
         }

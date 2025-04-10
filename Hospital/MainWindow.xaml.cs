@@ -55,8 +55,15 @@ namespace Hospital
                     this.Close();
                     return;
                 }
-
-                // Fallback for other roles (admin, etc.)
+                else if (_viewModel._authManagerModel._userInfo.Role == "Admin")
+                {
+                    // Show Admin Dashboard
+                    AdminDashboardWindow adminDashboard = new AdminDashboardWindow(_viewModel);
+                    adminDashboard.Activate();
+                    this.Close();
+                    return;
+                }
+                // Fallback for other roles
                 LogoutWindow log = new LogoutWindow(_viewModel);
                 log.Activate();
                 // Show Logger window after successful login just for the presentation (uncomment when needed)

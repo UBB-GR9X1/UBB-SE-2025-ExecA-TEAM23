@@ -9,7 +9,8 @@ namespace Hospital.Models
         LOGOUT,
         UPDATE_PROFILE,
         CHANGE_PASSWORD,
-        DELETE_ACCOUNT
+        DELETE_ACCOUNT,
+        CREATE_ACCOUNT
     }
 
     public class LogEntryModel

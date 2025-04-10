@@ -161,6 +161,18 @@ namespace Hospital.DatabaseServices
                     case ActionType.LOGOUT:
                         command.Parameters.AddWithValue("@type", "LOGOUT");
                         break;
+                    case ActionType.CREATE_ACCOUNT:
+                        command.Parameters.AddWithValue("@type", "CREATE_ACCOUNT");
+                        break;
+                    case ActionType.UPDATE_PROFILE:
+                        command.Parameters.AddWithValue("@type", "UPDATE_PROFILE");
+                        break;
+                    case ActionType.CHANGE_PASSWORD:
+                        command.Parameters.AddWithValue("@type", "CHANGE_PASSWORD");
+                        break;
+                    case ActionType.DELETE_ACCOUNT:
+                        command.Parameters.AddWithValue("@type", "DELETE_ACCOUNT");
+                        break;
                     default:
                         throw new AuthenticationException("Invalid type for Authentication Log");
                 }
@@ -169,7 +181,6 @@ namespace Hospital.DatabaseServices
                 connection.Close();
 
                 return rowsAffected == 1;
-
             }
             catch (SqlException)
             {
