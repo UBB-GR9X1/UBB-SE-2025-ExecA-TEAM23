@@ -3,35 +3,34 @@ using Microsoft.UI.Xaml.Controls;
 using Hospital.ViewModels;
 using Hospital.Models;
 using Hospital.Managers;
-
-using System.Threading.Tasks;
 using Hospital.DatabaseServices;
 using System;
+using System.Threading.Tasks;
 
 namespace Hospital.Views
 {
     public sealed partial class RecommendationView : Page
     {
-        private readonly RecommendationSystemFormViewModel _formViewModel;
-        private readonly RecommendationSystemModel _recommendationSystem;
+        private readonly RecommendationSystemFormViewModel _symptomFormViewModel;
+        private readonly RecommendationSystemModel _doctorRecommendationSystem;
 
         public RecommendationView()
         {
-            _formViewModel = new RecommendationSystemFormViewModel();
-            this.DataContext = _formViewModel;
-            this.InitializeComponent();
-            var doctorDBService = new DoctorsDatabaseService(); // Assuming you have a default constructor or create an instance as needed
-            _recommendationSystem = new RecommendationSystemModel(new DoctorManagerModel(doctorDBService));
+            _symptomFormViewModel = new RecommendationSystemFormViewModel();
+            DataContext = _symptomFormViewModel;
+            InitializeComponent();
 
+            var doctorDatabaseService = new DoctorsDatabaseService();
+            _doctorRecommendationSystem = new RecommendationSystemModel(new DoctorManagerModel(doctorDatabaseService));
         }
 
-        private async void RecommendButton_Click(object sender, RoutedEventArgs e)
+        private async void OnRecommendButtonClick(object sender, RoutedEventArgs e)
         {
             try
             {
                 if (sender is Button button) button.IsEnabled = false;
 
-                var recommendedDoctor = await _recommendationSystem.RecommendDoctor(_formViewModel);
+                var recommendedDoctor = await _doctorRecommendationSystem.RecommendDoctorBasedOnSymptomsAsync(_symptomFormViewModel);
 
                 if (recommendedDoctor != null)
                 {
@@ -48,10 +47,10 @@ namespace Hospital.Views
 
                 ResultPanel.Visibility = Visibility.Visible;
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                DoctorNameText.Text = "Error getting recommendation";
-                DepartmentText.Text = ex.Message;
+                DoctorNameText.Text = "Error during recommendation";
+                DepartmentText.Text = exception.Message;
                 RatingText.Text = string.Empty;
                 ResultPanel.Visibility = Visibility.Visible;
             }

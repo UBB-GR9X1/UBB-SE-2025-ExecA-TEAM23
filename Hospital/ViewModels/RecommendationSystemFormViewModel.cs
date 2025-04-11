@@ -7,92 +7,84 @@ public class RecommendationSystemFormViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public ObservableCollection<string> SymptomStartOptions { get; set; }
-    public ObservableCollection<string> SymptomDiscomfortAreas { get; set; }
-    public ObservableCollection<string> SymptomTypes { get; set; }
+    public ObservableCollection<string> SymptomStartOptions { get; }
+    public ObservableCollection<string> DiscomfortAreaOptions { get; }
+    public ObservableCollection<string> SymptomTypeOptions { get; }
 
-    private string _selectedSymptomStart = "";
+    private const string NoSymptomSelected = "None";
+
+    private string _selectedSymptomStart = string.Empty;
     public string SelectedSymptomStart
     {
         get => _selectedSymptomStart;
         set { _selectedSymptomStart = value; OnPropertyChanged(); }
     }
 
-    private string _selectedDiscomfortArea = "";
+    private string _selectedDiscomfortArea = string.Empty;
     public string SelectedDiscomfortArea
     {
         get => _selectedDiscomfortArea;
         set { _selectedDiscomfortArea = value; OnPropertyChanged(); }
     }
 
-    private string _selectedSymptom1 = "";
-    public string SelectedSymptom1
+    private string _selectedSymptomPrimary = NoSymptomSelected;
+    public string SelectedSymptomPrimary
     {
-        get => _selectedSymptom1;
-        set { _selectedSymptom1 = value; OnPropertyChanged(); }
+        get => _selectedSymptomPrimary;
+        set { _selectedSymptomPrimary = value; OnPropertyChanged(); ValidateSymptomSelection(); }
     }
 
-    private string _selectedSymptom2 = "";
-    public string SelectedSymptom2
+    private string _selectedSymptomSecondary = NoSymptomSelected;
+    public string SelectedSymptomSecondary
     {
-        get => _selectedSymptom2;
-        set { _selectedSymptom2 = value; OnPropertyChanged(); }
+        get => _selectedSymptomSecondary;
+        set { _selectedSymptomSecondary = value; OnPropertyChanged(); ValidateSymptomSelection(); }
     }
 
-    private string _selectedSymptom3 = "";
-    public string SelectedSymptom3
+    private string _selectedSymptomTertiary = NoSymptomSelected;
+    public string SelectedSymptomTertiary
     {
-        get => _selectedSymptom3;
-        set { _selectedSymptom3 = value; OnPropertyChanged(); }
+        get => _selectedSymptomTertiary;
+        set { _selectedSymptomTertiary = value; OnPropertyChanged(); ValidateSymptomSelection(); }
     }
-
-
 
     public RecommendationSystemFormViewModel()
     {
-
         SymptomStartOptions = new ObservableCollection<string>
         {
             "Suddenly", "After Waking Up", "After Incident", "After Meeting Someone", "After Ingestion"
         };
 
-        SymptomDiscomfortAreas = new ObservableCollection<string>
+        DiscomfortAreaOptions = new ObservableCollection<string>
         {
             "Head", "Eyes", "Neck", "Stomach", "Chest", "Arm", "Leg", "Back", "Shoulder", "Foot"
         };
 
-        SymptomTypes = new ObservableCollection<string>
+        SymptomTypeOptions = new ObservableCollection<string>
         {
-            "Pain", "Numbness", "Inflammation", "Tenderness", "Coloration", "Itching", "Burning", "None"
+            "Pain", "Numbness", "Inflammation", "Tenderness", "Coloration", "Itching", "Burning", NoSymptomSelected
         };
 
-        // Here wecan create default values for the fields
-        // I opted to use the placeholder text in the XAML file instead since I think it is nicer
-
-        //SelectedSymptomStart = SymptomStartOptions[1];
-        //SelectedDiscomfortArea = SymptomDiscomfortAreas[4];
-        SelectedSymptom1 = SymptomTypes[7];
-        SelectedSymptom2 = SymptomTypes[7];
-        SelectedSymptom3 = SymptomTypes[7];
-
+        SelectedSymptomPrimary = NoSymptomSelected;
+        SelectedSymptomSecondary = NoSymptomSelected;
+        SelectedSymptomTertiary = NoSymptomSelected;
     }
 
-    private void ValidateSymptoms()
+    private void ValidateSymptomSelection()
     {
-        Debug.WriteLine($"Validating Symptoms: {SelectedSymptom1}, {SelectedSymptom2}, {SelectedSymptom3}");
+        Debug.WriteLine($"Validating: {SelectedSymptomPrimary}, {SelectedSymptomSecondary}, {SelectedSymptomTertiary}");
 
-        // Only perform validation when symptoms are not "None"
-        if (SelectedSymptom1 != SymptomTypes[7] && SelectedSymptom2 == SelectedSymptom1)
-            SelectedSymptom2 = string.Empty; // Or set to "None" based on your logic
-        if (SelectedSymptom1 != SymptomTypes[7] && SelectedSymptom3 == SelectedSymptom1)
-            SelectedSymptom3 = string.Empty; // Or set to "None"
-        if (SelectedSymptom2 != SymptomTypes[7] && SelectedSymptom3 == SelectedSymptom2)
-            SelectedSymptom3 = string.Empty; // Or set to "None"
+        if (SelectedSymptomPrimary != NoSymptomSelected && SelectedSymptomPrimary == SelectedSymptomSecondary)
+            SelectedSymptomSecondary = NoSymptomSelected;
 
-        Debug.WriteLine($"After Validation: {SelectedSymptom1}, {SelectedSymptom2}, {SelectedSymptom3}");
+        if (SelectedSymptomPrimary != NoSymptomSelected && SelectedSymptomPrimary == SelectedSymptomTertiary)
+            SelectedSymptomTertiary = NoSymptomSelected;
+
+        if (SelectedSymptomSecondary != NoSymptomSelected && SelectedSymptomSecondary == SelectedSymptomTertiary)
+            SelectedSymptomTertiary = NoSymptomSelected;
+
+        Debug.WriteLine($"After validation: {SelectedSymptomPrimary}, {SelectedSymptomSecondary}, {SelectedSymptomTertiary}");
     }
-
-
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
