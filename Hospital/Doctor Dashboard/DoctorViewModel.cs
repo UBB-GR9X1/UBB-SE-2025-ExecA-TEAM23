@@ -9,32 +9,47 @@ namespace Hospital.ViewModels
 {
     public class DoctorViewModel : INotifyPropertyChanged
     {
+        private const string DefaultDoctorName = "Loading...";
+        private const string DefaultDepartmentName = "Loading department...";
+        private const double DefaultRating = 0.0;
+        private const string DefaultCareerInfo = "Loading career information...";
+        private const string DefaultAvatarUrl = "https://picsum.photos/200";
+        private const string DefaultPhoneNumber = "Loading phone...";
+        private const string DefaultEmail = "Loading mail...";
+        private const string NotSpecified = "Not specified";
+        private const string NotAvailable = "N/A";
+        private const string NotProvided = "Not provided";
+        private const string DefaultNotFoundDoctorName = "Doctor profile not found";
+
+        private const string DefaultErrorDoctorName = "Error loading profile";
+        private const string DefaultErrorDepartmentName = "Error";
+        private const string DefaultErrorCareerInfo = "Please try again later";
+
         private readonly DoctorService _doctorService;
 
         public DoctorViewModel(DoctorService doctorService, int userId)
         {
             _doctorService = doctorService;
-            _userId = userId;
+            UserId = userId;
 
-            // Initialize with default values
-            DoctorName = "Loading...";
-            DepartmentName = "Loading department...";
-            Rating = 0;
-            CareerInfo = "Loading career information...";
-            AvatarUrl = "/Assets/default-avatar.png";
-            PhoneNumber = "Loading phone...";
-            Mail = "Loading email...";
+            DoctorName = DefaultDoctorName;
+            DepartmentName = DefaultDepartmentName;
+            Rating = DefaultRating;
+            CareerInfo = DefaultCareerInfo;
+            AvatarUrl = DefaultAvatarUrl;
+            PhoneNumber = DefaultPhoneNumber;
+            Mail = DefaultEmail;
 
-            // Start async load
-            _originalDoctor = DoctorModel.Default;
-            _ = LoadDoctorInfoByUserIdAsync(userId);
+            OriginalDoctor = DoctorModel.Default;
+            _ = LoadDoctorInformationAsync(userId);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public DoctorModel _originalDoctor { get; private set; }
+        public DoctorModel OriginalDoctor { get; set; }
 
         private int _userId;
+
         public int UserId
         {
             get => _userId;
@@ -48,7 +63,8 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _doctorName = "";
+        private string _doctorName = string.Empty;
+
         public string DoctorName
         {
             get => _doctorName;
@@ -63,6 +79,7 @@ namespace Hospital.ViewModels
         }
 
         private int _departmentId;
+
         public int DepartmentId
         {
             get => _departmentId;
@@ -76,7 +93,8 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _departmentName = "";
+        private string _departmentName = string.Empty;
+
         public string DepartmentName
         {
             get => _departmentName;
@@ -91,6 +109,7 @@ namespace Hospital.ViewModels
         }
 
         private double _rating;
+
         public double Rating
         {
             get => _rating;
@@ -104,7 +123,8 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _careerInfo = "";
+        private string _careerInfo = string.Empty;
+
         public string CareerInfo
         {
             get => _careerInfo;
@@ -118,7 +138,8 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _avatarUrl = "";
+        private string _avatarUrl = string.Empty;
+
         public string AvatarUrl
         {
             get => _avatarUrl;
@@ -132,7 +153,8 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _phoneNumber = "";
+        private string _phoneNumber = string.Empty;
+
         public string PhoneNumber
         {
             get => _phoneNumber;
@@ -146,7 +168,8 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _mail = "";
+        private string _mail = string.Empty;
+
         public string Mail
         {
             get => _mail;
@@ -161,6 +184,7 @@ namespace Hospital.ViewModels
         }
 
         private bool _isLoading;
+
         public bool IsLoading
         {
             get => _isLoading;
@@ -179,45 +203,46 @@ namespace Hospital.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public async Task<bool> LoadDoctorInfoByUserIdAsync(int userId)
+        public async Task<bool> LoadDoctorInformationAsync(int userId)
         {
             try
             {
                 IsLoading = true;
 
-                var result = await _doctorService.LoadDoctorInfoByUserId(userId);
-                if (result && _doctorService._doctorInfo != DoctorModel.Default)
+                bool wasLoaded = await _doctorService.LoadDoctorInformationByUserId(userId);
+
+                if (wasLoaded && _doctorService.DoctorInformation != DoctorModel.Default)
                 {
-                    var doctor = _doctorService._doctorInfo;
+                    var doctor = _doctorService.DoctorInformation;
 
-                    DoctorName = doctor.DoctorName ?? "Not specified";
+                    DoctorName = doctor.DoctorName ?? NotSpecified;
                     DepartmentId = doctor.DepartmentId;
-                    DepartmentName = doctor.DepartmentName ?? "No department";
-                    Rating = (double)(doctor.Rating > 0 ? doctor.Rating : 0);
-                    CareerInfo = doctor.CareerInfo ?? "No career information";
-                    AvatarUrl = doctor.AvatarUrl ?? "/Assets/default-avatar.png";
-                    PhoneNumber = doctor.PhoneNumber ?? "Not provided";
-                    Mail = doctor.Mail ?? "Not provided";
+                    DepartmentName = doctor.DepartmentName ?? NotAvailable;
+                    Rating = doctor.Rating > 0 ? doctor.Rating : DefaultRating;
+                    CareerInfo = doctor.CareerInfo ?? NotAvailable;
+                    AvatarUrl = doctor.AvatarUrl ?? DefaultAvatarUrl;
+                    PhoneNumber = doctor.PhoneNumber ?? NotProvided;
+                    Mail = doctor.Mail ?? NotProvided;
 
-                    _originalDoctor = new DoctorModel(-1, DoctorName, DepartmentId, DepartmentName, Rating, CareerInfo, AvatarUrl,
+                    OriginalDoctor = new DoctorModel(-1, DoctorName, DepartmentId, DepartmentName, Rating, CareerInfo, AvatarUrl,
                         PhoneNumber, Mail);
 
                     return true;
                 }
 
                 // Set not found state
-                DoctorName = "Doctor profile not found";
-                DepartmentName = "N/A";
+                DoctorName = DefaultNotFoundDoctorName;
+                DepartmentName = NotAvailable;
                 return false;
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                Debug.WriteLine($"Error in ViewModel: {ex.Message}");
+                Debug.WriteLine($"Error in ViewModel: {exception.Message}");
 
                 // Set error state
-                DoctorName = "Error loading profile";
-                DepartmentName = "Error";
-                CareerInfo = "Please try again later";
+                DoctorName = DefaultErrorDoctorName;
+                DepartmentName = DefaultErrorDepartmentName;
+                CareerInfo = DefaultErrorCareerInfo;
 
                 return false;
             }
@@ -227,147 +252,135 @@ namespace Hospital.ViewModels
             }
         }
 
-        public async Task<bool> UpdateDoctorName(string name)
+        public async Task<bool> UpdateDoctorNameAsync(string newName)
+        {
+            return await UpdateFieldAsync(() => _doctorService.UpdateDoctorName(UserId, newName), 
+                () => DoctorName = newName,
+                () => OriginalDoctor.Clone(doctorName: newName)
+            );
+        }
+
+        public async Task<bool> UpdateDepartmentAsync(int newDepartmentId)
+        {
+            return await UpdateFieldAsync(() => _doctorService.UpdateDepartment(UserId, newDepartmentId), 
+                () => DepartmentId = newDepartmentId, 
+                () => OriginalDoctor.Clone(departmentId: newDepartmentId)
+            );
+        }
+
+        public async Task<bool> UpdateCareerInfoAsync(string newCareerInformation)
+        {
+            return await UpdateFieldAsync(() => _doctorService.UpdateCareerInfo(UserId, newCareerInformation), 
+                () => CareerInfo = newCareerInformation, 
+                () => OriginalDoctor.Clone(careerInformation: newCareerInformation) 
+            );
+        }
+
+        public async Task<bool> UpdateAvatarUrlAsync(string newAvatarUrl)
+        {
+            return await UpdateFieldAsync(() => _doctorService.UpdateAvatarUrl(UserId, newAvatarUrl), 
+                () => AvatarUrl = newAvatarUrl, 
+                () => OriginalDoctor.Clone(avatarUrl: newAvatarUrl)
+            );
+        }
+
+        public async Task<bool> UpdatePhoneNumberAsync(string newPhoneNumber)
+        {
+            return await UpdateFieldAsync(() => _doctorService.UpdatePhoneNumber(UserId, newPhoneNumber),
+                () => PhoneNumber = newPhoneNumber, 
+                () => OriginalDoctor.Clone(phoneNumber: newPhoneNumber) 
+            );
+        }
+
+
+        public async Task<bool> UpdateMailAsync(string newEmail)
+        {
+            return await UpdateFieldAsync(
+                () => _doctorService.UpdateEmail(UserId, newEmail), 
+                () => Mail = newEmail, 
+                () => OriginalDoctor.Clone(email: newEmail) 
+            );
+        }
+
+        public async Task<bool> LogDoctorUpdateAsync(ActionType action)
+        {
+            return await _doctorService.LogUpdate(UserId, action);
+        }
+
+        public void RevertChanges()
+        {
+            DoctorName = OriginalDoctor.DoctorName;
+            DepartmentName = OriginalDoctor.DepartmentName;
+            CareerInfo = OriginalDoctor.CareerInfo;
+            AvatarUrl = OriginalDoctor.AvatarUrl;
+            PhoneNumber = OriginalDoctor.PhoneNumber;
+            Mail = OriginalDoctor.Mail;
+        }
+
+        public async Task<(bool updateSuccessful, string? errorMessage)> TryUpdateDoctorProfileAsync()
         {
             try
             {
-                IsLoading = true;
-                bool result = await _doctorService.UpdateDoctorName(UserId, name);
-                if (result)
+                if (OriginalDoctor == null)
+                    return (false, "Original doctor data is not initialized.");
+
+                bool changeMade = false;
+
+                if (DoctorName != OriginalDoctor.DoctorName)
+                    changeMade |= await UpdateDoctorNameAsync(DoctorName);
+
+                if (DepartmentName != OriginalDoctor.DepartmentName)
+                    changeMade |= await UpdateDepartmentAsync(DepartmentId);
+
+                if (CareerInfo != OriginalDoctor.CareerInfo)
+                    changeMade |= await UpdateCareerInfoAsync(CareerInfo);
+
+                if (AvatarUrl != OriginalDoctor.AvatarUrl)
+                    changeMade |= await UpdateAvatarUrlAsync(AvatarUrl);
+
+                if (PhoneNumber != OriginalDoctor.PhoneNumber)
+                    changeMade |= await UpdatePhoneNumberAsync(PhoneNumber);
+
+                if (Mail != OriginalDoctor.Mail)
+                    changeMade |= await UpdateMailAsync(Mail);
+
+                if (changeMade)
                 {
-                    DoctorName = name;
-                    _originalDoctor = new DoctorModel(_originalDoctor.DoctorId, name, _originalDoctor.DepartmentId,
-    _originalDoctor.DepartmentName, _originalDoctor.Rating, _originalDoctor.CareerInfo, _originalDoctor.AvatarUrl,
-    _originalDoctor.PhoneNumber, _originalDoctor.Mail);
+                    await LogDoctorUpdateAsync(Models.ActionType.UPDATE_PROFILE);
                 }
-                IsLoading = false;
-                return result;
+
+                return (changeMade, null);
             }
             catch (Exception ex)
             {
-                IsLoading = false;
-                throw new Exception(ex.Message);
+                RevertChanges();
+                return (false, ex.Message);
             }
         }
 
-        public async Task<bool> UpdateDepartment(int departmentId)
+        private async Task<bool> UpdateFieldAsync(Func<Task<bool>> updateServiceFunction, Action updatePropertyFunction, Func<DoctorModel> updateModelFunction)
         {
             try
             {
                 IsLoading = true;
-                bool result = await _doctorService.UpdateDepartment(UserId, departmentId);
+                bool result = await updateServiceFunction();
                 if (result)
                 {
-                    DepartmentId = departmentId;
-                    // Note: You might need to update DepartmentName separately
-                    _originalDoctor = new DoctorModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, departmentId,
-    _originalDoctor.DepartmentName, _originalDoctor.Rating, _originalDoctor.CareerInfo, _originalDoctor.AvatarUrl,
-    _originalDoctor.PhoneNumber, _originalDoctor.Mail);
+                    updatePropertyFunction(); 
+                    OriginalDoctor = updateModelFunction();
                 }
-                IsLoading = false;
                 return result;
             }
             catch (Exception ex)
             {
-                IsLoading = false;
                 throw new Exception(ex.Message);
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
 
-        public async Task<bool> UpdateCareerInfo(string careerInfo)
-        {
-            try
-            {
-                IsLoading = true;
-                bool result = await _doctorService.UpdateCareerInfo(UserId, careerInfo);
-                if (result)
-                {
-                    CareerInfo = careerInfo;
-                    _originalDoctor = new DoctorModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, _originalDoctor.DepartmentId,
-    _originalDoctor.DepartmentName, _originalDoctor.Rating, careerInfo, _originalDoctor.AvatarUrl,
-    _originalDoctor.PhoneNumber, _originalDoctor.Mail);
-                }
-                IsLoading = false;
-                return result;
-            }
-            catch (Exception ex)
-            {
-                IsLoading = false;
-                throw new Exception(ex.Message);
-            }
-        }
 
-        public async Task<bool> UpdateAvatarUrl(string avatarUrl)
-        {
-            try
-            {
-                IsLoading = true;
-                bool result = await _doctorService.UpdateAvatarUrl(UserId, avatarUrl);
-                if (result)
-                {
-                    AvatarUrl = avatarUrl;
-                    _originalDoctor = new DoctorModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, _originalDoctor.DepartmentId,
-    _originalDoctor.DepartmentName, _originalDoctor.Rating, _originalDoctor.CareerInfo, _originalDoctor.AvatarUrl,
-    _originalDoctor.PhoneNumber, _originalDoctor.Mail);
-                }
-                IsLoading = false;
-                return result;
-            }
-            catch (Exception ex)
-            {
-                IsLoading = false;
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public async Task<bool> UpdatePhoneNumber(string phoneNumber)
-        {
-            try
-            {
-                IsLoading = true;
-                bool result = await _doctorService.UpdatePhoneNumber(UserId, phoneNumber);
-                if (result)
-                {
-                    PhoneNumber = phoneNumber;
-                    _originalDoctor = new DoctorModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, _originalDoctor.DepartmentId,
-                        _originalDoctor.DepartmentName, _originalDoctor.Rating, _originalDoctor.CareerInfo, _originalDoctor.AvatarUrl,
-                        phoneNumber, _originalDoctor.Mail);
-                }
-                IsLoading = false;
-                return result;
-            }
-            catch (Exception ex)
-            {
-                IsLoading = false;
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public async Task<bool> UpdateMail(string mail)
-        {
-            try
-            {
-                IsLoading = true;
-                bool result = await _doctorService.UpdateEmail(UserId, mail);
-                if (result)
-                {
-                    Mail = mail;
-                    _originalDoctor = new DoctorModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, _originalDoctor.DepartmentId,
-                    _originalDoctor.DepartmentName, _originalDoctor.Rating, _originalDoctor.CareerInfo, _originalDoctor.AvatarUrl,
-                    _originalDoctor.PhoneNumber, mail);
-                }
-                IsLoading = false;
-                return result;
-            }
-            catch (Exception ex)
-            {
-                IsLoading = false;
-                throw new Exception(ex.Message);
-            }
-        }
-        public async Task<bool> LogUpdate(int userId, ActionType action)
-        {
-            return await _doctorService.LogUpdate(userId, action);
-        }
     }
 }
