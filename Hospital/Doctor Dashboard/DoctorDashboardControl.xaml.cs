@@ -1,12 +1,13 @@
 using Hospital.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using Hospital.Doctor_Dashboard;
 
 namespace Hospital.Views
 {
     public sealed partial class DoctorDashboardControl : UserControl
     {
-        private DoctorViewModel? _viewModel;
+        private IDoctorViewModel? _viewModel;
 
         public event Action? LogoutButtonClicked;
 

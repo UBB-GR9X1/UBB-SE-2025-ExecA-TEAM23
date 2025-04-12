@@ -3,10 +3,11 @@ using Hospital.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Hospital.Doctor_Dashboard;
 
 namespace Hospital.Managers
 {
-    public class DoctorService
+    public class DoctorService : IDoctorService
     {
         private const int MaxNameLength = 100;
         private const int MaxEmailLength = 100;

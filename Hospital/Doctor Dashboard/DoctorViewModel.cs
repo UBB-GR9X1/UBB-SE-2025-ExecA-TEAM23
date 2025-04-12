@@ -4,10 +4,11 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Hospital.Doctor_Dashboard;
 
 namespace Hospital.ViewModels
 {
-    public class DoctorViewModel : INotifyPropertyChanged
+    public class DoctorViewModel : IDoctorViewModel, INotifyPropertyChanged
     {
         private const string DefaultDoctorName = "Loading...";
         private const string DefaultDepartmentName = "Loading department...";
@@ -25,9 +26,9 @@ namespace Hospital.ViewModels
         private const string DefaultErrorDepartmentName = "Error";
         private const string DefaultErrorCareerInfo = "Please try again later";
 
-        private readonly DoctorService _doctorService;
+        private readonly IDoctorService _doctorService;
 
-        public DoctorViewModel(DoctorService doctorService, int userId)
+        public DoctorViewModel(IDoctorService doctorService, int userId)
         {
             _doctorService = doctorService;
             UserId = userId;
@@ -371,16 +372,14 @@ namespace Hospital.ViewModels
                 }
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                throw new Exception(ex.Message);
+                throw new Exception(exception.Message);
             }
             finally
             {
                 IsLoading = false;
             }
         }
-
-
     }
 }
