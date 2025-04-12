@@ -25,7 +25,7 @@ namespace Hospital.Views
             this.InitializeComponent();
 
             // This would normally be injected through dependency injection
-            var searchManager = new SearchDoctorsManagerModel(new DoctorsDatabaseService());
+            var searchManager = new SearchDoctorsService(new DoctorsDatabaseHelper());
             ViewModel = new SearchDoctorsViewModel(searchManager, string.Empty);
 
             this.DataContext = ViewModel;
@@ -75,7 +75,7 @@ namespace Hospital.Views
         {
             try
             {
-                if (e?.ClickedItem is DoctorDisplayModel doctor)
+                if (e?.ClickedItem is DoctorModel doctor)
                 {
                     ViewModel.ShowDoctorProfile(doctor);
                     // The UI will be updated in the PropertyChanged event
@@ -92,7 +92,7 @@ namespace Hospital.Views
             try
             {
                 var doctor = ViewModel.SelectedDoctor;
-                if (doctor != DoctorDisplayModel.Default && ViewModel.IsProfileOpen)
+                if (doctor != DoctorModel.Default && ViewModel.IsProfileOpen)
                 {
                     // Set doctor profile image
                     try

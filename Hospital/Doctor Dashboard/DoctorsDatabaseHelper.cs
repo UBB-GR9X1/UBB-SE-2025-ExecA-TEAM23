@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace Hospital.DatabaseServices
 {
-    public class DoctorsDatabaseService
+    public class DoctorsDatabaseHelper
     {
         private readonly Config _config;
 
-        public DoctorsDatabaseService()
+        public DoctorsDatabaseHelper()
         {
             _config = Config.GetInstance();
         }
 
-        public async Task<DoctorDisplayModel> GetDoctorById(int userId)
+        public async Task<DoctorModel> GetDoctorById(int userId)
         {
             const string query = @"SELECT 
                 d.DoctorId,
@@ -47,7 +47,7 @@ namespace Hospital.DatabaseServices
                 {
                     Console.WriteLine($"Doctor found with user ID: {userId}");
 
-                    return new DoctorDisplayModel(
+                    return new DoctorModel(
                         doctorId: reader.GetInt32(0),
                         doctorName: reader.GetString(1),
                         departmentId: reader.GetInt32(2),
@@ -139,7 +139,7 @@ namespace Hospital.DatabaseServices
             }
         }
 
-        public async Task<List<DoctorDisplayModel>> GetDoctorsByDepartmentPartialName(string departmentPartialName)
+        public async Task<List<DoctorModel>> GetDoctorsByDepartmentPartialName(string departmentPartialName)
         {
             const string querySelectDoctors = @"
             SELECT 
@@ -166,7 +166,7 @@ namespace Hospital.DatabaseServices
                 selectCommand.Parameters.AddWithValue("@departmentNamePartial", departmentPartialName);
 
                 SqlDataReader reader = await selectCommand.ExecuteReaderAsync().ConfigureAwait(false);
-                List<DoctorDisplayModel> doctorList = new List<DoctorDisplayModel>();
+                List<DoctorModel> doctorList = new List<DoctorModel>();
                 if (departmentPartialName == "")
                 {
                     return doctorList;
@@ -183,7 +183,7 @@ namespace Hospital.DatabaseServices
                     string? phoneNumber = reader.IsDBNull(7) ? "" : reader.GetString(7);
                     string? mail = reader.GetString(8);
 
-                    DoctorDisplayModel doctor = new DoctorDisplayModel(
+                    DoctorModel doctor = new DoctorModel(
                         doctorId, doctorName,
                         departmentId, departmentName,
                         rating, careerInfo,
@@ -196,12 +196,12 @@ namespace Hospital.DatabaseServices
             catch (SqlException e)
             {
                 Console.WriteLine(e.Message);
-                return new List<DoctorDisplayModel>();
+                return new List<DoctorModel>();
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                return new List<DoctorDisplayModel>();
+                return new List<DoctorModel>();
             }
         }
 
@@ -281,7 +281,7 @@ namespace Hospital.DatabaseServices
             }
         }
 
-        public async Task<List<DoctorDisplayModel>> GetDoctorsByPartialDoctorName(string doctorPartialName)
+        public async Task<List<DoctorModel>> GetDoctorsByPartialDoctorName(string doctorPartialName)
         {
             const string querySelectDoctors = @"
             SELECT 
@@ -308,7 +308,7 @@ namespace Hospital.DatabaseServices
                 selectCommand.Parameters.AddWithValue("@doctorNamePartial", doctorPartialName);
 
                 SqlDataReader reader = await selectCommand.ExecuteReaderAsync().ConfigureAwait(false);
-                List<DoctorDisplayModel> doctorList = new List<DoctorDisplayModel>();
+                List<DoctorModel> doctorList = new List<DoctorModel>();
 
                 if (doctorPartialName == "")
                 {
@@ -327,7 +327,7 @@ namespace Hospital.DatabaseServices
                     string phoneNumber = reader.IsDBNull(7) ? "" : reader.GetString(7);
                     string mail = reader.GetString(8);
 
-                    DoctorDisplayModel doctor = new DoctorDisplayModel(
+                    DoctorModel doctor = new DoctorModel(
                         doctorId, doctorName,
                         departmentId, departmentName,
                         rating, careerInfo,
@@ -340,12 +340,12 @@ namespace Hospital.DatabaseServices
             catch (SqlException e)
             {
                 Console.WriteLine(e.Message);
-                return new List<DoctorDisplayModel>();
+                return new List<DoctorModel>();
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                return new List<DoctorDisplayModel>();
+                return new List<DoctorModel>();
             }
         }
 

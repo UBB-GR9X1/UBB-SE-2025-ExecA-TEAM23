@@ -6,35 +6,35 @@ using System.Threading.Tasks;
 
 namespace Hospital.Managers
 {
-    public class DoctorManagerModel
+    public class DoctorService
     {
-        private readonly DoctorsDatabaseService _doctorDBService;
-        public DoctorDisplayModel _doctorInfo { get; private set; } = DoctorDisplayModel.Default;
-        public List<DoctorDisplayModel> _doctorList { get; private set; }
+        private readonly DoctorsDatabaseHelper _doctorDbHelper;
+        public DoctorModel _doctorInfo { get; private set; } = DoctorModel.Default;
+        public List<DoctorModel> _doctorList { get; private set; }
 
-        public DoctorManagerModel(DoctorsDatabaseService doctorDBService)
+        public DoctorService(DoctorsDatabaseHelper doctorDbHelper)
         {
-            _doctorDBService = doctorDBService;
-            _doctorList = new List<DoctorDisplayModel>();
+            _doctorDbHelper = doctorDbHelper;
+            _doctorList = new List<DoctorModel>();
         }
 
         public async Task<List<DoctorJointModel>> GetDoctorsByDepartment(int departmentId)
         {
-            return await _doctorDBService.GetDoctorsByDepartment(departmentId);
+            return await _doctorDbHelper.GetDoctorsByDepartment(departmentId);
         }
 
         public async Task<List<DoctorJointModel>> GetAllDoctors()
         {
-            return await _doctorDBService.GetAllDoctors();
+            return await _doctorDbHelper.GetAllDoctors();
         }
 
         public async Task<bool> LoadDoctorInfoByUserId(int doctorId)
         {
             try
             {
-                _doctorInfo = await _doctorDBService.GetDoctorById(doctorId);
+                _doctorInfo = await _doctorDbHelper.GetDoctorById(doctorId);
 
-                if (_doctorInfo != DoctorDisplayModel.Default)
+                if (_doctorInfo != DoctorModel.Default)
                 {
                     return true;
                 }
@@ -48,13 +48,13 @@ namespace Hospital.Managers
 
         public async Task<bool> SearchDoctorsByDepartment(string departmentPartialName)
         {
-            _doctorList = await _doctorDBService.GetDoctorsByDepartmentPartialName(departmentPartialName);
+            _doctorList = await _doctorDbHelper.GetDoctorsByDepartmentPartialName(departmentPartialName);
             return _doctorList != null;
         }
 
         public async Task<bool> SearchDoctorsByName(string namePartial)
         {
-            _doctorList = await _doctorDBService.GetDoctorsByPartialDoctorName(namePartial);
+            _doctorList = await _doctorDbHelper.GetDoctorsByPartialDoctorName(namePartial);
             return _doctorList != null;
         }
 
@@ -69,12 +69,12 @@ namespace Hospital.Managers
             {
                 throw new Exception("Doctor name is too long");
             }
-            return await _doctorDBService.UpdateDoctorName(userId, name);
+            return await _doctorDbHelper.UpdateDoctorName(userId, name);
         }
 
         public async Task<bool> UpdateDepartment(int userId, int departmentId)
         {
-            return await _doctorDBService.UpdateDoctorDepartment(userId, departmentId);
+            return await _doctorDbHelper.UpdateDoctorDepartment(userId, departmentId);
         }
 
         public async Task<bool> UpdateRating(int userId, double rating)
@@ -84,7 +84,7 @@ namespace Hospital.Managers
                 throw new Exception("Rating must be between 0 and 5");
             }
 
-            return await _doctorDBService.UpdateDoctorRating(userId, rating);
+            return await _doctorDbHelper.UpdateDoctorRating(userId, rating);
         }
 
         public async Task<bool> UpdateCareerInfo(int userId, string careerInfo)
@@ -96,7 +96,7 @@ namespace Hospital.Managers
 
             careerInfo ??= "";
 
-            return await _doctorDBService.UpdateDoctorCareerInfo(userId, careerInfo);
+            return await _doctorDbHelper.UpdateDoctorCareerInfo(userId, careerInfo);
         }
 
         public async Task<bool> UpdateAvatarUrl(int userId, string avatarUrl)
@@ -111,7 +111,7 @@ namespace Hospital.Managers
 
             avatarUrl ??= "";
 
-            return await _doctorDBService.UpdateDoctorAvatarUrl(userId, avatarUrl);
+            return await _doctorDbHelper.UpdateDoctorAvatarUrl(userId, avatarUrl);
         }
 
         public async Task<bool> UpdatePhoneNumber(int userId, string phoneNumber)
@@ -132,7 +132,7 @@ namespace Hospital.Managers
 
             phoneNumber ??= "";
 
-            return await _doctorDBService.UpdateDoctorPhoneNumber(userId, phoneNumber);
+            return await _doctorDbHelper.UpdateDoctorPhoneNumber(userId, phoneNumber);
         }
 
         public async Task<bool> UpdateEmail(int userId, string email)
@@ -150,11 +150,11 @@ namespace Hospital.Managers
             if (!email.Contains('@') || !email.Contains('.'))
                 throw new Exception("Invalid email format!\nNeeds to have @ and .");
 
-            return await _doctorDBService.UpdateDoctorEmail(userId, email);
+            return await _doctorDbHelper.UpdateDoctorEmail(userId, email);
         }
         public async Task<bool> LogUpdate(int userId, ActionType action)
         {
-            return await _doctorDBService.UpdateLogService(userId, action);
+            return await _doctorDbHelper.UpdateLogService(userId, action);
         }
     }
 }

@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 public class RecommendationSystemModel
 {
-    private readonly DoctorManagerModel _doctorManager;
+    private readonly DoctorService _doctorManager;
     private Dictionary<string, Dictionary<int, int>> _symptomDepartmentScores;
 
-    public RecommendationSystemModel(DoctorManagerModel doctorManager)
+    public RecommendationSystemModel(DoctorService doctorManager)
     {
         _doctorManager = doctorManager;
         _symptomDepartmentScores = new Dictionary<string, Dictionary<int, int>>();

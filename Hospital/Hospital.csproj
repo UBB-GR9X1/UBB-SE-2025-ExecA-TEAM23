@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Commands\" />
+    <Folder Include="Doctor Dashboard\Tests\" />
     <Folder Include="Exceptions\" />
     <Folder Include="Helpers\" />
   </ItemGroup>

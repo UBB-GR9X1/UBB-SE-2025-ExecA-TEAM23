@@ -9,11 +9,11 @@ namespace Hospital.ViewModels
 {
     public class DoctorViewModel : INotifyPropertyChanged
     {
-        private readonly DoctorManagerModel _doctorManagerModel;
+        private readonly DoctorService _doctorService;
 
-        public DoctorViewModel(DoctorManagerModel doctorManagerModel, int userId)
+        public DoctorViewModel(DoctorService doctorService, int userId)
         {
-            _doctorManagerModel = doctorManagerModel;
+            _doctorService = doctorService;
             _userId = userId;
 
             // Initialize with default values
@@ -26,13 +26,13 @@ namespace Hospital.ViewModels
             Mail = "Loading email...";
 
             // Start async load
-            _originalDoctor = DoctorDisplayModel.Default;
+            _originalDoctor = DoctorModel.Default;
             _ = LoadDoctorInfoByUserIdAsync(userId);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public DoctorDisplayModel _originalDoctor { get; private set; }
+        public DoctorModel _originalDoctor { get; private set; }
 
         private int _userId;
         public int UserId
@@ -185,10 +185,10 @@ namespace Hospital.ViewModels
             {
                 IsLoading = true;
 
-                var result = await _doctorManagerModel.LoadDoctorInfoByUserId(userId);
-                if (result && _doctorManagerModel._doctorInfo != DoctorDisplayModel.Default)
+                var result = await _doctorService.LoadDoctorInfoByUserId(userId);
+                if (result && _doctorService._doctorInfo != DoctorModel.Default)
                 {
-                    var doctor = _doctorManagerModel._doctorInfo;
+                    var doctor = _doctorService._doctorInfo;
 
                     DoctorName = doctor.DoctorName ?? "Not specified";
                     DepartmentId = doctor.DepartmentId;
@@ -199,7 +199,7 @@ namespace Hospital.ViewModels
                     PhoneNumber = doctor.PhoneNumber ?? "Not provided";
                     Mail = doctor.Mail ?? "Not provided";
 
-                    _originalDoctor = new DoctorDisplayModel(-1, DoctorName, DepartmentId, DepartmentName, Rating, CareerInfo, AvatarUrl,
+                    _originalDoctor = new DoctorModel(-1, DoctorName, DepartmentId, DepartmentName, Rating, CareerInfo, AvatarUrl,
                         PhoneNumber, Mail);
 
                     return true;
@@ -232,11 +232,11 @@ namespace Hospital.ViewModels
             try
             {
                 IsLoading = true;
-                bool result = await _doctorManagerModel.UpdateDoctorName(UserId, name);
+                bool result = await _doctorService.UpdateDoctorName(UserId, name);
                 if (result)
                 {
                     DoctorName = name;
-                    _originalDoctor = new DoctorDisplayModel(_originalDoctor.DoctorId, name, _originalDoctor.DepartmentId,
+                    _originalDoctor = new DoctorModel(_originalDoctor.DoctorId, name, _originalDoctor.DepartmentId,
     _originalDoctor.DepartmentName, _originalDoctor.Rating, _originalDoctor.CareerInfo, _originalDoctor.AvatarUrl,
     _originalDoctor.PhoneNumber, _originalDoctor.Mail);
                 }
@@ -255,12 +255,12 @@ namespace Hospital.ViewModels
             try
             {
                 IsLoading = true;
-                bool result = await _doctorManagerModel.UpdateDepartment(UserId, departmentId);
+                bool result = await _doctorService.UpdateDepartment(UserId, departmentId);
                 if (result)
                 {
                     DepartmentId = departmentId;
                     // Note: You might need to update DepartmentName separately
-                    _originalDoctor = new DoctorDisplayModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, departmentId,
+                    _originalDoctor = new DoctorModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, departmentId,
     _originalDoctor.DepartmentName, _originalDoctor.Rating, _originalDoctor.CareerInfo, _originalDoctor.AvatarUrl,
     _originalDoctor.PhoneNumber, _originalDoctor.Mail);
                 }
@@ -279,11 +279,11 @@ namespace Hospital.ViewModels
             try
             {
                 IsLoading = true;
-                bool result = await _doctorManagerModel.UpdateCareerInfo(UserId, careerInfo);
+                bool result = await _doctorService.UpdateCareerInfo(UserId, careerInfo);
                 if (result)
                 {
                     CareerInfo = careerInfo;
-                    _originalDoctor = new DoctorDisplayModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, _originalDoctor.DepartmentId,
+                    _originalDoctor = new DoctorModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, _originalDoctor.DepartmentId,
     _originalDoctor.DepartmentName, _originalDoctor.Rating, careerInfo, _originalDoctor.AvatarUrl,
     _originalDoctor.PhoneNumber, _originalDoctor.Mail);
                 }
@@ -302,11 +302,11 @@ namespace Hospital.ViewModels
             try
             {
                 IsLoading = true;
-                bool result = await _doctorManagerModel.UpdateAvatarUrl(UserId, avatarUrl);
+                bool result = await _doctorService.UpdateAvatarUrl(UserId, avatarUrl);
                 if (result)
                 {
                     AvatarUrl = avatarUrl;
-                    _originalDoctor = new DoctorDisplayModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, _originalDoctor.DepartmentId,
+                    _originalDoctor = new DoctorModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, _originalDoctor.DepartmentId,
     _originalDoctor.DepartmentName, _originalDoctor.Rating, _originalDoctor.CareerInfo, _originalDoctor.AvatarUrl,
     _originalDoctor.PhoneNumber, _originalDoctor.Mail);
                 }
@@ -325,11 +325,11 @@ namespace Hospital.ViewModels
             try
             {
                 IsLoading = true;
-                bool result = await _doctorManagerModel.UpdatePhoneNumber(UserId, phoneNumber);
+                bool result = await _doctorService.UpdatePhoneNumber(UserId, phoneNumber);
                 if (result)
                 {
                     PhoneNumber = phoneNumber;
-                    _originalDoctor = new DoctorDisplayModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, _originalDoctor.DepartmentId,
+                    _originalDoctor = new DoctorModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, _originalDoctor.DepartmentId,
                         _originalDoctor.DepartmentName, _originalDoctor.Rating, _originalDoctor.CareerInfo, _originalDoctor.AvatarUrl,
                         phoneNumber, _originalDoctor.Mail);
                 }
@@ -348,11 +348,11 @@ namespace Hospital.ViewModels
             try
             {
                 IsLoading = true;
-                bool result = await _doctorManagerModel.UpdateEmail(UserId, mail);
+                bool result = await _doctorService.UpdateEmail(UserId, mail);
                 if (result)
                 {
                     Mail = mail;
-                    _originalDoctor = new DoctorDisplayModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, _originalDoctor.DepartmentId,
+                    _originalDoctor = new DoctorModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, _originalDoctor.DepartmentId,
                     _originalDoctor.DepartmentName, _originalDoctor.Rating, _originalDoctor.CareerInfo, _originalDoctor.AvatarUrl,
                     _originalDoctor.PhoneNumber, mail);
                 }
@@ -367,7 +367,7 @@ namespace Hospital.ViewModels
         }
         public async Task<bool> LogUpdate(int userId, ActionType action)
         {
-            return await _doctorManagerModel.LogUpdate(userId, action);
+            return await _doctorService.LogUpdate(userId, action);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Hospital.Models
 {
-    public class DoctorDisplayModel
+    public class DoctorModel
     {
         public int DoctorId { get; private set; }
         public string DoctorName { get; private set; }
@@ -12,9 +12,9 @@
         public string PhoneNumber { get; private set; }
         public string Mail { get; private set; }
 
-        public static readonly DoctorDisplayModel Default = new DoctorDisplayModel(0, "Guest", 0, "Department", 0.0f, "", "", "", "");
+        public static readonly DoctorModel Default = new DoctorModel(0, "Guest", 0, "Department", 0.0f, "", "", "", "");
 
-        public DoctorDisplayModel(int doctorId, string doctorName, 
+        public DoctorModel(int doctorId, string doctorName, 
             int departmentId, string departmentName,
             double rating, string careerInfo,
             string avatarUrl, string phoneNumber, 
