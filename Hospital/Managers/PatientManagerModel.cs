@@ -11,136 +11,137 @@ namespace Hospital.Managers
 {
     public class PatientManagerModel
     {
-        private readonly PatientsDatabaseService _patientDBService;
+        private readonly PatientsDatabaseService _patientsDatabaseService;
 
-        //Use this if you want to work on a specific patient
+        //Use this for working on a specific patient
         public PatientJointModel _patientInfo { get; private set; } = PatientJointModel.Default;
 
-        //Use this if you want to work with more patients
+        //Use this for working with more patients
         public List<PatientJointModel> _patientList { get; private set; } = new List<PatientJointModel>();
-        public PatientManagerModel()
+
+        public PatientManagerModel() : this(new PatientsDatabaseService()) { }
+
+        // Second constructor for test injection
+        public PatientManagerModel(PatientsDatabaseService testService)
         {
-            _patientDBService = new PatientsDatabaseService();
+            _patientsDatabaseService = testService;
         }
+
 
         public async Task<bool> LoadPatientInfoByUserId(int userId)
         {
-            _patientInfo = await _patientDBService.GetPatientByUserId(userId).ConfigureAwait(false);
+            _patientInfo = await _patientsDatabaseService.GetPatientByUserId(userId).ConfigureAwait(false);
             Debug.WriteLine($"Patient info loaded: {_patientInfo.PatientName}");
             return true;
         }
+
         public async Task<bool> LoadAllPatients()
         {
-            _patientList = await _patientDBService.GetAllPatients().ConfigureAwait(false);
+            _patientList = await _patientsDatabaseService.GetAllPatients().ConfigureAwait(false);
             return true;
         }
-        public async Task<bool> UpdatePassword(int userId, string password)
+
+        public virtual async Task<bool> UpdatePassword(int userId, string password)
         {
-            if (string.IsNullOrEmpty(password) || password.Contains(' '))
-                throw new InputProfileException("Invalid password!\nCan't be null or with space");
+            if (string.IsNullOrWhiteSpace(password) || password.Contains(' '))
+                throw new InputProfileException("Invalid password!\nPassword cannot be empty or contain spaces.");
 
             if (password.Length > 255)
-                throw new InputProfileException("Invalid password!\nCan't be more than 255 characters");
+                throw new InputProfileException("Invalid password!\nPassword cannot exceed 255 characters.");
 
-            return await _patientDBService.UpdatePassword(userId, password);
+            return await _patientsDatabaseService.UpdatePassword(userId, password);
         }
 
-        public async Task<bool> UpdateEmail(int userId, string email)
+        public virtual async Task<bool> UpdateEmail(int userId, string email)
         {
             if (string.IsNullOrWhiteSpace(email) || !email.Contains("@") || !email.Contains("."))
                 throw new InputProfileException("Invalid email format.");
 
             if (email.Length > 100)
-                throw new InputProfileException("Invalid mail\nCan't be more than 100 characters");
+                throw new InputProfileException("Invalid email!\nEmail cannot exceed 100 characters.");
 
-            return await _patientDBService.UpdateEmail(userId, email);
+            return await _patientsDatabaseService.UpdateEmail(userId, email);
         }
 
-        public async Task<bool> UpdateUsername(int userId, string username)
+        public virtual async Task<bool> UpdateUsername(int userId, string username)
         {
             if (string.IsNullOrWhiteSpace(username) || username.Contains(' '))
-                throw new InputProfileException("Invalid username!\nCan't be null or with space");
+                throw new InputProfileException("Invalid username!\nUsername cannot be empty or contain spaces.");
 
             if (username.Length > 50)
-                throw new InputProfileException("Invalid username!\nCan't be more than 50 characters");
+                throw new InputProfileException("Invalid username!\nUsername cannot exceed 50 characters.");
 
-            return await _patientDBService.UpdateUsername(userId, username);
+            return await _patientsDatabaseService.UpdateUsername(userId, username);
         }
 
-        public async Task<bool> UpdateName(int userId, string name)
+        public virtual async Task<bool> UpdateName(int userId, string name)
         {
             if (string.IsNullOrWhiteSpace(name) || name.Any(char.IsDigit))
-                throw new InputProfileException("Name cannot be empty.");
+                throw new InputProfileException("Name cannot be empty or contain digits.");
 
             if (name.Length > 100)
-                throw new InputProfileException("Invalid name!\nName has to be at most 100 characters long");
+                throw new InputProfileException("Invalid name!\nName cannot exceed 100 characters.");
 
-            return await _patientDBService.UpdateName(userId, name);
+            return await _patientsDatabaseService.UpdateName(userId, name);
         }
 
-        public async Task<bool> UpdateBirthDate(int userId, DateOnly birthDate)
+        public virtual async Task<bool> UpdateBirthDate(int userId, DateOnly birthDate)
         {
-            return await _patientDBService.UpdateBirthDate(userId, birthDate);
+            return await _patientsDatabaseService.UpdateBirthDate(userId, birthDate);
         }
 
-        public async Task<bool> UpdateAddress(int userId, string address)
+        public virtual async Task<bool> UpdateAddress(int userId, string address)
         {
             if (string.IsNullOrWhiteSpace(address))
                 address = "";
 
             if (address.Length > 255)
-                throw new InputProfileException("Invalid address\nCan't be more than 255 characters");
+                throw new InputProfileException("Invalid address!\nAddress cannot exceed 255 characters.");
 
-            return await _patientDBService.UpdateAddress(userId, address);
+            return await _patientsDatabaseService.UpdateAddress(userId, address);
         }
 
-        public async Task<bool> UpdatePhoneNumber(int userId, string phoneNumber)
+        public virtual async Task<bool> UpdatePhoneNumber(int userId, string phoneNumber)
         {
             if (phoneNumber.Length != 10)
-                throw new InputProfileException("Invalid phone number!\nIt must have length 10");
+                throw new InputProfileException("Invalid phone number!\nPhone number must be 10 digits long.");
 
-            foreach (char c in phoneNumber)
-            {
-                if (!char.IsDigit(c))
-                    throw new InputProfileException("Invalid phone number!\nOnly numbers allowed");
-            }
+            if (!phoneNumber.All(char.IsDigit))
+                throw new InputProfileException("Invalid phone number!\nOnly digits are allowed.");
 
-            return await _patientDBService.UpdatePhoneNumber(userId, phoneNumber);
+            return await _patientsDatabaseService.UpdatePhoneNumber(userId, phoneNumber);
         }
 
-        public async Task<bool> UpdateEmergencyContact(int userId, string emergencyContact)
+        public virtual async Task<bool> UpdateEmergencyContact(int userId, string emergencyContact)
         {
             if (emergencyContact.Length != 10)
-                throw new InputProfileException("Invalid emergency contact!\nIt must have length 10");
+                throw new InputProfileException("Invalid emergency contact!\nContact number must be 10 digits long.");
 
-            foreach (char c in emergencyContact)
-            {
-                if (!char.IsDigit(c))
-                    throw new InputProfileException("Invalid emergency contact!\nOnly numbers allowed");
-            }
+            if (!emergencyContact.All(char.IsDigit))
+                throw new InputProfileException("Invalid emergency contact!\nOnly digits are allowed.");
 
-            return await _patientDBService.UpdateEmergencyContact(userId, emergencyContact);
+            return await _patientsDatabaseService.UpdateEmergencyContact(userId, emergencyContact);
         }
 
-        public async Task<bool> UpdateWeight(int userId, double weight)
+        public virtual async Task<bool> UpdateWeight(int userId, double weight)
         {
             if (weight <= 0)
-                throw new InputProfileException("Weight must be greater than 0");
+                throw new InputProfileException("Invalid weight!\nWeight must be greater than 0.");
 
-            return await _patientDBService.UpdateWeight(userId, weight);
+            return await _patientsDatabaseService.UpdateWeight(userId, weight);
         }
 
-        public async Task<bool> UpdateHeight(int userId, int height)
+        public virtual async Task<bool> UpdateHeight(int userId, int height)
         {
             if (height <= 0)
-                throw new InputProfileException("Height must be greater than 0.");
+                throw new InputProfileException("Invalid height!\nHeight must be greater than 0.");
 
-            return await _patientDBService.UpdateHeight(userId, height);
+            return await _patientsDatabaseService.UpdateHeight(userId, height);
         }
 
-        public async Task<bool> LogUpdate(int userId, ActionType action)
+        public virtual async Task<bool> LogUpdate(int userId, ActionType action)
         {
-            return await _patientDBService.LogUpdate(userId, action);
+            return await _patientsDatabaseService.LogUpdate(userId, action);
         }
     }
 }
