@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 
 namespace Hospital.Managers
 {
-    public class SearchDoctorsManagerModel
+    public class SearchDoctorsService
     {
-        public List<DoctorDisplayModel> doctorList { get; private set; }
-        private readonly DoctorsDatabaseService _doctorDBService;
+        public List<DoctorModel> doctorList { get; private set; }
+        private readonly DoctorsDatabaseHelper _doctorDbHelper;
 
-        public SearchDoctorsManagerModel(DoctorsDatabaseService dbService)
+        public SearchDoctorsService(DoctorsDatabaseHelper dbHelper)
         {
-            _doctorDBService = dbService;
-            doctorList = new List<DoctorDisplayModel>();
+            _doctorDbHelper = dbHelper;
+            doctorList = new List<DoctorModel>();
         }
 
         public async Task LoadDoctors(string departmetnOrNamePartialName)
@@ -23,13 +23,13 @@ namespace Hospital.Managers
             try
             {
                 doctorList.Clear();
-                List<DoctorDisplayModel> doctorsDepartamentList = await _doctorDBService.GetDoctorsByDepartmentPartialName(departmetnOrNamePartialName);
-                List<DoctorDisplayModel> doctorNameList = await _doctorDBService.GetDoctorsByPartialDoctorName(departmetnOrNamePartialName);
-                foreach (DoctorDisplayModel doctor in doctorsDepartamentList)
+                List<DoctorModel> doctorsDepartamentList = await _doctorDbHelper.GetDoctorsByDepartmentPartialName(departmetnOrNamePartialName);
+                List<DoctorModel> doctorNameList = await _doctorDbHelper.GetDoctorsByPartialDoctorName(departmetnOrNamePartialName);
+                foreach (DoctorModel doctor in doctorsDepartamentList)
                 {
                     doctorList.Add(doctor);
                 }
-                foreach (DoctorDisplayModel doctor in doctorNameList)
+                foreach (DoctorModel doctor in doctorNameList)
                 {
                     // Check if a doctor with the same ID already exists in the list
                     bool doctorExists = doctorList.Any(d => d.DoctorId == doctor.DoctorId);
@@ -52,13 +52,13 @@ namespace Hospital.Managers
             }
         }
 
-        public List<DoctorDisplayModel> GetSearchedDoctors()
+        public List<DoctorModel> GetSearchedDoctors()
         {
             return doctorList;
         }
 
         // Optional: Add a method to get doctors sorted by different criteria
-        public List<DoctorDisplayModel> GetDoctorsSortedBy(SortCriteria criteria)
+        public List<DoctorModel> GetDoctorsSortedBy(SortCriteria criteria)
         {
             switch (criteria)
             {

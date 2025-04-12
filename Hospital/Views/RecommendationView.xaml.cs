@@ -20,8 +20,8 @@ namespace Hospital.Views
             _formViewModel = new RecommendationSystemFormViewModel();
             this.DataContext = _formViewModel;
             this.InitializeComponent();
-            var doctorDBService = new DoctorsDatabaseService(); // Assuming you have a default constructor or create an instance as needed
-            _recommendationSystem = new RecommendationSystemModel(new DoctorManagerModel(doctorDBService));
+            var doctorDBService = new DoctorsDatabaseHelper(); // Assuming you have a default constructor or create an instance as needed
+            _recommendationSystem = new RecommendationSystemModel(new DoctorService(doctorDBService));
 
         }
 
