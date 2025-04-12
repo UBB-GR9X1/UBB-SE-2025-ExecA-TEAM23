@@ -109,7 +109,6 @@ namespace Hospital.Views
                     };
                     await validationDialog.ShowAsync();
                 }
-
                 else
                 {
                     var validationDialog = new ContentDialog
