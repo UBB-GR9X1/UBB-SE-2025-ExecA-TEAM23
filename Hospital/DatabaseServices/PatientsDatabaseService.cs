@@ -157,14 +157,14 @@ namespace Hospital.DatabaseServices
         }
         public async Task<bool> UpdateEmail(int UserId, string Email)
         {
-            const string queryUpdateEmail = @"UPDATE Users SET Mail = @Email WHERE UserId = @UserId;";
+            const string queryUpdateEmail = @"UPDATE Users SET Mail = @Mail WHERE UserId = @UserId;";
             try
             {
                 using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
                 await connection.OpenAsync().ConfigureAwait(false);
                 SqlCommand updateCommand = new SqlCommand(queryUpdateEmail, connection);
                 updateCommand.Parameters.AddWithValue("@UserId", UserId);
-                updateCommand.Parameters.AddWithValue("@Email", Email);
+                updateCommand.Parameters.AddWithValue("@Mail", Email);
                 await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
                 return true;
             }

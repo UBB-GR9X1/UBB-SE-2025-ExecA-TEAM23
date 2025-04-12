@@ -43,7 +43,7 @@ namespace Hospital.Views
                     }
                 }
 
-                // Update Email
+                // Update Mail
                 if (_viewModel.Email != _viewModel._originalPatient.Mail)
                 {
                     bool isEmailUpdated = await _viewModel.UpdateEmail(_viewModel.Email);
