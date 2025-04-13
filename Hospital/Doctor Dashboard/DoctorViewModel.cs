@@ -189,8 +189,7 @@ namespace Hospital.ViewModels
         public bool IsLoading
         {
             get => _isLoading;
-            set
-            {
+            set {
                 if (_isLoading != value)
                 {
                     _isLoading = value;
@@ -215,7 +214,6 @@ namespace Hospital.ViewModels
                 if (wasLoaded && _doctorService.DoctorInformation != DoctorModel.Default)
                 {
                     var doctor = _doctorService.DoctorInformation;
-
                     DoctorName = doctor.DoctorName ?? NotSpecified;
                     DepartmentId = doctor.DepartmentId;
                     DepartmentName = doctor.DepartmentName ?? NotAvailable;

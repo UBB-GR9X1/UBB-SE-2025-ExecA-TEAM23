@@ -14,12 +14,13 @@ namespace Hospital.Managers
         private const int MaxAvatarUrlLength = 255;
         private const int PhoneNumberLength = 10;
 
-        private readonly DoctorsDatabaseHelper _doctorDatabaseHelper;
+        private readonly IDoctorsDatabaseHelper _doctorDatabaseHelper;
 
         public DoctorModel DoctorInformation { get; private set; } = DoctorModel.Default;
+
         public List<DoctorModel> DoctorList { get; private set; }
 
-        public DoctorService(DoctorsDatabaseHelper doctorDbHelper)
+        public DoctorService(IDoctorsDatabaseHelper doctorDbHelper)
         {
             _doctorDatabaseHelper = doctorDbHelper ?? throw new ArgumentNullException(nameof(doctorDbHelper));
             DoctorList = new List<DoctorModel>();
