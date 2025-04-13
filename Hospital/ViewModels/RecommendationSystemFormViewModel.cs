@@ -1,6 +1,9 @@
-﻿using System.Collections.ObjectModel;
+﻿using Hospital.Models;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -50,6 +53,15 @@ public class RecommendationSystemFormViewModel : INotifyPropertyChanged
         RecommendCommand = new RelayCommand(async () => await RecommendDoctorAsync());
     }
 
+    public async Task<DoctorJointModel?> RecommendDoctorBasedOnSymptomsAsync()
+    {
+        if (!ValidateSymptomSelection())
+            return null;
+
+        return await _recommendationSystem.RecommendDoctorBasedOnSymptomsAsync(this);
+    }
+
+
     private async Task RecommendDoctorAsync()
     {
         var doctor = await _recommendationSystem.RecommendDoctorAsync(this);
@@ -68,17 +80,21 @@ public class RecommendationSystemFormViewModel : INotifyPropertyChanged
         }
     }
 
-    private void ValidateSymptomSelection()
+    public bool ValidateSymptomSelection()
     {
-        if (SelectedSymptomPrimary != NoSymptomSelected && SelectedSymptomPrimary == SelectedSymptomSecondary)
-            SelectedSymptomSecondary = NoSymptomSelected;
+        var symptoms = new List<string?>
+        {
+            SelectedSymptomStart,
+            SelectedDiscomfortArea,
+            SelectedSymptomPrimary,
+            SelectedSymptomSecondary,
+            SelectedSymptomTertiary
+        };
 
-        if (SelectedSymptomPrimary != NoSymptomSelected && SelectedSymptomPrimary == SelectedSymptomTertiary)
-            SelectedSymptomTertiary = NoSymptomSelected;
-
-        if (SelectedSymptomSecondary != NoSymptomSelected && SelectedSymptomSecondary == SelectedSymptomTertiary)
-            SelectedSymptomTertiary = NoSymptomSelected;
+        var nonEmptySymptoms = symptoms.Where(s => !string.IsNullOrEmpty(s)).ToList();
+        return nonEmptySymptoms.Distinct().Count() == nonEmptySymptoms.Count;
     }
+
 
     private void OnPropertyChanged([CallerMemberName] string? name = null)
     {
