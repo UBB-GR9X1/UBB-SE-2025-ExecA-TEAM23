@@ -1,21 +1,23 @@
-using Hospital.DatabaseServices;
-using Hospital.Exceptions;
-using Hospital.Managers;
-using Hospital.ViewModels;
-using Hospital.Views;
-using Microsoft.Data.SqlClient;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using System;
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+// <copyright file="MainWindow.xaml.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
 namespace Hospital
 {
+    using Microsoft.UI.Xaml;
+
+    /// <summary>
+    /// Main Window that starts the aplication
+    /// It's a Window with a single button in the center with the text "OPEN HOSPITAL APPLICATION"
+    /// That when it is clicked it opens the Login Window.
+    /// </summary>
     public sealed partial class MainWindow : Window
     {
-
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainWindow"/> class.
+        /// Initializes the singleton application object.  This is the first line of authored code
+        /// executed, and as such is the logical equivalent of main() or WinMain().
+        /// </summary>
         public MainWindow()
         {
             this.InitializeComponent();
@@ -28,7 +30,5 @@ namespace Hospital
             newLogInWindow.Activate();
             this.Close();
         }
-
-
     }
 }

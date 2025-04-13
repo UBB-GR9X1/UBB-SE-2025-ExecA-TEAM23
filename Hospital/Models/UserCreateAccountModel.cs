@@ -19,14 +19,23 @@ namespace Hospital.Models
         }
 
         public string Username { get; private set; }
+
         public string Password { get; private set; }
+
         public string Mail { get; private set; }
+
         public string Name { get; private set; }
+
         public DateOnly BirthDate { get; private set; }
+
         public string Cnp { get; private set; }
+
         public BloodType BloodType { get; private set; }
+
         public string EmergencyContact { get; private set; }
+
         public double Weight { get; private set; }
+
         public int Height { get; private set; }
 
     }

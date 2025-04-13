@@ -1,42 +1,56 @@
-﻿using Hospital.Exceptions;
-using Hospital.Managers;
-using Hospital.Models;
-using Hospital.ViewModels;
-using Hospital.Views;
-using Microsoft.Data.SqlClient;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using System;
+﻿// <copyright file="CreateAccountView.xaml.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
 namespace Hospital
 {
+    using System;
+    using Hospital.Exceptions;
+    using Hospital.Managers;
+    using Hospital.Models;
+    using Hospital.ViewModels;
+    using Hospital.Views;
+    using Microsoft.Data.SqlClient;
+    using Microsoft.UI.Xaml;
+    using Microsoft.UI.Xaml.Controls;
+
+    /// <summary>
+    /// The create an account window for the hospital application:
+    /// Asks for user information necessary for creating an account.
+    /// Creates a new account if the information is valid, otherwise it throws exceptions that will be seen by the user.
+    /// </summary>
     public sealed partial class CreateAccountView : Window
     {
 
-        private AuthViewModel _viewModel;
-        public CreateAccountView(AuthViewModel viewModel)
+        private AuthViewModel viewModelCreateAccount;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CreateAccountView"/> class.
+        /// </summary>
+        /// <param name="authviewModel">View Model for Creating an account.</param>
+        public CreateAccountView(AuthViewModel authviewModel)
         {
             this.InitializeComponent();
-            _viewModel = viewModel;
+            this.viewModelCreateAccount = authviewModel;
         }
 
         private async void CreateAccountButton_Click(object sender, RoutedEventArgs e)
         {
-            string username = UsernameField.Text;
-            string password = PasswordField.Password;
-            string mail = EmailTextBox.Text;
-            string name = NameTextBox.Text;
-            string emergencyContact = EmergencyContactTextBox.Text;
+            string username = this.UsernameField.Text;
+            string password = this.PasswordField.Password;
+            string mail = this.EmailTextBox.Text;
+            string name = this.NameTextBox.Text;
+            string emergencyContact = this.EmergencyContactTextBox.Text;
 
-            if (BirthDateCalendarPicker.Date.HasValue)
+            if (this.BirthDateCalendarPicker.Date.HasValue)
             {
-                DateOnly birthDate = DateOnly.FromDateTime(BirthDateCalendarPicker.Date.Value.DateTime);
-                BirthDateCalendarPicker.Date = new DateTimeOffset(birthDate.ToDateTime(TimeOnly.MinValue));
+                DateOnly birthDate = DateOnly.FromDateTime(this.BirthDateCalendarPicker.Date.Value.DateTime);
+                this.BirthDateCalendarPicker.Date = new DateTimeOffset(birthDate.ToDateTime(TimeOnly.MinValue));
 
-                string cnp = CNPTextBox.Text;
+                string cnp = this.CNPTextBox.Text;
 
                 BloodType? selectedBloodType = null;
-                if (BloodTypeComboBox.SelectedItem is ComboBoxItem selectedItem)
+                if (this.BloodTypeComboBox.SelectedItem is ComboBoxItem selectedItem)
                 {
                     string? selectedTag = selectedItem.Tag.ToString();
                     if (selectedTag != null && Enum.TryParse(selectedTag, out BloodType parsedBloodType))
@@ -51,7 +65,7 @@ namespace Hospital
                     {
                         Title = "Error",
                         Content = "Please select a blood type.",
-                        CloseButtonText = "OK"
+                        CloseButtonText = "OK",
                     };
 
                     validationDialog.XamlRoot = this.Content.XamlRoot;
@@ -59,8 +73,8 @@ namespace Hospital
                     return;
                 }
 
-                bool weightValid = double.TryParse(WeightTextBox.Text, out double weight);
-                bool heightValid = int.TryParse(HeightTextBox.Text, out int height);
+                bool weightValid = double.TryParse(this.WeightTextBox.Text, out double weight);
+                bool heightValid = int.TryParse(this.HeightTextBox.Text, out int height);
 
                 if (!weightValid || !heightValid || weight <= 0 || height <= 0)
                 {
@@ -68,7 +82,7 @@ namespace Hospital
                     {
                         Title = "Error",
                         Content = "Please enter valid Weight (kg) and Height (cm).",
-                        CloseButtonText = "OK"
+                        CloseButtonText = "OK",
                     };
 
                     validationDialog.XamlRoot = this.Content.XamlRoot;
@@ -78,11 +92,11 @@ namespace Hospital
 
                 try
                 {
-                    await _viewModel.CreateAccount(new UserCreateAccountModel(username, password, mail, name, birthDate, cnp, (BloodType)selectedBloodType, emergencyContact, weight, height));
+                    await this.viewModelCreateAccount.CreateAccount(new UserCreateAccountModel(username, password, mail, name, birthDate, cnp, (BloodType)selectedBloodType, emergencyContact, weight, height));
 
                     PatientManagerModel patientManagerModel = new PatientManagerModel();
-                    PatientViewModel patientViewModel = new PatientViewModel(patientManagerModel, _viewModel._authManagerModel._userInfo.UserId);
-                    PatientDashboardWindow patientDashboardWindow = new PatientDashboardWindow(patientViewModel, _viewModel);
+                    PatientViewModel patientViewModel = new PatientViewModel(patientManagerModel, this.viewModelCreateAccount.AuthManagerModel_.allUserInformation.UserId);
+                    PatientDashboardWindow patientDashboardWindow = new PatientDashboardWindow(patientViewModel, this.viewModelCreateAccount);
                     patientDashboardWindow.Activate();
                     this.Close();
                     return;
@@ -95,11 +109,10 @@ namespace Hospital
                         Title = "Error",
                         Content = $"{err.Message}",
                         CloseButtonText = "OK",
-                        XamlRoot = this.Content.XamlRoot
+                        XamlRoot = this.Content.XamlRoot,
                     };
                     await validationDialog.ShowAsync();
                 }
-
                 catch (SqlException)
                 {
                     var validationDialog = new ContentDialog
@@ -107,7 +120,7 @@ namespace Hospital
                         Title = "Error",
                         Content = $"Database Error",
                         CloseButtonText = "OK",
-                        XamlRoot = this.Content.XamlRoot
+                        XamlRoot = this.Content.XamlRoot,
                     };
                     await validationDialog.ShowAsync();
                 }
@@ -118,7 +131,7 @@ namespace Hospital
                 {
                     Title = "Error",
                     Content = "Birth date is required.",
-                    CloseButtonText = "OK"
+                    CloseButtonText = "OK",
                 };
 
                 validationDialog.XamlRoot = this.Content.XamlRoot;

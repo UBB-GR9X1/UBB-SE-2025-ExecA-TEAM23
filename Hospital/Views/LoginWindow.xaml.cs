@@ -1,88 +1,104 @@
-using Hospital.DatabaseServices;
-using Hospital.Exceptions;
-using Hospital.Managers;
-using Hospital.ViewModels;
-using Hospital.Views;
-using Microsoft.Data.SqlClient;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using System;
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+// <copyright file="LoginWindow.xaml.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
 namespace Hospital
 {
+    using System;
+    using Hospital.DatabaseServices;
+    using Hospital.Exceptions;
+    using Hospital.Managers;
+    using Hospital.ViewModels;
+    using Hospital.Views;
+    using Microsoft.Data.SqlClient;
+    using Microsoft.UI.Xaml;
+    using Microsoft.UI.Xaml.Controls;
+
+    /// <summary>
+    /// The loggin window for the hospital application:
+    /// Asks for a username and password
+    /// If the user does not have an account there is a button for creating one.
+    /// </summary>
     public sealed partial class LoginWindow : Window
     {
 
-        private readonly AuthViewModel _viewModel;
+        private readonly AuthViewModel loginPageViewModel;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoginWindow"/> class.
+        /// Initializes the singleton application object.  This is the first line of authored code
+        /// executed, and as such is the logical equivalent of main() or WinMain().
+        /// </summary>
         public LoginWindow()
         {
             this.InitializeComponent();
-            LogInDatabaseService logInService = new LogInDatabaseService();
-            AuthManagerModel managerModel = new AuthManagerModel(logInService);
-            _viewModel = new AuthViewModel(managerModel);
+            ILogInDatabaseService logInService = new LogInDatabaseService();
+            IAuthManagerModel managerModel = new AuthManagerModel(logInService);
+            this.loginPageViewModel = new AuthViewModel(managerModel);
         }
 
+        /// <summary>
+        /// It gets the text inside the Username Text Block and the Password Text Block,
+        /// and if the user is not existent it shows an error, otherwise:
+        /// Depending on the user, if it is patient or not, it sends the user to the Patient Window
+        /// or to the Doctor Window.
+        /// </summary>
+        /// <param name="sender">.</param>
+        /// <param name="e">..</param>
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            string username = UsernameField.Text;
-            string password = PasswordField.Password;
+            string username = this.UsernameTextField.Text;
+            string password = this.PasswordTextField.Password;
 
             try
             {
-                await _viewModel.Login(username, password);
+                await this.loginPageViewModel.Login(username, password);
 
 
-                if (_viewModel._authManagerModel._userInfo.Role == "Patient")
+                if (this.loginPageViewModel.AuthManagerModel_.allUserInformation.Role == "Patient")
                 {
                     PatientManagerModel patientManagerModel = new PatientManagerModel();
-                    PatientViewModel patientViewModel = new PatientViewModel(patientManagerModel, _viewModel._authManagerModel._userInfo.UserId);
-                    PatientDashboardWindow patientDashboardWindow = new PatientDashboardWindow(patientViewModel, _viewModel);
+                    PatientViewModel patientViewModel = new PatientViewModel(patientManagerModel, this.loginPageViewModel.AuthManagerModel_.allUserInformation.UserId);
+                    PatientDashboardWindow patientDashboardWindow = new PatientDashboardWindow(patientViewModel, this.loginPageViewModel);
                     patientDashboardWindow.Activate();
                     this.Close();
 
                     return;
                 }
-                else if (_viewModel._authManagerModel._userInfo.Role == "Doctor")
+                else if (this.loginPageViewModel.AuthManagerModel_.allUserInformation.Role == "Doctor")
                 {
-                    DoctorsDatabaseService doctorDBService = new DoctorsDatabaseService();
-                    DoctorManagerModel doctorManagerModel = new DoctorManagerModel(doctorDBService);
-                    DoctorViewModel doctorViewModel = new DoctorViewModel(doctorManagerModel, _viewModel._authManagerModel._userInfo.UserId);
-                    DoctorDashboardWindow doctorDashboardWindow = new DoctorDashboardWindow(doctorViewModel, _viewModel);
+                    DoctorsDatabaseService doctorDatabaseService = new DoctorsDatabaseService();
+                    DoctorManagerModel doctorManagerModel = new DoctorManagerModel(doctorDatabaseService);
+                    DoctorViewModel doctorViewModel = new DoctorViewModel(doctorManagerModel, this.loginPageViewModel.AuthManagerModel_.allUserInformation.UserId);
+                    DoctorDashboardWindow doctorDashboardWindow = new DoctorDashboardWindow(doctorViewModel, this.loginPageViewModel);
                     doctorDashboardWindow.Activate();
                     this.Close();
                     return;
                 }
 
-                // Fallback for other roles (admin, etc.)
-                LogoutWindow log = new LogoutWindow(_viewModel);
-                log.Activate();
-                // Show Logger window after successful login just for the presentation (uncomment when needed)
-                // LoggerView logger = new LoggerView();
-                // logger.Activate();
+                LogoutWindow newLogOutWindow = new LogoutWindow(this.loginPageViewModel);
+                newLogOutWindow.Activate();
                 this.Close();
             }
-            catch (AuthenticationException ex)
+            catch (AuthenticationException newAuthenticationException)
             {
                 var validationDialog = new ContentDialog
                 {
                     Title = "Error",
-                    Content = $"{ex.Message}",
-                    CloseButtonText = "OK"
+                    Content = $"{newAuthenticationException.Message}",
+                    CloseButtonText = "OK",
                 };
 
                 validationDialog.XamlRoot = this.Content.XamlRoot;
                 await validationDialog.ShowAsync();
             }
-            catch (SqlException err)
+            catch (SqlException error_SQLException)
             {
                 var validationDialog = new ContentDialog
                 {
                     Title = "Error",
-                    Content = $"{err.Message}",
-                    CloseButtonText = "OK"
+                    Content = $"{error_SQLException.Message}",
+                    CloseButtonText = "OK",
                 };
 
                 validationDialog.XamlRoot = this.Content.XamlRoot;
@@ -92,7 +108,7 @@ namespace Hospital
 
         private void CreateAccountButton_Click(object sender, RoutedEventArgs e)
         {
-            CreateAccountView createAccWindow = new CreateAccountView(_viewModel);
+            CreateAccountView createAccWindow = new CreateAccountView(this.loginPageViewModel);
             createAccWindow.Activate();
             this.Close();
         }
