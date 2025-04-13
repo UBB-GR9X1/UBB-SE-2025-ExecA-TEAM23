@@ -64,7 +64,7 @@ public class RecommendationSystemFormViewModel : INotifyPropertyChanged
 
     private async Task RecommendDoctorAsync()
     {
-        var doctor = await _recommendationSystem.RecommendDoctorAsync(this);
+        var doctor = await _recommendationSystem.RecommendDoctorBasedOnSymptomsAsync(this);
 
         if (doctor != null)
         {

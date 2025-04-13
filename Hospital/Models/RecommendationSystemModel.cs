@@ -6,10 +6,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-public interface IRecommendationSystem
+public interface    IRecommendationSystem
 {
-    Task<DoctorJointModel?> RecommendDoctorAsync(RecommendationSystemFormViewModel symptomFormViewModel);
+    Task<DoctorJointModel?> RecommendDoctorBasedOnSymptomsAsync(RecommendationSystemFormViewModel vm);
 }
+
 
 public class RecommendationSystemModel : IRecommendationSystem
 {
@@ -92,5 +93,10 @@ public class RecommendationSystemModel : IRecommendationSystem
             .ThenBy(d => d.GetBirthDate())
             .ThenBy(d => d.GetDoctorRating())
             .FirstOrDefault();
+    }
+
+    public Task<DoctorJointModel?> RecommendDoctorBasedOnSymptomsAsync(RecommendationSystemFormViewModel vm)
+    {
+        throw new NotImplementedException();
     }
 }
