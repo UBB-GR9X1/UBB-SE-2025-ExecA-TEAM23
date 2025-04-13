@@ -2,10 +2,12 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
 public class RecommendationSystemFormViewModel : INotifyPropertyChanged
 {
-    public event PropertyChangedEventHandler? PropertyChanged;
+    private readonly IRecommendationSystem _recommendationSystem;
 
     public ObservableCollection<string> SymptomStartOptions { get; }
     public ObservableCollection<string> DiscomfortAreaOptions { get; }
@@ -14,66 +16,60 @@ public class RecommendationSystemFormViewModel : INotifyPropertyChanged
     private const string NoSymptomSelected = "None";
 
     private string _selectedSymptomStart = string.Empty;
-    public string SelectedSymptomStart
-    {
-        get => _selectedSymptomStart;
-        set { _selectedSymptomStart = value; OnPropertyChanged(); }
-    }
-
     private string _selectedDiscomfortArea = string.Empty;
-    public string SelectedDiscomfortArea
-    {
-        get => _selectedDiscomfortArea;
-        set { _selectedDiscomfortArea = value; OnPropertyChanged(); }
-    }
-
     private string _selectedSymptomPrimary = NoSymptomSelected;
-    public string SelectedSymptomPrimary
-    {
-        get => _selectedSymptomPrimary;
-        set { _selectedSymptomPrimary = value; OnPropertyChanged(); ValidateSymptomSelection(); }
-    }
-
     private string _selectedSymptomSecondary = NoSymptomSelected;
-    public string SelectedSymptomSecondary
-    {
-        get => _selectedSymptomSecondary;
-        set { _selectedSymptomSecondary = value; OnPropertyChanged(); ValidateSymptomSelection(); }
-    }
-
     private string _selectedSymptomTertiary = NoSymptomSelected;
-    public string SelectedSymptomTertiary
+
+    private string _doctorName;
+    private string _department;
+    private string _rating;
+
+    public string SelectedSymptomStart { get => _selectedSymptomStart; set { _selectedSymptomStart = value; OnPropertyChanged(); } }
+    public string SelectedDiscomfortArea { get => _selectedDiscomfortArea; set { _selectedDiscomfortArea = value; OnPropertyChanged(); } }
+    public string SelectedSymptomPrimary { get => _selectedSymptomPrimary; set { _selectedSymptomPrimary = value; OnPropertyChanged(); ValidateSymptomSelection(); } }
+    public string SelectedSymptomSecondary { get => _selectedSymptomSecondary; set { _selectedSymptomSecondary = value; OnPropertyChanged(); ValidateSymptomSelection(); } }
+    public string SelectedSymptomTertiary { get => _selectedSymptomTertiary; set { _selectedSymptomTertiary = value; OnPropertyChanged(); ValidateSymptomSelection(); } }
+
+    public string DoctorName { get => _doctorName; set { _doctorName = value; OnPropertyChanged(); } }
+    public string Department { get => _department; set { _department = value; OnPropertyChanged(); } }
+    public string Rating { get => _rating; set { _rating = value; OnPropertyChanged(); } }
+
+    public ICommand RecommendCommand { get; }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public RecommendationSystemFormViewModel(IRecommendationSystem recommendationSystem)
     {
-        get => _selectedSymptomTertiary;
-        set { _selectedSymptomTertiary = value; OnPropertyChanged(); ValidateSymptomSelection(); }
+        _recommendationSystem = recommendationSystem;
+
+        SymptomStartOptions = new ObservableCollection<string> { "Suddenly", "After Waking Up", "After Incident", "After Meeting Someone", "After Ingestion" };
+        DiscomfortAreaOptions = new ObservableCollection<string> { "Head", "Eyes", "Neck", "Stomach", "Chest", "Arm", "Leg", "Back", "Shoulder", "Foot" };
+        SymptomTypeOptions = new ObservableCollection<string> { "Pain", "Numbness", "Inflammation", "Tenderness", "Coloration", "Itching", "Burning", NoSymptomSelected };
+
+        RecommendCommand = new RelayCommand(async () => await RecommendDoctorAsync());
     }
 
-    public RecommendationSystemFormViewModel()
+    private async Task RecommendDoctorAsync()
     {
-        SymptomStartOptions = new ObservableCollection<string>
-        {
-            "Suddenly", "After Waking Up", "After Incident", "After Meeting Someone", "After Ingestion"
-        };
+        var doctor = await _recommendationSystem.RecommendDoctorAsync(this);
 
-        DiscomfortAreaOptions = new ObservableCollection<string>
+        if (doctor != null)
         {
-            "Head", "Eyes", "Neck", "Stomach", "Chest", "Arm", "Leg", "Back", "Shoulder", "Foot"
-        };
-
-        SymptomTypeOptions = new ObservableCollection<string>
+            DoctorName = $"Doctor: {doctor.GetDoctorName()}";
+            Department = $"Department: {doctor.GetDoctorDepartment()}";
+            Rating = $"Rating: {doctor.GetDoctorRating():0.0}";
+        }
+        else
         {
-            "Pain", "Numbness", "Inflammation", "Tenderness", "Coloration", "Itching", "Burning", NoSymptomSelected
-        };
-
-        SelectedSymptomPrimary = NoSymptomSelected;
-        SelectedSymptomSecondary = NoSymptomSelected;
-        SelectedSymptomTertiary = NoSymptomSelected;
+            DoctorName = "No suitable doctor found";
+            Department = string.Empty;
+            Rating = string.Empty;
+        }
     }
 
     private void ValidateSymptomSelection()
     {
-        Debug.WriteLine($"Validating: {SelectedSymptomPrimary}, {SelectedSymptomSecondary}, {SelectedSymptomTertiary}");
-
         if (SelectedSymptomPrimary != NoSymptomSelected && SelectedSymptomPrimary == SelectedSymptomSecondary)
             SelectedSymptomSecondary = NoSymptomSelected;
 
@@ -82,12 +78,10 @@ public class RecommendationSystemFormViewModel : INotifyPropertyChanged
 
         if (SelectedSymptomSecondary != NoSymptomSelected && SelectedSymptomSecondary == SelectedSymptomTertiary)
             SelectedSymptomTertiary = NoSymptomSelected;
-
-        Debug.WriteLine($"After validation: {SelectedSymptomPrimary}, {SelectedSymptomSecondary}, {SelectedSymptomTertiary}");
     }
 
-    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    private void OnPropertyChanged([CallerMemberName] string? name = null)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

@@ -6,7 +6,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-public class RecommendationSystemModel
+public interface IRecommendationSystem
+{
+    Task<DoctorJointModel?> RecommendDoctorAsync(RecommendationSystemFormViewModel symptomFormViewModel);
+}
+
+public class RecommendationSystemModel : IRecommendationSystem
 {
     private readonly DoctorManagerModel _doctorManager;
     private Dictionary<string, Dictionary<int, int>> _symptomToDepartmentScoreMapping;
@@ -22,7 +27,6 @@ public class RecommendationSystemModel
     public RecommendationSystemModel(DoctorManagerModel doctorManager)
     {
         _doctorManager = doctorManager;
-        _symptomToDepartmentScoreMapping = new Dictionary<string, Dictionary<int, int>>();
         InitializeSymptomToDepartmentScores();
     }
 
@@ -51,62 +55,42 @@ public class RecommendationSystemModel
         };
     }
 
-    public async Task<DoctorJointModel?> RecommendDoctorBasedOnSymptomsAsync(RecommendationSystemFormViewModel symptomFormViewModel)
+    public async Task<DoctorJointModel?> RecommendDoctorAsync(RecommendationSystemFormViewModel model)
     {
         Dictionary<int, int> departmentScores = new Dictionary<int, int>();
 
-        void AddSymptomScoreToDepartments(string symptom)
+        void AddSymptomScore(string symptom)
         {
             if (string.IsNullOrWhiteSpace(symptom)) return;
 
-            string cleanedSymptom = symptom.Trim();
-
-            if (_symptomToDepartmentScoreMapping.TryGetValue(cleanedSymptom, out var departmentScoreMap))
+            if (_symptomToDepartmentScoreMapping.TryGetValue(symptom.Trim(), out var scores))
             {
-                foreach (var departmentScore in departmentScoreMap)
+                foreach (var kvp in scores)
                 {
-                    int departmentId = departmentScore.Key;
-                    int points = departmentScore.Value;
+                    if (!departmentScores.ContainsKey(kvp.Key))
+                        departmentScores[kvp.Key] = 0;
 
-                    if (departmentScores.ContainsKey(departmentId))
-                    {
-                        departmentScores[departmentId] += points;
-                    }
-                    else
-                    {
-                        departmentScores[departmentId] = points;
-                    }
+                    departmentScores[kvp.Key] += kvp.Value;
                 }
-            }
-            else
-            {
-                Debug.WriteLine($"[Warning] Symptom '{cleanedSymptom}' was not recognized.");
             }
         }
 
-        Debug.WriteLine($"Selected Symptoms: '{symptomFormViewModel.SelectedSymptomStart}', '{symptomFormViewModel.SelectedDiscomfortArea}', '{symptomFormViewModel.SelectedSymptomPrimary}', '{symptomFormViewModel.SelectedSymptomSecondary}', '{symptomFormViewModel.SelectedSymptomTertiary}'");
-
-        AddSymptomScoreToDepartments(symptomFormViewModel.SelectedSymptomStart);
-        AddSymptomScoreToDepartments(symptomFormViewModel.SelectedDiscomfortArea);
-        AddSymptomScoreToDepartments(symptomFormViewModel.SelectedSymptomPrimary);
-        AddSymptomScoreToDepartments(symptomFormViewModel.SelectedSymptomSecondary);
-        AddSymptomScoreToDepartments(symptomFormViewModel.SelectedSymptomTertiary);
+        AddSymptomScore(model.SelectedSymptomStart);
+        AddSymptomScore(model.SelectedDiscomfortArea);
+        AddSymptomScore(model.SelectedSymptomPrimary);
+        AddSymptomScore(model.SelectedSymptomSecondary);
+        AddSymptomScore(model.SelectedSymptomTertiary);
 
         if (departmentScores.Count == 0)
             return null;
 
-        int mostRelevantDepartmentId = departmentScores
-            .OrderByDescending(entry => entry.Value)
-            .First().Key;
+        int bestDeptId = departmentScores.OrderByDescending(x => x.Value).First().Key;
+        var doctors = await _doctorManager.GetDoctorsByDepartment(bestDeptId);
 
-        List<DoctorJointModel> doctorsInDepartment = await _doctorManager.GetDoctorsByDepartment(mostRelevantDepartmentId);
-
-        DoctorJointModel? selectedDoctor = doctorsInDepartment
-            .OrderByDescending(doctor => doctor.GetRegistrationDate())
-            .ThenBy(doctor => doctor.GetBirthDate())
-            .ThenBy(doctor => doctor.GetDoctorRating())
+        return doctors
+            .OrderByDescending(d => d.GetRegistrationDate())
+            .ThenBy(d => d.GetBirthDate())
+            .ThenBy(d => d.GetDoctorRating())
             .FirstOrDefault();
-
-        return selectedDoctor;
     }
 }
