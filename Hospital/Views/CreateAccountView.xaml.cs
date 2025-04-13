@@ -13,7 +13,7 @@ namespace Hospital
     public sealed partial class CreateAccountView : Window
     {
 
-        private readonly AuthViewModel _viewModel;
+        private AuthViewModel _viewModel;
         public CreateAccountView(AuthViewModel viewModel)
         {
             this.InitializeComponent();

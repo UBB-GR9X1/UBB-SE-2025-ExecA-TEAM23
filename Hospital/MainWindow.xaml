@@ -9,82 +9,17 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="Black">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-
-        <StackPanel Grid.Row="1" Padding="20" Background="Black"
-            Width="300" HorizontalAlignment="Center"
-            VerticalAlignment="Center" Spacing="10">
-
-            <!-- Title -->
-            <TextBlock Text="Login" FontSize="24" FontWeight="Bold"
-               HorizontalAlignment="Center" Margin="0,0,0,10" Foreground="White"/>
-
-            <!-- Username Field -->
-            <TextBox x:Name="UsernameField" PlaceholderText="Username"
-             Background="Black" Foreground="White" BorderBrush="Gray" BorderThickness="1" Margin="0,5"/>
-
-            <!-- Password Field -->
-            <PasswordBox x:Name="PasswordField" PlaceholderText="Password"
-                 Background="Black" Foreground="White" BorderBrush="Gray" BorderThickness="1" Margin="0,5"/>
-
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
-                <!-- Login Button -->
-                <Button x:Name="LoginButton" Content="Login"
-                Background="#0078D7" Foreground="White"
-                Padding="10" FontWeight="Bold" Click="LoginButton_Click">
-                </Button>
-
-                <!-- Create Account Button -->
-                <Button x:Name="CreateAccount" Content="Create Account"
-                Background="#0078D7" Foreground="White"
-                Padding="10" FontWeight="Bold" Click="CreateAccountButton_Click">
-                </Button>
-                
-            </StackPanel>
-            <!-- TESTING RECOMMENDSYS
-            <Grid>
-                <Frame x:Name="MainFrame"/>
-
-                <Button Content="Doctor Guide"
+    <Grid       HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="LightPink">
+                    
+        <Button Content="OPEN HOSPITAL APPLICATION"
                 HorizontalAlignment="Center"
-                VerticalAlignment="Bottom"
-                Click="TestPatientDashboardButton_Click"/>
-            </Grid>-->
-
-        </StackPanel>
-        
-
-
-        <!-- IMPORTANT: I COMMENTED THIS CODE TO HAVE THE AUTHENTICATION ON MAIN WINDOW !!!
-    xmlns:local="using:Hospital"
-    xmlns:views="using:Hospital.Views"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Title="Hospital Management System">
-
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        <TextBlock Grid.Row="0" Text="Hospital Management System" 
-                   Style="{StaticResource TitleTextBlockStyle}" 
-                   Margin="20,10" HorizontalAlignment="Center"/>
-        
-        
-        <views:SearchDoctorsView Grid.Row="1" x:Name="searchDoctorsView" 
-                         Width="600" Height="400" 
-                         HorizontalAlignment="Center" 
-                         VerticalAlignment="Center"/>
-
-       IMPORTANT: I COMMENTED THIS CODE TO HAVE THE AUTHENTICATION ON MAIN WINDOW !!!
-        -->
+                VerticalAlignment="Center"
+                Click="OpenApplicationButton_Click"
+                Background="DeepPink"/>
     </Grid>
+
+    
+    
 </Window>

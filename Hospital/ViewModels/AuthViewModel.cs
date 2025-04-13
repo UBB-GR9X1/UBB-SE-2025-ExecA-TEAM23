@@ -5,11 +5,11 @@ using Hospital.Models;
 
 namespace Hospital.ViewModels
 {
-    public class AuthViewModel
+    public class AuthViewModel : IAuthViewModel
     {
-        public AuthManagerModel _authManagerModel { get; private set; }
+        public IAuthManagerModel _authManagerModel { get; private set; }
 
-        public AuthViewModel (AuthManagerModel auth)
+        public AuthViewModel(IAuthManagerModel auth)
         {
             _authManagerModel = auth;
         }

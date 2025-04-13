@@ -7,12 +7,12 @@ using Windows.Services.Maps;
 
 namespace Hospital.Managers
 {
-    public class AuthManagerModel
+    public class AuthManagerModel : IAuthManagerModel
     {
-        private readonly LogInDatabaseService _logInDBService;
+        private readonly ILogInDatabaseService _logInDBService;
         public UserAuthModel _userInfo { get; private set; } = UserAuthModel.Default;
 
-        public AuthManagerModel (LogInDatabaseService dbService)
+        public AuthManagerModel(ILogInDatabaseService dbService)
         {
             _logInDBService = dbService;
         }
@@ -32,14 +32,14 @@ namespace Hospital.Managers
                 return false;
 
             return await LogAction(ActionType.LOGIN);
-     
+
         }
 
         public async Task<bool> Logout()
         {
             if (_userInfo == UserAuthModel.Default)
                 throw new AuthenticationException("Not logged in");
-           
+
             bool result = await LogAction(ActionType.LOGOUT);
 
             if (result)
@@ -133,7 +133,7 @@ namespace Hospital.Managers
             }
             else
                 if (model.BirthDate.Day.ToString() != model.Cnp.Substring(5, 2))
-                    throw new AuthenticationException("Mismatch between Birth Day and CNP birth day");
+                throw new AuthenticationException("Mismatch between Birth Day and CNP birth day");
 
             bool result = await _logInDBService.CreateAccount(model);
             if (result)
@@ -146,6 +146,6 @@ namespace Hospital.Managers
         public async Task<bool> LogAction(ActionType action)
         {
             return await _logInDBService.AuthenticationLogService(_userInfo.UserId, action);
-        }  
+        }
     }
 }

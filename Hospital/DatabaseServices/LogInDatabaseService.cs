@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Hospital.DatabaseServices
 {
-    public class LogInDatabaseService
+    public class LogInDatabaseService : ILogInDatabaseService
     {
         private readonly Config _config;
 
