@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Hospital.ViewModels
 {
-    public class SearchDoctorsViewModel : INotifyPropertyChanged
+    public class SearchDoctorsViewModel : ISearchDoctorsViewModel, INotifyPropertyChanged
     {
-        public readonly SearchDoctorsService _searchDoctorsManager;
+        public readonly ISearchDoctorsService _searchDoctorsManager;
         private string _departmentPartialName;
         private DoctorModel _selectedDoctor = DoctorModel.Default;
         private bool _isProfileOpen;
@@ -56,7 +56,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        public SearchDoctorsViewModel(SearchDoctorsService searchDoctorsManager, string departmentPartialName)
+        public SearchDoctorsViewModel(ISearchDoctorsService searchDoctorsManager, string departmentPartialName)
         {
             _searchDoctorsManager = searchDoctorsManager;
             _departmentPartialName = departmentPartialName;
@@ -103,5 +103,6 @@ namespace Hospital.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
     }
 }

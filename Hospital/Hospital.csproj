@@ -12,6 +12,12 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Doctor Dashboard\Tests\**" />
+    <EmbeddedResource Remove="Doctor Dashboard\Tests\**" />
+    <None Remove="Doctor Dashboard\Tests\**" />
+    <Page Remove="Doctor Dashboard\Tests\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -49,7 +55,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Commands\" />
-    <Folder Include="Doctor Dashboard\Tests\" />
     <Folder Include="Exceptions\" />
     <Folder Include="Helpers\" />
   </ItemGroup>
@@ -90,4 +95,7 @@
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+  <ItemGroup>
+    <PRIResource Remove="Doctor Dashboard\Tests\**" />
+  </ItemGroup>
 </Project>

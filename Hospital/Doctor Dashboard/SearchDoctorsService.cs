@@ -4,94 +4,109 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hospital.Doctor_Dashboard;
 
 namespace Hospital.Managers
 {
-    public class SearchDoctorsService
+    public class SearchDoctorsService : ISearchDoctorsService
     {
-        public List<DoctorModel> doctorList { get; private set; }
-        private readonly DoctorsDatabaseHelper _doctorDbHelper;
+        public List<DoctorModel> AvailableDoctors { get; private set; }
+        private readonly IDoctorsDatabaseHelper _doctorDatabaseHelper;
 
-        public SearchDoctorsService(DoctorsDatabaseHelper dbHelper)
+        public SearchDoctorsService(IDoctorsDatabaseHelper doctorDatabaseHelper)
         {
-            _doctorDbHelper = dbHelper;
-            doctorList = new List<DoctorModel>();
+            _doctorDatabaseHelper = doctorDatabaseHelper;
+            AvailableDoctors = new List<DoctorModel>();
         }
 
-        public async Task LoadDoctors(string departmetnOrNamePartialName)
+        public async Task LoadDoctors(string searchTerm)
         {
             try
             {
-                doctorList.Clear();
-                List<DoctorModel> doctorsDepartamentList = await _doctorDbHelper.GetDoctorsByDepartmentPartialName(departmetnOrNamePartialName);
-                List<DoctorModel> doctorNameList = await _doctorDbHelper.GetDoctorsByPartialDoctorName(departmetnOrNamePartialName);
-                foreach (DoctorModel doctor in doctorsDepartamentList)
+                AvailableDoctors.Clear();
+
+                // Search by department name
+                List<DoctorModel> doctorsByDepartment = await _doctorDatabaseHelper.GetDoctorsByDepartmentPartialName(searchTerm);
+
+                // Search by doctor name
+                List<DoctorModel> doctorsByName = await _doctorDatabaseHelper.GetDoctorsByPartialDoctorName(searchTerm);
+
+                // Add doctors from department search
+                foreach (DoctorModel doctor in doctorsByDepartment)
                 {
-                    doctorList.Add(doctor);
+                    AvailableDoctors.Add(doctor);
                 }
-                foreach (DoctorModel doctor in doctorNameList)
+
+                // Add doctors from name search if not already in list
+                foreach (DoctorModel doctor in doctorsByName)
                 {
-                    // Check if a doctor with the same ID already exists in the list
-                    bool doctorExists = doctorList.Any(d => d.DoctorId == doctor.DoctorId);
-                    if (!doctorExists)
+                    bool isDoctorAlreadyInList = AvailableDoctors.Any(existingDoctor => existingDoctor.DoctorId == doctor.DoctorId);
+                    if (!isDoctorAlreadyInList)
                     {
-                        doctorList.Add(doctor);
+                        AvailableDoctors.Add(doctor);
                     }
                 }
 
-                // Sort doctors by rating (descending), then by name, then by department
-                doctorList = doctorList
-                    .OrderByDescending(d => d.Rating)
-                    .ThenBy(d => d.DoctorName)
-                    .ThenBy(d => d.DepartmentName)
-                    .ToList();
+                // Sort doctors by multiple criteria
+                AvailableDoctors = SortDoctorsByDefaultCriteria(AvailableDoctors);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                Console.WriteLine($"Error loading departments: {ex.Message}");
+                Console.WriteLine($"Error loading doctors: {exception.Message}");
             }
         }
 
         public List<DoctorModel> GetSearchedDoctors()
         {
-            return doctorList;
+            return AvailableDoctors;
         }
 
-        // Optional: Add a method to get doctors sorted by different criteria
-        public List<DoctorModel> GetDoctorsSortedBy(SortCriteria criteria)
+        // Method to sort doctors by different criteria
+        public List<DoctorModel> GetDoctorsSortedBy(SortCriteria sortCriteria)
         {
-            switch (criteria)
+            switch (sortCriteria)
             {
                 case SortCriteria.RatingHighToLow:
-                    return doctorList.OrderByDescending(d => d.Rating).ToList();
+                    return AvailableDoctors.OrderByDescending(doctor => doctor.Rating).ToList();
+
                 case SortCriteria.RatingLowToHigh:
-                    return doctorList.OrderBy(d => d.Rating).ToList();
-                case SortCriteria.NameAZ:
-                    return doctorList.OrderBy(d => d.DoctorName).ToList();
-                case SortCriteria.NameZA:
-                    return doctorList.OrderByDescending(d => d.DoctorName).ToList();
-                case SortCriteria.DepartmentAZ:
-                    return doctorList.OrderBy(d => d.DepartmentName).ToList();
+                    return AvailableDoctors.OrderBy(doctor => doctor.Rating).ToList();
+
+                case SortCriteria.NameAscending:
+                    return AvailableDoctors.OrderBy(doctor => doctor.DoctorName).ToList();
+
+                case SortCriteria.NameDescending:
+                    return AvailableDoctors.OrderByDescending(doctor => doctor.DoctorName).ToList();
+
+                case SortCriteria.DepartmentAscending:
+                    return AvailableDoctors.OrderBy(doctor => doctor.DepartmentName).ToList();
+
                 case SortCriteria.RatingThenNameThenDepartment:
-                    return doctorList
-                        .OrderByDescending(d => d.Rating)
-                        .ThenBy(d => d.DoctorName)
-                        .ThenBy(d => d.DepartmentName)
-                        .ToList();
+                    return SortDoctorsByDefaultCriteria(AvailableDoctors);
+
                 default:
-                    return doctorList;
+                    return AvailableDoctors;
             }
+        }
+
+        private List<DoctorModel> SortDoctorsByDefaultCriteria(List<DoctorModel> doctorsToSort)
+        {
+            return doctorsToSort
+                .OrderByDescending(doctor => doctor.Rating)
+                .ThenBy(doctor => doctor.DoctorName)
+                .ThenBy(doctor => doctor.DepartmentName)
+                .ToList();
         }
     }
 
-    // Optional: Add an enum for sort criteria if you want to support multiple sorting options
+    // Enum for doctor sorting criteria
     public enum SortCriteria
     {
         RatingHighToLow,
         RatingLowToHigh,
-        NameAZ,
-        NameZA,
-        DepartmentAZ,
-        RatingThenNameThenDepartment // New composite sorting option
+        NameAscending,
+        NameDescending,
+        DepartmentAscending,
+        RatingThenNameThenDepartment
     }
 }
