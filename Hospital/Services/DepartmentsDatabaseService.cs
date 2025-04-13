@@ -2,45 +2,52 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Hospital.Configs;
+using Hospital.Interfaces;
 using Hospital.Models;
 using Microsoft.Data.SqlClient;
 namespace Hospital.Services
 {
-    public class DepartmentsDatabaseService
+    public class DepartmentsDatabaseService : IDepartmentService
     {
-        private readonly Config _configs;
+        private readonly IConfigProvider _configProvider;
 
-        public DepartmentsDatabaseService()
+        public DepartmentsDatabaseService(IConfigProvider configProvider)
         {
-            _configs = Config.GetInstance();
+            _configProvider = configProvider ?? throw new ArgumentNullException(nameof(configProvider));
         }
 
-        public async Task<List<Department>> GetDepartmentsFromDB()
+        public async Task<List<Department>> GetAllDepartments()
         {
             List<Department> departments = new List<Department>();
-            string connectionString = _configs.DatabaseConnection;
-            using (var connection = new SqlConnection(connectionString))
+
+            try
             {
-                await connection.OpenAsync();
-                string query = "SELECT * FROM Departments";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
+                await connection.OpenAsync().ConfigureAwait(false);
+
+                const string query = "SELECT DepartmentId, DepartmentName FROM Departments";
+
+                using SqlCommand command = new SqlCommand(query, connection);
+                using SqlDataReader reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
+
+                while (await reader.ReadAsync().ConfigureAwait(false))
                 {
-                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            Department department = new Department(
-                                reader.GetInt32(0),
-                                reader.GetString(1)
-                            );
-                            //{ ?????????????????????
-                            //    Description = reader.GetString(2)
-                            //};
-                            departments.Add(department);
-                        }
-                    }
+                    Department department = new Department(
+                        reader.GetInt32(0),
+                        reader.GetString(1)
+                    );
+                    departments.Add(department);
                 }
             }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"SQL Exception: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"General Exception: {ex.Message}");
+            }
+
             return departments;
         }
     }

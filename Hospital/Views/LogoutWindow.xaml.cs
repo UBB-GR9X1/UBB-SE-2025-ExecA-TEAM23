@@ -1,54 +1,60 @@
 ﻿using Hospital.Exceptions;
+using Hospital.Interfaces;
 using Hospital.ViewModels;
 using Microsoft.Data.SqlClient;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Threading.Tasks;
 
 namespace Hospital
 {
     public sealed partial class LogoutWindow : Window
     {
-        private readonly AuthViewModel _viewModel;
+        private readonly IAuthService _authService;
 
-        public LogoutWindow(AuthViewModel viewModel)
+        public LogoutWindow(IAuthService authService)
         {
             this.InitializeComponent();
-            _viewModel = viewModel; // Pass ViewModel to interact with auth logic
+            _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         }
 
         private async void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                await _viewModel.Logout(); // Log out the user
-                MainWindow main = new MainWindow();
-                main.Activate();
-                this.Close(); // Close logout window after successful logout
+                await PerformLogoutAsync();
+                NavigateToMainWindow();
             }
-            catch (AuthenticationException ex)
+            catch (Exception ex) when (ex is AuthenticationException || ex is SqlException)
             {
-                var dialog = new ContentDialog
-                {
-                    Title = "Error",
-                    Content = $"{ex.Message}",
-                    CloseButtonText = "OK",
-                    XamlRoot = this.Content.XamlRoot
-                };
-                await dialog.ShowAsync();
+                await DisplayErrorDialogAsync(ex.Message);
             }
-            catch (SqlException err)
-            {
-                var validationDialog = new ContentDialog
-                {
-                    Title = "Error",
-                    Content = $"{err.Message}",
-                    CloseButtonText = "OK"
-                };
+        }
 
-                validationDialog.XamlRoot = this.Content.XamlRoot;
-                await validationDialog.ShowAsync();
-            }
+        private async Task PerformLogoutAsync()
+        {
+            await _authService.Logout();
+        }
+
+        private void NavigateToMainWindow()
+        {
+            MainWindow mainWindow = new MainWindow();
+            mainWindow.Activate();
+            this.Close();
+        }
+
+        private async Task DisplayErrorDialogAsync(string errorMessage)
+        {
+            ContentDialog errorDialog = new ContentDialog
+            {
+                Title = "Error",
+                Content = errorMessage,
+                CloseButtonText = "OK",
+                XamlRoot = Content.XamlRoot
+            };
+
+            await errorDialog.ShowAsync();
         }
     }
 }

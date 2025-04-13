@@ -1,59 +1,113 @@
-﻿namespace Hospital.Configs
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Config.cs" company="Hospital">
+//   Copyright (c) Hospital. All rights reserved. Licensed under the MIT License.
+// </copyright>
+// <summary>
+//   Defines the Config class that provides application configuration values.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Hospital.Configs
 {
-    class Config
+    using Hospital.Interfaces;
+
+    /// <summary>
+    /// Singleton class that provides configuration values for the application.
+    /// Implements the IConfigProvider interface.
+    /// </summary>
+    public class Config : IConfigProvider
     {
-        private Config() { }
+        /// <summary>
+        /// The default appointment slot duration in minutes.
+        /// </summary>
+        private const int DefaultSlotDuration = 30;
 
-        private static Config? _instance;
+        /// <summary>
+        /// The default patient ID for testing or initial setup.
+        /// </summary>
+        private const int DefaultPatientId = 1;
 
-        // We now have a lock object that will be used to synchronize threads
-        // during first access to the Singleton.
-        private static readonly object _lock = new object();
+        /// <summary>
+        /// The default doctor ID for testing or initial setup.
+        /// </summary>
+        private const int DefaultDoctorId = 1;
 
+        /// <summary>
+        /// Lock object for thread-safe singleton instantiation.
+        /// </summary>
+        private static readonly object LockObject = new object();
+
+        /// <summary>
+        /// The singleton instance of the Config class.
+        /// </summary>
+        private static Config? instance;
+
+        /// <summary>
+        /// The database connection string.
+        /// </summary>
+        private readonly string databaseConnection = "Data Source=DESKTOP-2KUEEF3;Initial Catalog=HospitalApp;Integrated Security=True;TrustServerCertificate=True";
+
+        /// <summary>
+        /// Prevents a default instance of the <see cref="Config"/> class from being created.
+        /// </summary>
+        private Config()
+        {
+        }
+
+        /// <summary>
+        /// Gets the singleton instance of the Config class.
+        /// </summary>
+        /// <returns>The singleton instance of Config.</returns>
         public static Config GetInstance()
         {
-            // This conditional is needed to prevent threads stumbling over the
-            // lock once the instance is ready.
-            if (_instance == null)
+            if (instance == null)
             {
-                // Now, imagine that the program has just been launched. Since
-                // there's no Singleton instance yet, multiple threads can
-                // simultaneously pass the previous conditional and reach this
-                // point almost at the same time. The first of them will acquire
-                // lock and will proceed further, while the rest will wait here.
-                lock (_lock)
+                lock (LockObject)
                 {
-                    // The first thread to acquire the lock, reaches this
-                    // conditional, goes inside and creates the Singleton
-                    // instance. Once it leaves the lock block, a thread that
-                    // might have been waiting for the lock release may then
-                    // enter this section. But since the Singleton field is
-                    // already initialized, the thread won't create a new
-                    // object.
-                    if (_instance == null)
+                    if (instance == null)
                     {
-                        _instance = new Config();
+                        instance = new Config();
                     }
                 }
             }
-            return _instance;
+
+            return instance;
         }
 
-        // We'll use this property to prove that our Singleton really works.
+        /// <summary>
+        /// Gets the database connection string.
+        /// </summary>
+        /// <returns>A string containing the database connection information.</returns>
+        public string GetDatabaseConnection()
+        {
+            return this.databaseConnection;
+        }
 
-        // Microsoft.Data.SqlClient uses Encrypted=true by default, so we need to add TrustServerCertificate=True
-        // _databaseConnection = "Data Source={SERVER NAME};Initial Catalog={DATABASE_NAME};Integrated Security=True;TrustServerCertificate=True"
-        // private string _databaseConnection = "Data Source=LAPTOP-ANDU\\SQLEXPRESS;Initial Catalog=HospitalDB;Integrated Security=True;TrustServerCertificate=True";
-        //private string _databaseConnection = "Data Source=DESKTOP-B33HRLE;Initial Catalog=HospitalDB;Integrated Security=True;TrustServerCertificate=True";
-        //private string _databaseConnection = "Data Source=DESKTOP-DK2UM26;Initial Catalog=HospitalApp;Integrated Security=True;TrustServerCertificate=True";
+        /// <summary>
+        /// Gets the default patient ID from configuration.
+        /// </summary>
+        /// <returns>An integer representing the patient ID.</returns>
+        public int GetPatientId()
+        {
+            return DefaultPatientId;
+        }
 
-        //private string _databaseConnection = "Data Source=DESKTOP-5A6VJDA;Initial Catalog=HospitalDB;Integrated Security=True;TrustServerCertificate=True";
-        private string _databaseConnection = "Data Source=DESKTOP-S99JALT;Initial Catalog=HospitalApp;Integrated Security=True;TrustServerCertificate=True";
+        /// <summary>
+        /// Gets the default doctor ID from configuration.
+        /// </summary>
+        /// <returns>An integer representing the doctor ID.</returns>
+        public int GetDoctorId()
+        {
+            return DefaultDoctorId;
+        }
 
-        public string DatabaseConnection { get { return _databaseConnection; } }
-
-        public int patientId = 1;
-        public int doctorId = 1;
-        public int SlotDuration = 30;
+        /// <summary>
+        /// Gets the default appointment slot duration from configuration.
+        /// </summary>
+        /// <returns>An integer representing the slot duration in minutes.</returns>
+        public int GetDefaultSlotDuration()
+        {
+            return DefaultSlotDuration;
+        }
     }
 }

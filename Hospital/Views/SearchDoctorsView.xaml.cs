@@ -1,4 +1,6 @@
+using Hospital.Configs;
 using Hospital.DatabaseServices;
+using Hospital.Interfaces;
 using Hospital.Managers;
 using Hospital.Models;
 using Hospital.ViewModels;
@@ -25,7 +27,8 @@ namespace Hospital.Views
             this.InitializeComponent();
 
             // This would normally be injected through dependency injection
-            var searchManager = new SearchDoctorsManagerModel(new DoctorsDatabaseService());
+            IConfigProvider configProvider = Config.GetInstance();
+            var searchManager = new SearchDoctorsManagerModel(new DoctorsDatabaseService(configProvider));
             ViewModel = new SearchDoctorsViewModel(searchManager, string.Empty);
 
             this.DataContext = ViewModel;

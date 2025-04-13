@@ -1,490 +1,643 @@
-﻿using Hospital.Managers;
-using Hospital.Models;
-using System;
-using System.ComponentModel;
-using System.Threading.Tasks;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="PatientViewModel.cs" company="Hospital">
+//   Copyright (c) Hospital. All rights reserved. Licensed under the MIT License.
+// </copyright>
+// <summary>
+//   Defines the PatientViewModel for managing patient information.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Hospital.ViewModels
 {
+    using System;
+    using System.ComponentModel;
+    using System.Runtime.CompilerServices;
+    using System.Threading.Tasks;
+    using Hospital.Managers;
+    using Hospital.Models;
+
+    /// <summary>
+    /// View model for managing patient information and operations.
+    /// </summary>
     public class PatientViewModel : INotifyPropertyChanged
     {
         private readonly PatientManagerModel _patientManagerModel;
+        private int _userId;
+        private string _name = string.Empty;
+        private string _email = string.Empty;
+        private string _username = string.Empty;
+        private string _address = string.Empty;
+        private string _phoneNumber = string.Empty;
+        private string _emergencyContact = string.Empty;
+        private string _bloodType = string.Empty;
+        private string _allergies = string.Empty;
+        private DateTime _birthDate;
+        private string _cnp = string.Empty;
+        private DateTime _registrationDate;
+        private double _weight;
+        private int _height;
+        private bool _isLoading;
+        private string _password = string.Empty;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PatientViewModel"/> class.
+        /// </summary>
+        /// <param name="patientManagerModel">The patient manager model.</param>
+        /// <param name="userId">The user ID for the patient.</param>
         public PatientViewModel(PatientManagerModel patientManagerModel, int userId)
         {
-            _patientManagerModel = patientManagerModel;
-            _userId = userId;
-            _originalPatient = PatientJointModel.Default;
-            _ = LoadPatientInfoByUserIdAsync(userId);
+            this._patientManagerModel = patientManagerModel ?? throw new ArgumentNullException(nameof(patientManagerModel));
+            this._userId = userId;
+            this.OriginalPatient = PatientJointModel.Default;
+            _ = this.LoadPatientInfoByUserIdAsync(userId);
         }
 
+        /// <summary>
+        /// Event raised when a property value changes.
+        /// </summary>
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public PatientJointModel _originalPatient { get; private set; }
+        /// <summary>
+        /// Gets the original patient data for comparison.
+        /// </summary>
+        public PatientJointModel OriginalPatient { get; private set; }
 
-        private int _userId;
+        /// <summary>
+        /// Gets or sets the user ID.
+        /// </summary>
         public int UserId
         {
-            get => _userId;
+            get => this._userId;
             set
             {
-                if (_userId != value)
+                if (this._userId != value)
                 {
-                    _userId = value;
-                    OnPropertyChanged();
+                    this._userId = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        private string _name = "";
+        /// <summary>
+        /// Gets or sets the patient's name.
+        /// </summary>
         public string Name
         {
-            get => _name;
+            get => this._name;
             set
             {
-                if (_name != value)
+                if (this._name != value)
                 {
-                    _name = value;
-                    OnPropertyChanged();
+                    this._name = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        private string _email = "";
+        /// <summary>
+        /// Gets or sets the patient's email address.
+        /// </summary>
         public string Email
         {
-            get => _email;
+            get => this._email;
             set
             {
-                if (_email != value)
+                if (this._email != value)
                 {
-                    _email = value;
-                    OnPropertyChanged();
+                    this._email = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        private string _username = "";
+        /// <summary>
+        /// Gets or sets the patient's username.
+        /// </summary>
         public string Username
         {
-            get => _username;
+            get => this._username;
             set
             {
-                if (_username != value)
+                if (this._username != value)
                 {
-                    _username = value;
-                    OnPropertyChanged();
+                    this._username = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        private string _address = "";
+        /// <summary>
+        /// Gets or sets the patient's address.
+        /// </summary>
         public string Address
         {
-            get => _address;
+            get => this._address;
             set
             {
-                if (_address != value)
+                if (this._address != value)
                 {
-                    _address = value;
-                    OnPropertyChanged();
+                    this._address = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        private string _phoneNumber = "";
+        /// <summary>
+        /// Gets or sets the patient's phone number.
+        /// </summary>
         public string PhoneNumber
         {
-            get => _phoneNumber;
+            get => this._phoneNumber;
             set
             {
-                if (_phoneNumber != value)
+                if (this._phoneNumber != value)
                 {
-                    _phoneNumber = value;
-                    OnPropertyChanged();
+                    this._phoneNumber = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        private string _emergencyContact = "";
+        /// <summary>
+        /// Gets or sets the patient's emergency contact information.
+        /// </summary>
         public string EmergencyContact
         {
-            get => _emergencyContact;
+            get => this._emergencyContact;
             set
             {
-                if (_emergencyContact != value)
+                if (this._emergencyContact != value)
                 {
-                    _emergencyContact = value;
-                    OnPropertyChanged();
+                    this._emergencyContact = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        // Non-editable fields
-        private string _bloodType = "";
+        /// <summary>
+        /// Gets or sets the patient's blood type.
+        /// </summary>
         public string BloodType
         {
-            get => _bloodType;
+            get => this._bloodType;
             set
             {
-                if (_bloodType != value)
+                if (this._bloodType != value)
                 {
-                    _bloodType = value;
-                    OnPropertyChanged();
+                    this._bloodType = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        private string _allergies = "";
+        /// <summary>
+        /// Gets or sets the patient's allergies.
+        /// </summary>
         public string Allergies
         {
-            get => _allergies;
+            get => this._allergies;
             set
             {
-                if (_allergies != value)
+                if (this._allergies != value)
                 {
-                    _allergies = value;
-                    OnPropertyChanged();
+                    this._allergies = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        private DateTime _birthDate;
+        /// <summary>
+        /// Gets or sets the patient's birth date.
+        /// </summary>
         public DateTime BirthDate
         {
-            get => _birthDate;
+            get => this._birthDate;
             set
             {
-                if (_birthDate != value)
+                if (this._birthDate != value)
                 {
-                    _birthDate = value;
-                    OnPropertyChanged();
+                    this._birthDate = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        private string _cnp = "";
+        /// <summary>
+        /// Gets or sets the patient's CNP (personal numeric code).
+        /// </summary>
         public string Cnp
         {
-            get => _cnp;
+            get => this._cnp;
             set
             {
-                if (_cnp != value)
+                if (this._cnp != value)
                 {
-                    _cnp = value;
-                    OnPropertyChanged();
+                    this._cnp = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        private DateTime _registrationDate;
+        /// <summary>
+        /// Gets or sets the patient's registration date.
+        /// </summary>
         public DateTime RegistrationDate
         {
-            get => _registrationDate;
+            get => this._registrationDate;
             set
             {
-                if (_registrationDate != value)
+                if (this._registrationDate != value)
                 {
-                    _registrationDate = value;
-                    OnPropertyChanged();
+                    this._registrationDate = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        private double _weight;
+        /// <summary>
+        /// Gets or sets the patient's weight in kilograms.
+        /// </summary>
         public double Weight
         {
-            get => _weight;
+            get => this._weight;
             set
             {
-                if (_weight != value)
+                if (this._weight != value)
                 {
-                    _weight = value;
-                    OnPropertyChanged();
+                    this._weight = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        private int _height;
+        /// <summary>
+        /// Gets or sets the patient's height in centimeters.
+        /// </summary>
         public int Height
         {
-            get => _height;
+            get => this._height;
             set
             {
-                if (_height != value)
+                if (this._height != value)
                 {
-                    _height = value;
-                    OnPropertyChanged();
+                    this._height = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        private bool _isLoading;
+        /// <summary>
+        /// Gets or sets a value indicating whether data is currently being loaded.
+        /// </summary>
         public bool IsLoading
         {
-            get => _isLoading;
+            get => this._isLoading;
             set
             {
-                if (_isLoading != value)
+                if (this._isLoading != value)
                 {
-                    _isLoading = value;
-                    OnPropertyChanged();
+                    this._isLoading = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        // Password fields
-        private string _password = "";
+        /// <summary>
+        /// Gets or sets the patient's password.
+        /// </summary>
         public string Password
         {
-            get => _password;
+            get => this._password;
             set
             {
-                if (_password != value)
+                if (this._password != value)
                 {
-                    _password = value;
-                    OnPropertyChanged();
+                    this._password = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        protected virtual void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
+        /// <summary>
+        /// Loads patient information by user ID.
+        /// </summary>
+        /// <param name="userId">The user ID to load information for.</param>
+        /// <returns>A task representing the asynchronous operation, with a boolean result indicating success.</returns>
         public async Task<bool> LoadPatientInfoByUserIdAsync(int userId)
         {
             try
             {
-                IsLoading = true;
-                bool result = await _patientManagerModel.LoadPatientInfoByUserId(userId);
-                if (result && _patientManagerModel._patientInfo != PatientJointModel.Default)
+                this.IsLoading = true;
+                bool result = await this._patientManagerModel.LoadPatientInfoByUserId(userId);
+                if (result && this._patientManagerModel.PatientInfo != PatientJointModel.Default)
                 {
-                    var patient = _patientManagerModel._patientInfo;
-                    Name = patient.PatientName;
-                    Email = patient.Mail;
-                    Password = patient.Password;
-                    Username = patient.Username;
-                    Address = patient.Address;
-                    PhoneNumber = patient.PhoneNumber;
-                    EmergencyContact = patient.EmergencyContact;
-                    BloodType = patient.BloodType;
-                    Allergies = patient.Allergies;
-                    BirthDate = patient.BirthDate.ToDateTime(TimeOnly.MinValue);
-                    Cnp = patient.Cnp;
-                    RegistrationDate = patient.RegistrationDate;
-                    Weight = patient.Weight;
-                    Height = patient.Height;
+                    var patient = this._patientManagerModel.PatientInfo;
+                    this.Name = patient.PatientName;
+                    this.Email = patient.Mail;
+                    this.Password = patient.Password;
+                    this.Username = patient.Username;
+                    this.Address = patient.Address;
+                    this.PhoneNumber = patient.PhoneNumber;
+                    this.EmergencyContact = patient.EmergencyContact;
+                    this.BloodType = patient.BloodType;
+                    this.Allergies = patient.Allergies;
+                    this.BirthDate = patient.BirthDate.ToDateTime(TimeOnly.MinValue);
+                    this.Cnp = patient.Cnp;
+                    this.RegistrationDate = patient.RegistrationDate;
+                    this.Weight = patient.Weight;
+                    this.Height = patient.Height;
 
-                    _originalPatient = new PatientJointModel(userId, -1, Name, BloodType, EmergencyContact, Allergies, Weight, Height,
-                        Username, Password, Email, patient.BirthDate, Cnp, Address, PhoneNumber, RegistrationDate);
-
+                    this.OriginalPatient = new PatientJointModel(
+                        userId,
+                        -1,
+                        this.Name,
+                        this.BloodType,
+                        this.EmergencyContact,
+                        this.Allergies,
+                        this.Weight,
+                        this.Height,
+                        this.Username,
+                        this.Password,
+                        this.Email,
+                        patient.BirthDate,
+                        this.Cnp,
+                        this.Address,
+                        this.PhoneNumber,
+                        this.RegistrationDate);
                 }
 
-                IsLoading = false;
+                this.IsLoading = false;
                 return result;
             }
             catch (Exception ex)
             {
-                IsLoading = false;
+                this.IsLoading = false;
                 Console.WriteLine($"Error loading patient info: {ex.Message}");
                 return false;
             }
         }
 
-
+        /// <summary>
+        /// Updates the patient's name.
+        /// </summary>
+        /// <param name="name">The new name.</param>
+        /// <returns>A task representing the asynchronous operation, with a boolean result indicating success.</returns>
         public async Task<bool> UpdateName(string name)
         {
             try
             {
-                IsLoading = true;
-                bool result = await _patientManagerModel.UpdateName(UserId, name);
+                this.IsLoading = true;
+                bool result = await this._patientManagerModel.UpdateName(this.UserId, name);
                 if (result)
                 {
-                    Name = name;
-                    _originalPatient.PatientName = name;
+                    this.Name = name;
+                    this.OriginalPatient.PatientName = name;
                 }
-                IsLoading = false;
+
+                this.IsLoading = false;
                 return result;
             }
             catch (Exception ex)
             {
-                IsLoading = false;
+                this.IsLoading = false;
                 throw new Exception(ex.Message);
             }
         }
 
+        /// <summary>
+        /// Updates the patient's email.
+        /// </summary>
+        /// <param name="email">The new email.</param>
+        /// <returns>A task representing the asynchronous operation, with a boolean result indicating success.</returns>
         public async Task<bool> UpdateEmail(string email)
         {
             try
             {
-                IsLoading = true;
-                bool result = await _patientManagerModel.UpdateEmail(UserId, email);
+                this.IsLoading = true;
+                bool result = await this._patientManagerModel.UpdateEmail(this.UserId, email);
                 if (result)
                 {
-                    Email = email;
-                    _originalPatient.Mail = email;
+                    this.Email = email;
+                    this.OriginalPatient.Mail = email;
                 }
-                IsLoading = false;
+
+                this.IsLoading = false;
                 return result;
             }
             catch (Exception ex)
             {
-                IsLoading = false;
+                this.IsLoading = false;
                 throw new Exception(ex.Message);
             }
         }
 
+        /// <summary>
+        /// Updates the patient's username.
+        /// </summary>
+        /// <param name="username">The new username.</param>
+        /// <returns>A task representing the asynchronous operation, with a boolean result indicating success.</returns>
         public async Task<bool> UpdateUsername(string username)
         {
             try
             {
-                IsLoading = true;
-                bool result = await _patientManagerModel.UpdateUsername(UserId, username);
+                this.IsLoading = true;
+                bool result = await this._patientManagerModel.UpdateUsername(this.UserId, username);
                 if (result)
                 {
-                    Username = username;
-                    _originalPatient.Username = username;
+                    this.Username = username;
+                    this.OriginalPatient.Username = username;
                 }
-                IsLoading = false;
+
+                this.IsLoading = false;
                 return result;
             }
             catch (Exception ex)
             {
-                IsLoading = false;
+                this.IsLoading = false;
                 throw new Exception(ex.Message);
             }
         }
 
+        /// <summary>
+        /// Updates the patient's address.
+        /// </summary>
+        /// <param name="address">The new address.</param>
+        /// <returns>A task representing the asynchronous operation, with a boolean result indicating success.</returns>
         public async Task<bool> UpdateAddress(string address)
         {
             try
             {
-                IsLoading = true;
-                bool result = await _patientManagerModel.UpdateAddress(UserId, address);
+                this.IsLoading = true;
+                bool result = await this._patientManagerModel.UpdateAddress(this.UserId, address);
                 if (result)
                 {
-                    Address = address;
-                    _originalPatient.Address = address;
+                    this.Address = address;
+                    this.OriginalPatient.Address = address;
                 }
-                IsLoading = false;
+
+                this.IsLoading = false;
                 return result;
             }
             catch (Exception ex)
             {
-                IsLoading = false;
+                this.IsLoading = false;
                 throw new Exception(ex.Message);
             }
         }
+
+        /// <summary>
+        /// Updates the patient's password.
+        /// </summary>
+        /// <param name="password">The new password.</param>
+        /// <returns>A task representing the asynchronous operation, with a boolean result indicating success.</returns>
         public async Task<bool> UpdatePassword(string password)
         {
             try
             {
-                IsLoading = true;
-                bool result = await _patientManagerModel.UpdatePassword(UserId, password);
+                this.IsLoading = true;
+                bool result = await this._patientManagerModel.UpdatePassword(this.UserId, password);
                 if (result)
                 {
-                    Password = password;
-                    _originalPatient.Password = password;
+                    this.Password = password;
+                    this.OriginalPatient.Password = password;
                 }
-                IsLoading = false;
+
+                this.IsLoading = false;
                 return result;
             }
             catch (Exception ex)
             {
-                IsLoading = false;
+                this.IsLoading = false;
                 throw new Exception(ex.Message);
             }
         }
 
+        /// <summary>
+        /// Updates the patient's phone number.
+        /// </summary>
+        /// <param name="phoneNumber">The new phone number.</param>
+        /// <returns>A task representing the asynchronous operation, with a boolean result indicating success.</returns>
         public async Task<bool> UpdatePhoneNumber(string phoneNumber)
         {
             try
             {
-                IsLoading = true;
-                bool result = await _patientManagerModel.UpdatePhoneNumber(UserId, phoneNumber);
+                this.IsLoading = true;
+                bool result = await this._patientManagerModel.UpdatePhoneNumber(this.UserId, phoneNumber);
                 if (result)
                 {
-                    PhoneNumber = phoneNumber;
-                    _originalPatient.PhoneNumber = phoneNumber;
+                    this.PhoneNumber = phoneNumber;
+                    this.OriginalPatient.PhoneNumber = phoneNumber;
                 }
-                IsLoading = false;
+
+                this.IsLoading = false;
                 return result;
             }
             catch (Exception ex)
             {
-                IsLoading = false;
+                this.IsLoading = false;
                 throw new Exception(ex.Message);
             }
         }
 
+        /// <summary>
+        /// Updates the patient's emergency contact.
+        /// </summary>
+        /// <param name="emergencyContact">The new emergency contact.</param>
+        /// <returns>A task representing the asynchronous operation, with a boolean result indicating success.</returns>
         public async Task<bool> UpdateEmergencyContact(string emergencyContact)
         {
             try
             {
-                IsLoading = true;
-                bool result = await _patientManagerModel.UpdateEmergencyContact(UserId, emergencyContact);
+                this.IsLoading = true;
+                bool result = await this._patientManagerModel.UpdateEmergencyContact(this.UserId, emergencyContact);
                 if (result)
                 {
-                    EmergencyContact = emergencyContact;
-                    _originalPatient.EmergencyContact = emergencyContact;
+                    this.EmergencyContact = emergencyContact;
+                    this.OriginalPatient.EmergencyContact = emergencyContact;
                 }
-                IsLoading = false;
+
+                this.IsLoading = false;
                 return result;
             }
             catch (Exception ex)
             {
-                IsLoading = false;
+                this.IsLoading = false;
                 throw new Exception(ex.Message);
             }
         }
 
+        /// <summary>
+        /// Updates the patient's weight.
+        /// </summary>
+        /// <param name="weight">The new weight.</param>
+        /// <returns>A task representing the asynchronous operation, with a boolean result indicating success.</returns>
         public async Task<bool> UpdateWeight(double weight)
         {
             try
             {
-                IsLoading = true;
-                bool result = await _patientManagerModel.UpdateWeight(UserId, weight);
+                this.IsLoading = true;
+                bool result = await this._patientManagerModel.UpdateWeight(this.UserId, weight);
                 if (result)
                 {
-                    Weight = weight;
-                    _originalPatient.Weight = weight;
+                    this.Weight = weight;
+                    this.OriginalPatient.Weight = weight;
                 }
-                IsLoading = false;
+
+                this.IsLoading = false;
                 return result;
             }
             catch (Exception ex)
             {
-                IsLoading = false;
+                this.IsLoading = false;
                 throw new Exception(ex.Message);
             }
         }
 
+        /// <summary>
+        /// Updates the patient's height.
+        /// </summary>
+        /// <param name="height">The new height.</param>
+        /// <returns>A task representing the asynchronous operation, with a boolean result indicating success.</returns>
         public async Task<bool> UpdateHeight(int height)
         {
             try
             {
-                IsLoading = true;
-                bool result = await _patientManagerModel.UpdateHeight(UserId, height);
+                this.IsLoading = true;
+                bool result = await this._patientManagerModel.UpdateHeight(this.UserId, height);
                 if (result)
                 {
-                    Height = height;
-                    _originalPatient.Height = height;
+                    this.Height = height;
+                    this.OriginalPatient.Height = height;
                 }
-                IsLoading = false;
+
+                this.IsLoading = false;
                 return result;
             }
             catch (Exception ex)
             {
-                IsLoading = false;
+                this.IsLoading = false;
                 throw new Exception(ex.Message);
             }
         }
 
+        /// <summary>
+        /// Logs an update action for the patient.
+        /// </summary>
+        /// <param name="userId">The user ID to log the action for.</param>
+        /// <param name="action">The type of action being logged.</param>
+        /// <returns>A task representing the asynchronous operation, with a boolean result indicating success.</returns>
         public async Task<bool> LogUpdate(int userId, ActionType action)
         {
-            return await _patientManagerModel.LogUpdate(userId, action);
+            return await this._patientManagerModel.LogUpdate(userId, action);
+        }
+
+        /// <summary>
+        /// Raises the PropertyChanged event.
+        /// </summary>
+        /// <param name="propertyName">The name of the property that changed.</param>
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

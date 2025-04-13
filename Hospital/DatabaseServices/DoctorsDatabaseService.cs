@@ -1,4 +1,5 @@
 ﻿using Hospital.Configs;
+using Hospital.Interfaces;
 using Hospital.Models;
 using Microsoft.Data.SqlClient;
 using System;
@@ -7,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace Hospital.DatabaseServices
 {
-    public class DoctorsDatabaseService
+    public class DoctorsDatabaseService : IDoctorService
     {
-        private readonly Config _config;
+        private readonly IConfigProvider _configProvider;
 
-        public DoctorsDatabaseService()
+        public DoctorsDatabaseService(IConfigProvider configProvider)
         {
-            _config = Config.GetInstance();
+            _configProvider = configProvider ?? throw new ArgumentNullException(nameof(configProvider));
         }
 
         public async Task<DoctorDisplayModel> GetDoctorById(int userId)
@@ -35,7 +36,7 @@ namespace Hospital.DatabaseServices
 
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
 
                 using SqlCommand command = new SqlCommand(query, connection);
@@ -94,7 +95,7 @@ namespace Hospital.DatabaseServices
 
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
 
                 SqlCommand selectCommand = new SqlCommand(querySelectAllDoctors, connection);
@@ -159,7 +160,7 @@ namespace Hospital.DatabaseServices
 
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
 
                 SqlCommand selectCommand = new SqlCommand(querySelectDoctors, connection);
@@ -228,7 +229,7 @@ namespace Hospital.DatabaseServices
 
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
 
                 //Prepare the command
@@ -301,7 +302,7 @@ namespace Hospital.DatabaseServices
 
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
 
                 SqlCommand selectCommand = new SqlCommand(querySelectDoctors, connection);
@@ -358,7 +359,7 @@ namespace Hospital.DatabaseServices
 
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
 
                 SqlCommand updateCommand = new SqlCommand(queryUpdateDoctorName, connection);
@@ -395,7 +396,7 @@ namespace Hospital.DatabaseServices
 
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
 
                 SqlCommand updateCommand = new SqlCommand(queryUpdateDepartment, connection);
@@ -424,7 +425,7 @@ namespace Hospital.DatabaseServices
 
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
 
                 SqlCommand updateCommand = new SqlCommand(queryUpdateRating, connection);
@@ -453,7 +454,7 @@ namespace Hospital.DatabaseServices
 
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
 
                 SqlCommand updateCommand = new SqlCommand(queryUpdateCareerInfo, connection);
@@ -482,7 +483,7 @@ namespace Hospital.DatabaseServices
 
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
 
                 SqlCommand updateCommand = new SqlCommand(queryUpdateAvatarUrl, connection);
@@ -510,8 +511,8 @@ namespace Hospital.DatabaseServices
             WHERE UserId = @userId;";
 
             try
-            {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+            {   
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
 
                 SqlCommand updateCommand = new SqlCommand(queryUpdatePhoneNumber, connection);
@@ -540,7 +541,7 @@ namespace Hospital.DatabaseServices
 
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
 
                 SqlCommand updateCommand = new SqlCommand(queryUpdateEmail, connection);
@@ -565,7 +566,7 @@ namespace Hospital.DatabaseServices
             string query = "INSERT INTO Logs (UserId, ActionType) VALUES (@userId, @type)";
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
 
                 await connection.OpenAsync().ConfigureAwait(false);
 

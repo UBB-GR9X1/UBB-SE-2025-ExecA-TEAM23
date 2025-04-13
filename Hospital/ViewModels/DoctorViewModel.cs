@@ -1,213 +1,274 @@
-using Hospital.Managers;
-using Hospital.Models;
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Threading.Tasks;
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="DoctorViewModel.cs" company="Hospital">
+//   Copyright (c) Hospital. All rights reserved. Licensed under the MIT License.
+// </copyright>
+// <summary>
+//   Defines the DoctorViewModel class for handling doctor profile operations.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Hospital.ViewModels
 {
+    using System;
+    using System.ComponentModel;
+    using System.Diagnostics;
+    using System.Threading.Tasks;
+    using Hospital.Managers;
+    using Hospital.Models;
+
+    /// <summary>
+    /// View model for doctor profile operations. Implements INotifyPropertyChanged for UI binding.
+    /// </summary>
     public class DoctorViewModel : INotifyPropertyChanged
     {
-        private readonly DoctorManagerModel _doctorManagerModel;
+        private readonly DoctorManagerModel doctorManagerModel;
+        private int userId;
+        private string doctorName = string.Empty;
+        private int departmentId;
+        private string departmentName = string.Empty;
+        private double rating;
+        private string careerInfo = string.Empty;
+        private string avatarUrl = string.Empty;
+        private string phoneNumber = string.Empty;
+        private string mail = string.Empty;
+        private bool isLoading;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DoctorViewModel"/> class.
+        /// </summary>
+        /// <param name="doctorManagerModel">The doctor manager model.</param>
+        /// <param name="userId">The user ID of the doctor.</param>
         public DoctorViewModel(DoctorManagerModel doctorManagerModel, int userId)
         {
-            _doctorManagerModel = doctorManagerModel;
-            _userId = userId;
+            this.doctorManagerModel = doctorManagerModel;
+            this.userId = userId;
 
             // Initialize with default values
-            DoctorName = "Loading...";
-            DepartmentName = "Loading department...";
-            Rating = 0;
-            CareerInfo = "Loading career information...";
-            AvatarUrl = "/Assets/default-avatar.png";
-            PhoneNumber = "Loading phone...";
-            Mail = "Loading email...";
+            this.DoctorName = "Loading...";
+            this.DepartmentName = "Loading department...";
+            this.Rating = 0;
+            this.CareerInfo = "Loading career information...";
+            this.AvatarUrl = "/Assets/default-avatar.png";
+            this.PhoneNumber = "Loading phone...";
+            this.Mail = "Loading email...";
 
             // Start async load
-            _originalDoctor = DoctorDisplayModel.Default;
-            _ = LoadDoctorInfoByUserIdAsync(userId);
+            this.OriginalDoctor = DoctorDisplayModel.Default;
+            _ = this.LoadDoctorInfoByUserIdAsync(userId);
         }
 
+        /// <summary>
+        /// Event raised when a property value changes.
+        /// </summary>
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public DoctorDisplayModel _originalDoctor { get; private set; }
+        /// <summary>
+        /// Gets the original doctor model.
+        /// </summary>
+        public DoctorDisplayModel OriginalDoctor { get; private set; }
 
-        private int _userId;
+        /// <summary>
+        /// Gets or sets the user ID of the doctor.
+        /// </summary>
         public int UserId
         {
-            get => _userId;
+            get => this.userId;
             set
             {
-                if (_userId != value)
+                if (this.userId != value)
                 {
-                    _userId = value;
-                    OnPropertyChanged();
+                    this.userId = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        private string _doctorName = "";
+        /// <summary>
+        /// Gets or sets the doctor's name.
+        /// </summary>
         public string DoctorName
         {
-            get => _doctorName;
+            get => this.doctorName;
             set
             {
-                if (_doctorName != value)
+                if (this.doctorName != value)
                 {
-                    _doctorName = value;
-                    OnPropertyChanged();
+                    this.doctorName = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        private int _departmentId;
+        /// <summary>
+        /// Gets or sets the doctor's department ID.
+        /// </summary>
         public int DepartmentId
         {
-            get => _departmentId;
+            get => this.departmentId;
             set
             {
-                if (_departmentId != value)
+                if (this.departmentId != value)
                 {
-                    _departmentId = value;
-                    OnPropertyChanged();
+                    this.departmentId = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        private string _departmentName = "";
+        /// <summary>
+        /// Gets or sets the department name.
+        /// </summary>
         public string DepartmentName
         {
-            get => _departmentName;
+            get => this.departmentName;
             set
             {
-                if (_departmentName != value)
+                if (this.departmentName != value)
                 {
-                    _departmentName = value;
-                    OnPropertyChanged();
+                    this.departmentName = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        private double _rating;
+        /// <summary>
+        /// Gets or sets the doctor's rating.
+        /// </summary>
         public double Rating
         {
-            get => _rating;
+            get => this.rating;
             set
             {
-                if (_rating != value)
+                if (this.rating != value)
                 {
-                    _rating = value;
-                    OnPropertyChanged();
+                    this.rating = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        private string _careerInfo = "";
+        /// <summary>
+        /// Gets or sets the doctor's career information.
+        /// </summary>
         public string CareerInfo
         {
-            get => _careerInfo;
+            get => this.careerInfo;
             set
             {
-                if (_careerInfo != value)
+                if (this.careerInfo != value)
                 {
-                    _careerInfo = value;
-                    OnPropertyChanged();
+                    this.careerInfo = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        private string _avatarUrl = "";
+        /// <summary>
+        /// Gets or sets the doctor's avatar URL.
+        /// </summary>
         public string AvatarUrl
         {
-            get => _avatarUrl;
+            get => this.avatarUrl;
             set
             {
-                if (_avatarUrl != value)
+                if (this.avatarUrl != value)
                 {
-                    _avatarUrl = value;
-                    OnPropertyChanged();
+                    this.avatarUrl = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        private string _phoneNumber = "";
+        /// <summary>
+        /// Gets or sets the doctor's phone number.
+        /// </summary>
         public string PhoneNumber
         {
-            get => _phoneNumber;
+            get => this.phoneNumber;
             set
             {
-                if (_phoneNumber != value)
+                if (this.phoneNumber != value)
                 {
-                    _phoneNumber = value;
-                    OnPropertyChanged();
+                    this.phoneNumber = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        private string _mail = "";
+        /// <summary>
+        /// Gets or sets the doctor's email address.
+        /// </summary>
         public string Mail
         {
-            get => _mail;
+            get => this.mail;
             set
             {
-                if (_mail != value)
+                if (this.mail != value)
                 {
-                    _mail = value;
-                    OnPropertyChanged();
+                    this.mail = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        private bool _isLoading;
+        /// <summary>
+        /// Gets or sets a value indicating whether the view model is loading data.
+        /// </summary>
         public bool IsLoading
         {
-            get => _isLoading;
+            get => this.isLoading;
             set
             {
-                if (_isLoading != value)
+                if (this.isLoading != value)
                 {
-                    _isLoading = value;
-                    OnPropertyChanged();
+                    this.isLoading = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-        protected virtual void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
+        /// <summary>
+        /// Loads the doctor information based on user ID.
+        /// </summary>
+        /// <param name="userId">The user ID to load information for.</param>
+        /// <returns>A task representing the asynchronous operation that returns true if successful.</returns>
         public async Task<bool> LoadDoctorInfoByUserIdAsync(int userId)
         {
             try
             {
-                IsLoading = true;
+                this.IsLoading = true;
 
-                var result = await _doctorManagerModel.LoadDoctorInfoByUserId(userId);
-                if (result && _doctorManagerModel._doctorInfo != DoctorDisplayModel.Default)
+                var result = await this.doctorManagerModel.LoadDoctorInfoByUserId(userId);
+                if (result && this.doctorManagerModel._doctorInfo != DoctorDisplayModel.Default)
                 {
-                    var doctor = _doctorManagerModel._doctorInfo;
+                    var doctor = this.doctorManagerModel._doctorInfo;
 
-                    DoctorName = doctor.DoctorName ?? "Not specified";
-                    DepartmentId = doctor.DepartmentId;
-                    DepartmentName = doctor.DepartmentName ?? "No department";
-                    Rating = (double)(doctor.Rating > 0 ? doctor.Rating : 0);
-                    CareerInfo = doctor.CareerInfo ?? "No career information";
-                    AvatarUrl = doctor.AvatarUrl ?? "/Assets/default-avatar.png";
-                    PhoneNumber = doctor.PhoneNumber ?? "Not provided";
-                    Mail = doctor.Mail ?? "Not provided";
+                    this.DoctorName = doctor.DoctorName ?? "Not specified";
+                    this.DepartmentId = doctor.DepartmentId;
+                    this.DepartmentName = doctor.DepartmentName ?? "No department";
+                    this.Rating = (double)(doctor.Rating > 0 ? doctor.Rating : 0);
+                    this.CareerInfo = doctor.CareerInfo ?? "No career information";
+                    this.AvatarUrl = doctor.AvatarUrl ?? "/Assets/default-avatar.png";
+                    this.PhoneNumber = doctor.PhoneNumber ?? "Not provided";
+                    this.Mail = doctor.Mail ?? "Not provided";
 
-                    _originalDoctor = new DoctorDisplayModel(-1, DoctorName, DepartmentId, DepartmentName, Rating, CareerInfo, AvatarUrl,
-                        PhoneNumber, Mail);
+                    this.OriginalDoctor = new DoctorDisplayModel(
+                        -1,
+                        this.DoctorName,
+                        this.DepartmentId,
+                        this.DepartmentName,
+                        this.Rating,
+                        this.CareerInfo,
+                        this.AvatarUrl,
+                        this.PhoneNumber,
+                        this.Mail);
 
                     return true;
                 }
 
                 // Set not found state
-                DoctorName = "Doctor profile not found";
-                DepartmentName = "N/A";
+                this.DoctorName = "Doctor profile not found";
+                this.DepartmentName = "N/A";
                 return false;
             }
             catch (Exception ex)
@@ -215,159 +276,252 @@ namespace Hospital.ViewModels
                 Debug.WriteLine($"Error in ViewModel: {ex.Message}");
 
                 // Set error state
-                DoctorName = "Error loading profile";
-                DepartmentName = "Error";
-                CareerInfo = "Please try again later";
+                this.DoctorName = "Error loading profile";
+                this.DepartmentName = "Error";
+                this.CareerInfo = "Please try again later";
 
                 return false;
             }
             finally
             {
-                IsLoading = false;
+                this.IsLoading = false;
             }
         }
 
+        /// <summary>
+        /// Updates the doctor's name.
+        /// </summary>
+        /// <param name="name">The new name to set.</param>
+        /// <returns>A task representing the asynchronous operation that returns true if successful.</returns>
         public async Task<bool> UpdateDoctorName(string name)
         {
             try
             {
-                IsLoading = true;
-                bool result = await _doctorManagerModel.UpdateDoctorName(UserId, name);
+                this.IsLoading = true;
+                bool result = await this.doctorManagerModel.UpdateDoctorName(this.UserId, name);
                 if (result)
                 {
-                    DoctorName = name;
-                    _originalDoctor = new DoctorDisplayModel(_originalDoctor.DoctorId, name, _originalDoctor.DepartmentId,
-    _originalDoctor.DepartmentName, _originalDoctor.Rating, _originalDoctor.CareerInfo, _originalDoctor.AvatarUrl,
-    _originalDoctor.PhoneNumber, _originalDoctor.Mail);
+                    this.DoctorName = name;
+                    this.OriginalDoctor = new DoctorDisplayModel(
+                        this.OriginalDoctor.DoctorId,
+                        name,
+                        this.OriginalDoctor.DepartmentId,
+                        this.OriginalDoctor.DepartmentName,
+                        this.OriginalDoctor.Rating,
+                        this.OriginalDoctor.CareerInfo,
+                        this.OriginalDoctor.AvatarUrl,
+                        this.OriginalDoctor.PhoneNumber,
+                        this.OriginalDoctor.Mail);
                 }
-                IsLoading = false;
+
+                this.IsLoading = false;
                 return result;
             }
             catch (Exception ex)
             {
-                IsLoading = false;
+                this.IsLoading = false;
                 throw new Exception(ex.Message);
             }
         }
 
+        /// <summary>
+        /// Updates the doctor's department.
+        /// </summary>
+        /// <param name="departmentId">The new department ID to set.</param>
+        /// <returns>A task representing the asynchronous operation that returns true if successful.</returns>
         public async Task<bool> UpdateDepartment(int departmentId)
         {
             try
             {
-                IsLoading = true;
-                bool result = await _doctorManagerModel.UpdateDepartment(UserId, departmentId);
+                this.IsLoading = true;
+                bool result = await this.doctorManagerModel.UpdateDepartment(this.UserId, departmentId);
                 if (result)
                 {
-                    DepartmentId = departmentId;
-                    // Note: You might need to update DepartmentName separately
-                    _originalDoctor = new DoctorDisplayModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, departmentId,
-    _originalDoctor.DepartmentName, _originalDoctor.Rating, _originalDoctor.CareerInfo, _originalDoctor.AvatarUrl,
-    _originalDoctor.PhoneNumber, _originalDoctor.Mail);
+                    this.DepartmentId = departmentId; // Note: You might need to update DepartmentName separately
+                    this.OriginalDoctor = new DoctorDisplayModel(
+                        this.OriginalDoctor.DoctorId,
+                        this.OriginalDoctor.DoctorName,
+                        departmentId,
+                        this.OriginalDoctor.DepartmentName,
+                        this.OriginalDoctor.Rating,
+                        this.OriginalDoctor.CareerInfo,
+                        this.OriginalDoctor.AvatarUrl,
+                        this.OriginalDoctor.PhoneNumber,
+                        this.OriginalDoctor.Mail);
                 }
-                IsLoading = false;
+
+                this.IsLoading = false;
                 return result;
             }
             catch (Exception ex)
             {
-                IsLoading = false;
+                this.IsLoading = false;
                 throw new Exception(ex.Message);
             }
         }
 
+        /// <summary>
+        /// Updates the doctor's career information.
+        /// </summary>
+        /// <param name="careerInfo">The new career information to set.</param>
+        /// <returns>A task representing the asynchronous operation that returns true if successful.</returns>
         public async Task<bool> UpdateCareerInfo(string careerInfo)
         {
             try
             {
-                IsLoading = true;
-                bool result = await _doctorManagerModel.UpdateCareerInfo(UserId, careerInfo);
+                this.IsLoading = true;
+                bool result = await this.doctorManagerModel.UpdateCareerInfo(this.UserId, careerInfo);
                 if (result)
                 {
-                    CareerInfo = careerInfo;
-                    _originalDoctor = new DoctorDisplayModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, _originalDoctor.DepartmentId,
-    _originalDoctor.DepartmentName, _originalDoctor.Rating, careerInfo, _originalDoctor.AvatarUrl,
-    _originalDoctor.PhoneNumber, _originalDoctor.Mail);
+                    this.CareerInfo = careerInfo;
+                    this.OriginalDoctor = new DoctorDisplayModel(
+                        this.OriginalDoctor.DoctorId,
+                        this.OriginalDoctor.DoctorName,
+                        this.OriginalDoctor.DepartmentId,
+                        this.OriginalDoctor.DepartmentName,
+                        this.OriginalDoctor.Rating,
+                        careerInfo,
+                        this.OriginalDoctor.AvatarUrl,
+                        this.OriginalDoctor.PhoneNumber,
+                        this.OriginalDoctor.Mail);
                 }
-                IsLoading = false;
+
+                this.IsLoading = false;
                 return result;
             }
             catch (Exception ex)
             {
-                IsLoading = false;
+                this.IsLoading = false;
                 throw new Exception(ex.Message);
             }
         }
 
+        /// <summary>
+        /// Updates the doctor's avatar URL.
+        /// </summary>
+        /// <param name="avatarUrl">The new avatar URL to set.</param>
+        /// <returns>A task representing the asynchronous operation that returns true if successful.</returns>
         public async Task<bool> UpdateAvatarUrl(string avatarUrl)
         {
             try
             {
-                IsLoading = true;
-                bool result = await _doctorManagerModel.UpdateAvatarUrl(UserId, avatarUrl);
+                this.IsLoading = true;
+                bool result = await this.doctorManagerModel.UpdateAvatarUrl(this.UserId, avatarUrl);
                 if (result)
                 {
-                    AvatarUrl = avatarUrl;
-                    _originalDoctor = new DoctorDisplayModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, _originalDoctor.DepartmentId,
-    _originalDoctor.DepartmentName, _originalDoctor.Rating, _originalDoctor.CareerInfo, _originalDoctor.AvatarUrl,
-    _originalDoctor.PhoneNumber, _originalDoctor.Mail);
+                    this.AvatarUrl = avatarUrl;
+                    this.OriginalDoctor = new DoctorDisplayModel(
+                        this.OriginalDoctor.DoctorId,
+                        this.OriginalDoctor.DoctorName,
+                        this.OriginalDoctor.DepartmentId,
+                        this.OriginalDoctor.DepartmentName,
+                        this.OriginalDoctor.Rating,
+                        this.OriginalDoctor.CareerInfo,
+                        this.OriginalDoctor.AvatarUrl,
+                        this.OriginalDoctor.PhoneNumber,
+                        this.OriginalDoctor.Mail);
                 }
-                IsLoading = false;
+
+                this.IsLoading = false;
                 return result;
             }
             catch (Exception ex)
             {
-                IsLoading = false;
+                this.IsLoading = false;
                 throw new Exception(ex.Message);
             }
         }
 
+        /// <summary>
+        /// Updates the doctor's phone number.
+        /// </summary>
+        /// <param name="phoneNumber">The new phone number to set.</param>
+        /// <returns>A task representing the asynchronous operation that returns true if successful.</returns>
         public async Task<bool> UpdatePhoneNumber(string phoneNumber)
         {
             try
             {
-                IsLoading = true;
-                bool result = await _doctorManagerModel.UpdatePhoneNumber(UserId, phoneNumber);
+                this.IsLoading = true;
+                bool result = await this.doctorManagerModel.UpdatePhoneNumber(this.UserId, phoneNumber);
                 if (result)
                 {
-                    PhoneNumber = phoneNumber;
-                    _originalDoctor = new DoctorDisplayModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, _originalDoctor.DepartmentId,
-                        _originalDoctor.DepartmentName, _originalDoctor.Rating, _originalDoctor.CareerInfo, _originalDoctor.AvatarUrl,
-                        phoneNumber, _originalDoctor.Mail);
+                    this.PhoneNumber = phoneNumber;
+                    this.OriginalDoctor = new DoctorDisplayModel(
+                        this.OriginalDoctor.DoctorId,
+                        this.OriginalDoctor.DoctorName,
+                        this.OriginalDoctor.DepartmentId,
+                        this.OriginalDoctor.DepartmentName,
+                        this.OriginalDoctor.Rating,
+                        this.OriginalDoctor.CareerInfo,
+                        this.OriginalDoctor.AvatarUrl,
+                        phoneNumber,
+                        this.OriginalDoctor.Mail);
                 }
-                IsLoading = false;
+
+                this.IsLoading = false;
                 return result;
             }
             catch (Exception ex)
             {
-                IsLoading = false;
+                this.IsLoading = false;
                 throw new Exception(ex.Message);
             }
         }
 
+        /// <summary>
+        /// Updates the doctor's email address.
+        /// </summary>
+        /// <param name="mail">The new email address to set.</param>
+        /// <returns>A task representing the asynchronous operation that returns true if successful.</returns>
         public async Task<bool> UpdateMail(string mail)
         {
             try
             {
-                IsLoading = true;
-                bool result = await _doctorManagerModel.UpdateEmail(UserId, mail);
+                this.IsLoading = true;
+                bool result = await this.doctorManagerModel.UpdateEmail(this.UserId, mail);
                 if (result)
                 {
-                    Mail = mail;
-                    _originalDoctor = new DoctorDisplayModel(_originalDoctor.DoctorId, _originalDoctor.DoctorName, _originalDoctor.DepartmentId,
-                    _originalDoctor.DepartmentName, _originalDoctor.Rating, _originalDoctor.CareerInfo, _originalDoctor.AvatarUrl,
-                    _originalDoctor.PhoneNumber, mail);
+                    this.Mail = mail;
+                    this.OriginalDoctor = new DoctorDisplayModel(
+                        this.OriginalDoctor.DoctorId,
+                        this.OriginalDoctor.DoctorName,
+                        this.OriginalDoctor.DepartmentId,
+                        this.OriginalDoctor.DepartmentName,
+                        this.OriginalDoctor.Rating,
+                        this.OriginalDoctor.CareerInfo,
+                        this.OriginalDoctor.AvatarUrl,
+                        this.OriginalDoctor.PhoneNumber,
+                        mail);
                 }
-                IsLoading = false;
+
+                this.IsLoading = false;
                 return result;
             }
             catch (Exception ex)
             {
-                IsLoading = false;
+                this.IsLoading = false;
                 throw new Exception(ex.Message);
             }
         }
+
+        /// <summary>
+        /// Logs a user action.
+        /// </summary>
+        /// <param name="userId">The user ID performing the action.</param>
+        /// <param name="action">The action type to log.</param>
+        /// <returns>A task representing the asynchronous operation that returns true if successful.</returns>
         public async Task<bool> LogUpdate(int userId, ActionType action)
         {
-            return await _doctorManagerModel.LogUpdate(userId, action);
+            return await this.doctorManagerModel.LogUpdate(userId, action);
+        }
+
+        /// <summary>
+        /// Raises the PropertyChanged event.
+        /// </summary>
+        /// <param name="propertyName">Name of the property that changed.</param>
+        protected virtual void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

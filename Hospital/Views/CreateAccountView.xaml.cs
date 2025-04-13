@@ -7,17 +7,22 @@ using Microsoft.Data.SqlClient;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using Hospital.DatabaseServices;
+using Hospital.Interfaces;
+using System.Threading.Tasks;
 
 namespace Hospital
 {
     public sealed partial class CreateAccountView : Window
     {
+        private readonly IAuthService _authService;
+        private readonly IConfigProvider _configProvider;
 
-        private readonly AuthViewModel _viewModel;
-        public CreateAccountView(AuthViewModel viewModel)
+        public CreateAccountView(IAuthService authService)
         {
             this.InitializeComponent();
-            _viewModel = viewModel;
+            _authService = authService ?? throw new ArgumentNullException(nameof(authService));
+            _configProvider = Hospital.Configs.Config.GetInstance();
         }
 
         private async void CreateAccountButton_Click(object sender, RoutedEventArgs e)
@@ -28,109 +33,98 @@ namespace Hospital
             string name = NameTextBox.Text;
             string emergencyContact = EmergencyContactTextBox.Text;
 
-            if (BirthDateCalendarPicker.Date.HasValue)
+            if (!BirthDateCalendarPicker.Date.HasValue)
             {
-                DateOnly birthDate = DateOnly.FromDateTime(BirthDateCalendarPicker.Date.Value.DateTime);
-                BirthDateCalendarPicker.Date = new DateTimeOffset(birthDate.ToDateTime(TimeOnly.MinValue));
+                await DisplayErrorDialogAsync("Birth date is required.");
+                return;
+            }
 
-                string cnp = CNPTextBox.Text;
+            DateOnly birthDate = DateOnly.FromDateTime(BirthDateCalendarPicker.Date.Value.DateTime);
+            BirthDateCalendarPicker.Date = new DateTimeOffset(birthDate.ToDateTime(TimeOnly.MinValue));
 
-                BloodType? selectedBloodType = null;
-                if (BloodTypeComboBox.SelectedItem is ComboBoxItem selectedItem)
+            string cnp = CNPTextBox.Text;
+
+            BloodType? selectedBloodType = null;
+            if (BloodTypeComboBox.SelectedItem is ComboBoxItem selectedItem)
+            {
+                string? selectedTag = selectedItem.Tag?.ToString();
+                if (selectedTag != null && Enum.TryParse(selectedTag, out BloodType parsedBloodType))
                 {
-                    string? selectedTag = selectedItem.Tag.ToString();
-                    if (selectedTag != null && Enum.TryParse(selectedTag, out BloodType parsedBloodType))
-                    {
-                        selectedBloodType = parsedBloodType;
-                    }
-                }
-
-                if (selectedBloodType == null)
-                {
-                    var validationDialog = new ContentDialog
-                    {
-                        Title = "Error",
-                        Content = "Please select a blood type.",
-                        CloseButtonText = "OK"
-                    };
-
-                    validationDialog.XamlRoot = this.Content.XamlRoot;
-                    await validationDialog.ShowAsync();
-                    return;
-                }
-
-                bool weightValid = double.TryParse(WeightTextBox.Text, out double weight);
-                bool heightValid = int.TryParse(HeightTextBox.Text, out int height);
-
-                if (!weightValid || !heightValid || weight <= 0 || height <= 0)
-                {
-                    var validationDialog = new ContentDialog
-                    {
-                        Title = "Error",
-                        Content = "Please enter valid Weight (kg) and Height (cm).",
-                        CloseButtonText = "OK"
-                    };
-
-                    validationDialog.XamlRoot = this.Content.XamlRoot;
-                    await validationDialog.ShowAsync();
-                    return;
-                }
-
-                try
-                {
-                    await _viewModel.CreateAccount(new UserCreateAccountModel(username, password, mail, name, birthDate, cnp, (BloodType)selectedBloodType, emergencyContact, weight, height));
-
-                    PatientManagerModel patientManagerModel = new PatientManagerModel();
-                    PatientViewModel patientViewModel = new PatientViewModel(patientManagerModel, _viewModel._authManagerModel._userInfo.UserId);
-                    PatientDashboardWindow patientDashboardWindow = new PatientDashboardWindow(patientViewModel, _viewModel);
-                    patientDashboardWindow.Activate();
-                    this.Close();
-                    return;
-
-                }
-                catch (AuthenticationException err)
-                {
-                    var validationDialog = new ContentDialog
-                    {
-                        Title = "Error",
-                        Content = $"{err.Message}",
-                        CloseButtonText = "OK",
-                        XamlRoot = this.Content.XamlRoot
-                    };
-                    await validationDialog.ShowAsync();
-                }
-
-                catch (SqlException)
-                {
-                    var validationDialog = new ContentDialog
-                    {
-                        Title = "Error",
-                        Content = $"Database Error",
-                        CloseButtonText = "OK",
-                        XamlRoot = this.Content.XamlRoot
-                    };
-                    await validationDialog.ShowAsync();
+                    selectedBloodType = parsedBloodType;
                 }
             }
-            else
-            {
-                var validationDialog = new ContentDialog
-                {
-                    Title = "Error",
-                    Content = "Birth date is required.",
-                    CloseButtonText = "OK"
-                };
 
-                validationDialog.XamlRoot = this.Content.XamlRoot;
-                await validationDialog.ShowAsync();
+            if (selectedBloodType == null)
+            {
+                await DisplayErrorDialogAsync("Please select a blood type.");
+                return;
+            }
+
+            bool weightValid = double.TryParse(WeightTextBox.Text, out double weight);
+            bool heightValid = int.TryParse(HeightTextBox.Text, out int height);
+
+            if (!weightValid || !heightValid || weight <= 0 || height <= 0)
+            {
+                await DisplayErrorDialogAsync("Please enter valid Weight (kg) and Height (cm).");
+                return;
+            }
+
+            try
+            {
+                UserCreateAccountModel userModel = new(
+                    username, password, mail, name, birthDate, cnp,
+                    (BloodType)selectedBloodType, emergencyContact, weight, height
+                );
+
+                await _authService.CreateAccount(userModel);
+
+                // Create patient service using config provider
+                IPatientService patientService = new PatientsDatabaseService(_configProvider);
+
+                // Create manager model with service
+                PatientManagerModel patientManagerModel = new PatientManagerModel(patientService);
+
+                // Create view model with manager and user ID
+                PatientViewModel patientViewModel = new PatientViewModel(patientManagerModel, _authService.GetUserId());
+
+                // Navigate to dashboard window
+                PatientDashboardWindow patientDashboardWindow = new PatientDashboardWindow(patientViewModel, _authService);
+                patientDashboardWindow.Activate();
+                this.Close();
+            }
+            catch (AuthenticationException ex)
+            {
+                await DisplayErrorDialogAsync(ex.Message);
+            }
+            catch (SqlException)
+            {
+                await DisplayErrorDialogAsync("Database Error");
             }
         }
 
         private void GoBackButton_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow main = new MainWindow();
-            main.Activate();
+            NavigateToMainWindow();
+        }
+
+        private void NavigateToMainWindow()
+        {
+            MainWindow mainWindow = new MainWindow();
+            mainWindow.Activate();
             this.Close();
+        }
+
+        private async Task DisplayErrorDialogAsync(string message)
+        {
+            var errorDialog = new ContentDialog
+            {
+                Title = "Error",
+                Content = message,
+                CloseButtonText = "OK",
+                XamlRoot = this.Content.XamlRoot
+            };
+
+            await errorDialog.ShowAsync();
         }
     }
 }

@@ -1,101 +1,212 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RecommendationSystemFormViewModel.cs" company="Hospital">
+//   Copyright (c) Hospital. All rights reserved. Licensed under the MIT License.
+// </copyright>
+// <summary>
+//   Defines the RecommendationSystemFormViewModel for handling medical recommendation forms.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
-public class RecommendationSystemFormViewModel : INotifyPropertyChanged
+namespace Hospital.ViewModels
 {
-    public event PropertyChangedEventHandler? PropertyChanged;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Diagnostics;
+    using System.Runtime.CompilerServices;
 
-    public ObservableCollection<string> SymptomStartOptions { get; set; }
-    public ObservableCollection<string> SymptomDiscomfortAreas { get; set; }
-    public ObservableCollection<string> SymptomTypes { get; set; }
-
-    private string _selectedSymptomStart = "";
-    public string SelectedSymptomStart
+    /// <summary>
+    /// View model for managing recommendation system form inputs and validations.
+    /// </summary>
+    public class RecommendationSystemFormViewModel : INotifyPropertyChanged
     {
-        get => _selectedSymptomStart;
-        set { _selectedSymptomStart = value; OnPropertyChanged(); }
-    }
+        private string selectedSymptomStart = string.Empty;
+        private string selectedDiscomfortArea = string.Empty;
+        private string selectedSymptom1 = string.Empty;
+        private string selectedSymptom2 = string.Empty;
+        private string selectedSymptom3 = string.Empty;
 
-    private string _selectedDiscomfortArea = "";
-    public string SelectedDiscomfortArea
-    {
-        get => _selectedDiscomfortArea;
-        set { _selectedDiscomfortArea = value; OnPropertyChanged(); }
-    }
-
-    private string _selectedSymptom1 = "";
-    public string SelectedSymptom1
-    {
-        get => _selectedSymptom1;
-        set { _selectedSymptom1 = value; OnPropertyChanged(); }
-    }
-
-    private string _selectedSymptom2 = "";
-    public string SelectedSymptom2
-    {
-        get => _selectedSymptom2;
-        set { _selectedSymptom2 = value; OnPropertyChanged(); }
-    }
-
-    private string _selectedSymptom3 = "";
-    public string SelectedSymptom3
-    {
-        get => _selectedSymptom3;
-        set { _selectedSymptom3 = value; OnPropertyChanged(); }
-    }
-
-
-
-    public RecommendationSystemFormViewModel()
-    {
-
-        SymptomStartOptions = new ObservableCollection<string>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RecommendationSystemFormViewModel"/> class.
+        /// </summary>
+        public RecommendationSystemFormViewModel()
         {
-            "Suddenly", "After Waking Up", "After Incident", "After Meeting Someone", "After Ingestion"
-        };
+            this.SymptomStartOptions = new ObservableCollection<string>
+            {
+                "Suddenly",
+                "After Waking Up",
+                "After Incident",
+                "After Meeting Someone",
+                "After Ingestion",
+            };
 
-        SymptomDiscomfortAreas = new ObservableCollection<string>
+            this.SymptomDiscomfortAreas = new ObservableCollection<string>
+            {
+                "Head",
+                "Eyes",
+                "Neck",
+                "Stomach",
+                "Chest",
+                "Arm",
+                "Leg",
+                "Back",
+                "Shoulder",
+                "Foot",
+            };
+
+            this.SymptomTypes = new ObservableCollection<string>
+            {
+                "Pain",
+                "Numbness",
+                "Inflammation",
+                "Tenderness",
+                "Coloration",
+                "Itching",
+                "Burning",
+                "None",
+            };
+
+            // Default values for the symptoms
+            this.SelectedSymptom1 = this.SymptomTypes[7];
+            this.SelectedSymptom2 = this.SymptomTypes[7];
+            this.SelectedSymptom3 = this.SymptomTypes[7];
+        }
+
+        /// <summary>
+        /// Event raised when a property value changes.
+        /// </summary>
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        /// <summary>
+        /// Gets or sets the collection of symptom start options.
+        /// </summary>
+        public ObservableCollection<string> SymptomStartOptions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of symptom discomfort areas.
+        /// </summary>
+        public ObservableCollection<string> SymptomDiscomfortAreas { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of symptom types.
+        /// </summary>
+        public ObservableCollection<string> SymptomTypes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the selected symptom start option.
+        /// </summary>
+        public string SelectedSymptomStart
         {
-            "Head", "Eyes", "Neck", "Stomach", "Chest", "Arm", "Leg", "Back", "Shoulder", "Foot"
-        };
+            get => this.selectedSymptomStart;
+            set
+            {
+                if (this.selectedSymptomStart != value)
+                {
+                    this.selectedSymptomStart = value;
+                    this.OnPropertyChanged();
+                }
+            }
+        }
 
-        SymptomTypes = new ObservableCollection<string>
+        /// <summary>
+        /// Gets or sets the selected discomfort area.
+        /// </summary>
+        public string SelectedDiscomfortArea
         {
-            "Pain", "Numbness", "Inflammation", "Tenderness", "Coloration", "Itching", "Burning", "None"
-        };
+            get => this.selectedDiscomfortArea;
+            set
+            {
+                if (this.selectedDiscomfortArea != value)
+                {
+                    this.selectedDiscomfortArea = value;
+                    this.OnPropertyChanged();
+                }
+            }
+        }
 
-        // Here wecan create default values for the fields
-        // I opted to use the placeholder text in the XAML file instead since I think it is nicer
+        /// <summary>
+        /// Gets or sets the first selected symptom.
+        /// </summary>
+        public string SelectedSymptom1
+        {
+            get => this.selectedSymptom1;
+            set
+            {
+                if (this.selectedSymptom1 != value)
+                {
+                    this.selectedSymptom1 = value;
+                    this.OnPropertyChanged();
+                    this.ValidateSymptoms();
+                }
+            }
+        }
 
-        //SelectedSymptomStart = SymptomStartOptions[1];
-        //SelectedDiscomfortArea = SymptomDiscomfortAreas[4];
-        SelectedSymptom1 = SymptomTypes[7];
-        SelectedSymptom2 = SymptomTypes[7];
-        SelectedSymptom3 = SymptomTypes[7];
+        /// <summary>
+        /// Gets or sets the second selected symptom.
+        /// </summary>
+        public string SelectedSymptom2
+        {
+            get => this.selectedSymptom2;
+            set
+            {
+                if (this.selectedSymptom2 != value)
+                {
+                    this.selectedSymptom2 = value;
+                    this.OnPropertyChanged();
+                    this.ValidateSymptoms();
+                }
+            }
+        }
 
-    }
+        /// <summary>
+        /// Gets or sets the third selected symptom.
+        /// </summary>
+        public string SelectedSymptom3
+        {
+            get => this.selectedSymptom3;
+            set
+            {
+                if (this.selectedSymptom3 != value)
+                {
+                    this.selectedSymptom3 = value;
+                    this.OnPropertyChanged();
+                    this.ValidateSymptoms();
+                }
+            }
+        }
 
-    private void ValidateSymptoms()
-    {
-        Debug.WriteLine($"Validating Symptoms: {SelectedSymptom1}, {SelectedSymptom2}, {SelectedSymptom3}");
+        /// <summary>
+        /// Raises the PropertyChanged event.
+        /// </summary>
+        /// <param name="propertyName">The name of the property that changed.</param>
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
-        // Only perform validation when symptoms are not "None"
-        if (SelectedSymptom1 != SymptomTypes[7] && SelectedSymptom2 == SelectedSymptom1)
-            SelectedSymptom2 = string.Empty; // Or set to "None" based on your logic
-        if (SelectedSymptom1 != SymptomTypes[7] && SelectedSymptom3 == SelectedSymptom1)
-            SelectedSymptom3 = string.Empty; // Or set to "None"
-        if (SelectedSymptom2 != SymptomTypes[7] && SelectedSymptom3 == SelectedSymptom2)
-            SelectedSymptom3 = string.Empty; // Or set to "None"
+        /// <summary>
+        /// Validates symptom selections to ensure there are no duplicates.
+        /// </summary>
+        private void ValidateSymptoms()
+        {
+            Debug.WriteLine($"Validating Symptoms: {this.SelectedSymptom1}, {this.SelectedSymptom2}, {this.SelectedSymptom3}");
 
-        Debug.WriteLine($"After Validation: {SelectedSymptom1}, {SelectedSymptom2}, {SelectedSymptom3}");
-    }
+            // Only perform validation when symptoms are not "None"
+            if (this.SelectedSymptom1 != this.SymptomTypes[7] && this.SelectedSymptom2 == this.SelectedSymptom1)
+            {
+                this.SelectedSymptom2 = string.Empty;
+            }
 
+            if (this.SelectedSymptom1 != this.SymptomTypes[7] && this.SelectedSymptom3 == this.SelectedSymptom1)
+            {
+                this.SelectedSymptom3 = string.Empty;
+            }
 
+            if (this.SelectedSymptom2 != this.SymptomTypes[7] && this.SelectedSymptom3 == this.SelectedSymptom2)
+            {
+                this.SelectedSymptom3 = string.Empty;
+            }
 
-    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            Debug.WriteLine($"After Validation: {this.SelectedSymptom1}, {this.SelectedSymptom2}, {this.SelectedSymptom3}");
+        }
     }
 }

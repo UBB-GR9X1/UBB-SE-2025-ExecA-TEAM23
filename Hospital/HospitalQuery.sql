@@ -1,4 +1,5 @@
 use [HospitalApp]
+
 -------------------------------------
 -- Clean up existing tables (if any)
 -------------------------------------
@@ -99,7 +100,7 @@ CREATE TABLE Admins (
 CREATE TABLE Logs (
     LogId INT IDENTITY(1,1) PRIMARY KEY,
     UserId INT NULL, 
-    ActionType NVARCHAR(50) NOT NULL CHECK (ActionType IN ('LOGIN', 'LOGOUT', 'UPDATE_PROFILE', 'CHANGE_PASSWORD', 'DELETE_ACCOUNT')),  
+    ActionType NVARCHAR(50) NOT NULL CHECK (ActionType IN ('LOGIN', 'LOGOUT', 'UPDATE_PROFILE', 'CHANGE_PASSWORD', 'DELETE_ACCOUNT', 'CREATE_ACCOUNT')),  
     Timestamp DATETIME NOT NULL DEFAULT GETDATE(),  -- Auto-set when action occurs
 
     CONSTRAINT FK_Logs_Users FOREIGN KEY (UserId) REFERENCES Users(UserId) ON DELETE SET NULL

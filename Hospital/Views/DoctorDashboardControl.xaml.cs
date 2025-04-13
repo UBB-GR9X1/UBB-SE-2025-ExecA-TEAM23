@@ -39,7 +39,7 @@ namespace Hospital.Views
                 bool changeMade = false;
 
                 // Update Doctor Name
-                if (_viewModel.DoctorName != _viewModel._originalDoctor.DoctorName)
+                if (_viewModel.DoctorName != _viewModel.OriginalDoctor.DoctorName)
                 {
                     bool isNameUpdated = await _viewModel.UpdateDoctorName(_viewModel.DoctorName);
                     if (isNameUpdated)
@@ -49,7 +49,7 @@ namespace Hospital.Views
                 }
 
                 // Update Department
-                if (_viewModel.DepartmentName != _viewModel._originalDoctor.DepartmentName)
+                if (_viewModel.DepartmentName != _viewModel.OriginalDoctor.DepartmentName)
                 {
                     bool isDepartmentUpdated = await _viewModel.UpdateDepartment(_viewModel.DepartmentId);
                     if (isDepartmentUpdated)
@@ -58,7 +58,7 @@ namespace Hospital.Views
                     }
                 }
                 // Update Career Info
-                if (_viewModel.CareerInfo != _viewModel._originalDoctor.CareerInfo)
+                if (_viewModel.CareerInfo != _viewModel.OriginalDoctor.CareerInfo)
                 {
                     bool isCareerInfoUpdated = await _viewModel.UpdateCareerInfo(_viewModel.CareerInfo);
                     if (isCareerInfoUpdated)
@@ -68,7 +68,7 @@ namespace Hospital.Views
                 }
 
                 // Update Avatar URL
-                if (_viewModel.AvatarUrl != _viewModel._originalDoctor.AvatarUrl)
+                if (_viewModel.AvatarUrl != _viewModel.OriginalDoctor.AvatarUrl)
                 {
                     bool isAvatarUrlUpdated = await _viewModel.UpdateAvatarUrl(_viewModel.AvatarUrl);
                     if (isAvatarUrlUpdated)
@@ -78,7 +78,7 @@ namespace Hospital.Views
                 }
 
                 // Update Phone Number
-                if (_viewModel.PhoneNumber != _viewModel._originalDoctor.PhoneNumber)
+                if (_viewModel.PhoneNumber != _viewModel.OriginalDoctor.PhoneNumber)
                 {
                     bool isPhoneNumberUpdated = await _viewModel.UpdatePhoneNumber(_viewModel.PhoneNumber);
                     if (isPhoneNumberUpdated)
@@ -88,7 +88,7 @@ namespace Hospital.Views
                 }
 
                 // Update Email
-                if (_viewModel.Mail != _viewModel._originalDoctor.Mail)
+                if (_viewModel.Mail != _viewModel.OriginalDoctor.Mail)
                 {
                     bool isEmailUpdated = await _viewModel.UpdateMail(_viewModel.Mail);
                     if (isEmailUpdated)
@@ -126,12 +126,12 @@ namespace Hospital.Views
             {
                 if (_viewModel != null)
                 {
-                    _viewModel.DoctorName = _viewModel._originalDoctor.DoctorName;
-                    _viewModel.DepartmentName = _viewModel._originalDoctor.DepartmentName;
-                    _viewModel.CareerInfo = _viewModel._originalDoctor.CareerInfo;
-                    _viewModel.AvatarUrl = _viewModel._originalDoctor.AvatarUrl;
-                    _viewModel.PhoneNumber = _viewModel._originalDoctor.PhoneNumber;
-                    _viewModel.Mail = _viewModel._originalDoctor.Mail;
+                    _viewModel.DoctorName = _viewModel.OriginalDoctor.DoctorName;
+                    _viewModel.DepartmentName = _viewModel.OriginalDoctor.DepartmentName;
+                    _viewModel.CareerInfo = _viewModel.OriginalDoctor.CareerInfo;
+                    _viewModel.AvatarUrl = _viewModel.OriginalDoctor.AvatarUrl;
+                    _viewModel.PhoneNumber = _viewModel.OriginalDoctor.PhoneNumber;
+                    _viewModel.Mail = _viewModel.OriginalDoctor.Mail;
                 }
                 var validationDialog = new ContentDialog
                 {

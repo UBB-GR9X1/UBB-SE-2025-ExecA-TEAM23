@@ -34,7 +34,7 @@ namespace Hospital.Views
                     throw new Exception("Patient is not initialized");
 
                 // Update Name
-                if (_viewModel.Name != _viewModel._originalPatient.PatientName)
+                if (_viewModel.Name != _viewModel.OriginalPatient.PatientName)
                 {
                     bool isNameUpdated = await _viewModel.UpdateName(_viewModel.Name);
                     if (isNameUpdated)
@@ -44,7 +44,7 @@ namespace Hospital.Views
                 }
 
                 // Update Email
-                if (_viewModel.Email != _viewModel._originalPatient.Mail)
+                if (_viewModel.Email != _viewModel.OriginalPatient.Mail)
                 {
                     bool isEmailUpdated = await _viewModel.UpdateEmail(_viewModel.Email);
                     if (isEmailUpdated)
@@ -54,7 +54,7 @@ namespace Hospital.Views
                 }
 
                 // Update Username
-                if (_viewModel.Username != _viewModel._originalPatient.Username)
+                if (_viewModel.Username != _viewModel.OriginalPatient.Username)
                 {
                     bool isUsernameUpdated = await _viewModel.UpdateUsername(_viewModel.Username);
                     if (isUsernameUpdated)
@@ -64,7 +64,7 @@ namespace Hospital.Views
                 }
 
                 // Update Address
-                if (_viewModel.Address != _viewModel._originalPatient.Address)
+                if (_viewModel.Address != _viewModel.OriginalPatient.Address)
                 {
                     bool isAddressUpdated = await _viewModel.UpdateAddress(_viewModel.Address);
                     if (isAddressUpdated)
@@ -74,7 +74,7 @@ namespace Hospital.Views
                 }
 
                 // Update Phone Number
-                if (_viewModel.PhoneNumber != _viewModel._originalPatient.PhoneNumber)
+                if (_viewModel.PhoneNumber != _viewModel.OriginalPatient.PhoneNumber)
                 {
                     bool isPhoneNumberUpdated = await _viewModel.UpdatePhoneNumber(_viewModel.PhoneNumber);
                     if (isPhoneNumberUpdated)
@@ -84,7 +84,7 @@ namespace Hospital.Views
                 }
 
                 // Update Emergency Contact
-                if (_viewModel.EmergencyContact != _viewModel._originalPatient.EmergencyContact)
+                if (_viewModel.EmergencyContact != _viewModel.OriginalPatient.EmergencyContact)
                 {
                     bool isEmergencyContactUpdated = await _viewModel.UpdateEmergencyContact(_viewModel.EmergencyContact);
                     if (isEmergencyContactUpdated)
@@ -94,7 +94,7 @@ namespace Hospital.Views
                 }
 
                 // Update Weight
-                if (_viewModel.Weight != _viewModel._originalPatient.Weight)
+                if (_viewModel.Weight != _viewModel.OriginalPatient.Weight)
                 {
                     bool isWeightUpdated = await _viewModel.UpdateWeight(_viewModel.Weight);
                     if (isWeightUpdated)
@@ -104,7 +104,7 @@ namespace Hospital.Views
                 }
 
                 // Update Height
-                if (_viewModel.Height != _viewModel._originalPatient.Height)
+                if (_viewModel.Height != _viewModel.OriginalPatient.Height)
                 {
                     bool isHeightUpdated = await _viewModel.UpdateHeight(_viewModel.Height);
                     if (isHeightUpdated)
@@ -115,7 +115,7 @@ namespace Hospital.Views
 
                 // Update Password
                 bool passwordChanged = false;
-                if (_viewModel.Password != _viewModel._originalPatient.Password)
+                if (_viewModel.Password != _viewModel.OriginalPatient.Password)
                 {
                     bool isPasswordUpdated = await _viewModel.UpdatePassword(_viewModel.Password);
                     if (isPasswordUpdated)
@@ -157,15 +157,15 @@ namespace Hospital.Views
             {
                 if (_viewModel != null)
                 {
-                    _viewModel.Name = _viewModel._originalPatient.PatientName;
-                    _viewModel.Email = _viewModel._originalPatient.Mail;
-                    _viewModel.Username = _viewModel._originalPatient.Username;
-                    _viewModel.Address = _viewModel._originalPatient.Address;
-                    _viewModel.PhoneNumber = _viewModel._originalPatient.PhoneNumber;
-                    _viewModel.EmergencyContact = _viewModel._originalPatient.EmergencyContact;
-                    _viewModel.Weight = _viewModel._originalPatient.Weight;
-                    _viewModel.Height = _viewModel._originalPatient.Height;
-                    _viewModel.Password = _viewModel._originalPatient.Password;
+                    _viewModel.Name = _viewModel.OriginalPatient.PatientName;
+                    _viewModel.Email = _viewModel.OriginalPatient.Mail;
+                    _viewModel.Username = _viewModel.OriginalPatient.Username;
+                    _viewModel.Address = _viewModel.OriginalPatient.Address;
+                    _viewModel.PhoneNumber = _viewModel.OriginalPatient.PhoneNumber;
+                    _viewModel.EmergencyContact = _viewModel.OriginalPatient.EmergencyContact;
+                    _viewModel.Weight = _viewModel.OriginalPatient.Weight;
+                    _viewModel.Height = _viewModel.OriginalPatient.Height;
+                    _viewModel.Password = _viewModel.OriginalPatient.Password;
 
                     var validationDialog = new ContentDialog
                     {

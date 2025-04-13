@@ -4,15 +4,16 @@ using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Hospital.Interfaces;
 
 namespace Hospital.DatabaseServices
 {
-    public class PatientsDatabaseService
+    public class PatientsDatabaseService : IPatientService
     {
-        private readonly Config _config;
-        public PatientsDatabaseService()
+        private readonly IConfigProvider _configProvider;
+        public PatientsDatabaseService(IConfigProvider configProvider)
         {
-            _config = Config.GetInstance();
+            _configProvider = configProvider ?? throw new ArgumentNullException(nameof(configProvider));
         }
 
         public async Task<List<PatientJointModel>> GetAllPatients()
@@ -39,7 +40,7 @@ namespace Hospital.DatabaseServices
                 INNER JOIN Users u ON p.UserId = u.UserId;";
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
                 SqlCommand selectCommand = new SqlCommand(querySelectPatients, connection);
                 SqlDataReader reader = await selectCommand.ExecuteReaderAsync().ConfigureAwait(false);
@@ -101,7 +102,7 @@ namespace Hospital.DatabaseServices
                 WHERE u.UserId = @UserId;";
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
                 SqlCommand selectCommand = new SqlCommand(querySelectPatients, connection);
                 selectCommand.Parameters.AddWithValue("@UserId", UserId);
@@ -141,7 +142,7 @@ namespace Hospital.DatabaseServices
             const string queryUpdatePassword = @"UPDATE Users SET Password = @Password WHERE UserId = @UserId;";
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
                 SqlCommand updateCommand = new SqlCommand(queryUpdatePassword, connection);
                 updateCommand.Parameters.AddWithValue("@UserId", UserId);
@@ -160,7 +161,7 @@ namespace Hospital.DatabaseServices
             const string queryUpdateEmail = @"UPDATE Users SET Mail = @Email WHERE UserId = @UserId;";
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
                 SqlCommand updateCommand = new SqlCommand(queryUpdateEmail, connection);
                 updateCommand.Parameters.AddWithValue("@UserId", UserId);
@@ -179,7 +180,7 @@ namespace Hospital.DatabaseServices
             const string queryUpdateUsername = @"UPDATE Users SET Username = @Username WHERE UserId = @UserId;";
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
                 SqlCommand updateCommand = new SqlCommand(queryUpdateUsername, connection);
                 updateCommand.Parameters.AddWithValue("@UserId", UserId);
@@ -198,7 +199,7 @@ namespace Hospital.DatabaseServices
             const string queryUpdateName = @"UPDATE Users SET Name = @Name WHERE UserId = @UserId;";
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
                 SqlCommand updateCommand = new SqlCommand(queryUpdateName, connection);
                 updateCommand.Parameters.AddWithValue("@UserId", UserId);
@@ -217,7 +218,7 @@ namespace Hospital.DatabaseServices
             const string queryUpdateBirthDate = @"UPDATE Users SET BirthDate = @BirthDate WHERE UserId = @UserId;";
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
                 SqlCommand updateCommand = new SqlCommand(queryUpdateBirthDate, connection);
                 updateCommand.Parameters.AddWithValue("@UserId", UserId);
@@ -236,7 +237,7 @@ namespace Hospital.DatabaseServices
             const string queryUpdateAddress = @"UPDATE Users SET Address = @Address WHERE UserId = @UserId;";
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
                 SqlCommand updateCommand = new SqlCommand(queryUpdateAddress, connection);
                 updateCommand.Parameters.AddWithValue("@UserId", UserId);
@@ -255,7 +256,7 @@ namespace Hospital.DatabaseServices
             const string queryUpdatePhoneNumber = @"UPDATE Users SET PhoneNumber = @PhoneNumber WHERE UserId = @UserId;";
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
                 SqlCommand updateCommand = new SqlCommand(queryUpdatePhoneNumber, connection);
                 updateCommand.Parameters.AddWithValue("@UserId", UserId);
@@ -274,7 +275,7 @@ namespace Hospital.DatabaseServices
             const string queryUpdateEmergencyContact = @"UPDATE Patients SET EmergencyContact = @EmergencyContact WHERE UserId = @UserId;";
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
                 SqlCommand updateCommand = new SqlCommand(queryUpdateEmergencyContact, connection);
                 updateCommand.Parameters.AddWithValue("@UserId", UserId);
@@ -294,7 +295,7 @@ namespace Hospital.DatabaseServices
             const string queryUpdateWeight = @"UPDATE Patients SET Weight = @Weight WHERE UserId = @UserId;";
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
                 SqlCommand updateCommand = new SqlCommand(queryUpdateWeight, connection);
                 updateCommand.Parameters.AddWithValue("@UserId", UserId);
@@ -313,7 +314,7 @@ namespace Hospital.DatabaseServices
             const string queryUpdateHeight = @"UPDATE Patients SET Height = @Height WHERE UserId = @UserId;";
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
                 await connection.OpenAsync().ConfigureAwait(false);
                 SqlCommand updateCommand = new SqlCommand(queryUpdateHeight, connection);
                 updateCommand.Parameters.AddWithValue("@UserId", UserId);
@@ -333,7 +334,7 @@ namespace Hospital.DatabaseServices
             string query = "INSERT INTO Logs (UserId, ActionType) VALUES (@userId, @type)";
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
 
                 await connection.OpenAsync().ConfigureAwait(false);
 

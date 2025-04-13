@@ -1,37 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.ApplicationModel;
-using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Microsoft.UI.Xaml.Shapes;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="App.xaml.cs" company="YourCompanyName">
+//   Copyright (c) YourCompanyName. All rights reserved. Licensed under the MIT License.
+// </copyright>
+// <summary>
+//   Provides application-specific behavior to supplement the default Application class.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Hospital
 {
+    using System;
+    using System.Linq;
+    using Microsoft.UI.Xaml;
+
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
     public partial class App : Application
     {
+        private Window? window;
+
         /// <summary>
-        /// Initializes the singleton application object.  This is the first line of authored code
-        /// executed, and as such is the logical equivalent of main() or WinMain().
+        /// Initializes a new instance of the <see cref="App"/> class.
+        /// This is the first line of authored code executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
         public App()
         {
+            if (this.IsRunningAsUnitTest())
+            {
+                // Skip initialization when running as a test
+                return;
+            }
+
             this.InitializeComponent();
 
             // Prevent unhandled exceptions from breaking into the debugger
@@ -40,7 +40,6 @@ namespace Hospital
                 e.Handled = true;
             };
         }
-        
 
         /// <summary>
         /// Invoked when the application is launched.
@@ -48,10 +47,18 @@ namespace Hospital
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            m_window = new MainWindow();
-            m_window.Activate();
+            this.window = new MainWindow();
+            this.window.Activate();
         }
 
-        private Window? m_window;
+        private bool IsRunningAsUnitTest()
+        {
+            // Check for test assemblies more thoroughly
+            return AppDomain.CurrentDomain.GetAssemblies()
+                .Any(a => a.FullName?.Contains("Test") == true ||
+                          a.FullName?.Contains("MSTest") == true ||
+                          a.FullName?.Contains("xUnit") == true ||
+                          a.FullName?.Contains("NUnit") == true);
+        }
     }
 }

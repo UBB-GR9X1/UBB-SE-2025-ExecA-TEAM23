@@ -1,5 +1,7 @@
+using Hospital.Configs;
 using Hospital.DatabaseServices;
 using Hospital.Exceptions;
+using Hospital.Interfaces;
 using Hospital.Managers;
 using Hospital.ViewModels;
 using Hospital.Views;
@@ -7,22 +9,28 @@ using Microsoft.Data.SqlClient;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+using System.Threading.Tasks;
 
 namespace Hospital
 {
     public sealed partial class MainWindow : Window
     {
-
-        private readonly AuthViewModel _viewModel;
+        private readonly IAuthService _authService;
+        private readonly IConfigProvider _configProvider;
 
         public MainWindow()
         {
             this.InitializeComponent();
-            LogInDatabaseService logInService = new LogInDatabaseService();
-            AuthManagerModel managerModel = new AuthManagerModel(logInService);
-            _viewModel = new AuthViewModel(managerModel);
+
+            // Get the configuration instance that implements IConfigProvider
+            _configProvider = Config.GetInstance();
+
+            // Create services with configuration
+            ILoginService loginService = new LogInDatabaseService(_configProvider);
+            AuthManagerModel authManagerModel = new AuthManagerModel(loginService);
+
+            // Create view model that implements IAuthService
+            _authService = new AuthViewModel(authManagerModel);
         }
 
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
@@ -32,75 +40,104 @@ namespace Hospital
 
             try
             {
-                await _viewModel.Login(username, password);
+                await _authService.Login(username, password);
 
+                string userRole = _authService.GetUserRole();
+                int userId = _authService.GetUserId();
 
-                if (_viewModel._authManagerModel._userInfo.Role == "Patient")
+                switch (userRole)
                 {
-                    PatientManagerModel patientManagerModel = new PatientManagerModel();
-                    PatientViewModel patientViewModel = new PatientViewModel(patientManagerModel, _viewModel._authManagerModel._userInfo.UserId);
-                    PatientDashboardWindow patientDashboardWindow = new PatientDashboardWindow(patientViewModel, _viewModel);
-                    patientDashboardWindow.Activate();
-                    this.Close();
-
-                    return;
+                    case "Patient":
+                        NavigateToPatientDashboard(userId);
+                        break;
+                    case "Doctor":
+                        NavigateToDoctorDashboard(userId);
+                        break;
+                    case "Admin":
+                        NavigateToAdminDashboard();
+                        break;
+                    default:
+                        NavigateToLogoutWindow();
+                        break;
                 }
-                else if (_viewModel._authManagerModel._userInfo.Role == "Doctor")
-                {
-                    DoctorsDatabaseService doctorDBService = new DoctorsDatabaseService();
-                    DoctorManagerModel doctorManagerModel = new DoctorManagerModel(doctorDBService);
-                    DoctorViewModel doctorViewModel = new DoctorViewModel(doctorManagerModel, _viewModel._authManagerModel._userInfo.UserId);
-                    DoctorDashboardWindow doctorDashboardWindow = new DoctorDashboardWindow(doctorViewModel, _viewModel);
-                    doctorDashboardWindow.Activate();
-                    this.Close();
-                    return;
-                }
-                else if (_viewModel._authManagerModel._userInfo.Role == "Admin")
-                {
-                    // Show Admin Dashboard
-                    AdminDashboardWindow adminDashboard = new AdminDashboardWindow(_viewModel);
-                    adminDashboard.Activate();
-                    this.Close();
-                    return;
-                }
-                // Fallback for other roles
-                LogoutWindow log = new LogoutWindow(_viewModel);
-                log.Activate();
-                // Show Logger window after successful login just for the presentation (uncomment when needed)
-                // LoggerView logger = new LoggerView();
-                // logger.Activate();
-                this.Close();
             }
-            catch (AuthenticationException ex)
+            catch (Exception ex) when (ex is AuthenticationException || ex is SqlException)
             {
-                var validationDialog = new ContentDialog
-                {
-                    Title = "Error",
-                    Content = $"{ex.Message}",
-                    CloseButtonText = "OK"
-                };
-
-                validationDialog.XamlRoot = this.Content.XamlRoot;
-                await validationDialog.ShowAsync();
+                await DisplayErrorDialog(ex.Message);
             }
-            catch (SqlException err)
+        }
+
+        private void NavigateToPatientDashboard(int userId)
+        {
+            // Create patient service using config provider
+            IPatientService patientService = new PatientsDatabaseService(_configProvider);
+
+            // Create manager model with service
+            PatientManagerModel patientManagerModel = new PatientManagerModel(patientService);
+
+            // Create view model with manager and ID
+            PatientViewModel patientViewModel = new PatientViewModel(patientManagerModel, userId);
+
+            // Navigate to dashboard window
+            PatientDashboardWindow patientDashboardWindow = new PatientDashboardWindow(patientViewModel, _authService);
+            patientDashboardWindow.Activate();
+            this.Close();
+        }
+
+        private void NavigateToDoctorDashboard(int userId)
+        {
+            // Create doctor service using config provider
+            IDoctorService doctorService = new DoctorsDatabaseService(_configProvider);
+
+            // Create manager model with service
+            DoctorManagerModel doctorManagerModel = new DoctorManagerModel(doctorService);
+
+            // Create view model with manager and ID
+            DoctorViewModel doctorViewModel = new DoctorViewModel(doctorManagerModel, userId);
+
+            // Navigate to dashboard window
+            DoctorDashboardWindow doctorDashboardWindow = new DoctorDashboardWindow(doctorViewModel, _authService);
+            doctorDashboardWindow.Activate();
+            this.Close();
+        }
+
+        private void NavigateToAdminDashboard()
+        {
+            // Create logger service using config provider
+            ILoggerService loggerService = new LoggerDatabaseService(_configProvider);
+
+            // Navigate to admin dashboard with auth service and logger service
+            AdminDashboardWindow adminDashboard = new AdminDashboardWindow(_authService, loggerService);
+            adminDashboard.Activate();
+            this.Close();
+        }
+
+        private void NavigateToLogoutWindow()
+        {
+            // Navigate to logout window with auth service
+            LogoutWindow logoutWindow = new LogoutWindow(_authService);
+            logoutWindow.Activate();
+            this.Close();
+        }
+
+        private async Task DisplayErrorDialog(string message)
+        {
+            ContentDialog errorDialog = new ContentDialog
             {
-                var validationDialog = new ContentDialog
-                {
-                    Title = "Error",
-                    Content = $"{err.Message}",
-                    CloseButtonText = "OK"
-                };
+                Title = "Error",
+                Content = message,
+                CloseButtonText = "OK"
+            };
 
-                validationDialog.XamlRoot = this.Content.XamlRoot;
-                await validationDialog.ShowAsync();
-            }
+            errorDialog.XamlRoot = this.Content.XamlRoot;
+            await errorDialog.ShowAsync();
         }
 
         private void CreateAccountButton_Click(object sender, RoutedEventArgs e)
         {
-            CreateAccountView createAccWindow = new CreateAccountView(_viewModel);
-            createAccWindow.Activate();
+            // Navigate to create account view with auth service
+            CreateAccountView createAccountWindow = new CreateAccountView(_authService);
+            createAccountWindow.Activate();
             this.Close();
         }
     }

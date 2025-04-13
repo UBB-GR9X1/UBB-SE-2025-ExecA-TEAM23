@@ -1,139 +1,248 @@
-﻿using Hospital.Managers;
-using Hospital.Models;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="LoggerViewModel.cs" company="Hospital">
+//   Copyright (c) Hospital. All rights reserved. Licensed under the MIT License.
+// </copyright>
+// <summary>
+//   Defines the LoggerViewModel for handling system logging operations.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Hospital.ViewModels
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using System.Windows.Input;
+    using Hospital.Interfaces;
+    using Hospital.Models;
+
+    /// <summary>
+    /// View model for managing and displaying system logs.
+    /// </summary>
     public class LoggerViewModel : BaseViewModel
     {
-        private readonly LoggerManagerModel _loggerManager;
-
-        public ObservableCollection<LogEntryModel> Logs { get; private set; }
-
-        // Commands for filtering logs
-        public ICommand LoadAllLogsCommand { get; }
-        public ICommand LoadLogsByUserIdCommand { get; }
-        public ICommand LoadLogsBeforeTimestampCommand { get; }
-        public ICommand LoadLogsByActionTypeCommand { get; }
-        public ICommand LoadLogsWithParametersCommand { get; }
-
-        private string _userIdInput = "";
-
+        private readonly ILoggerManagerModel _loggerManager;
+        private string _userIdInput = string.Empty;
         private ActionType _selectedActionType;
-        public List<ActionType> ActionTypes { get; } = Enum.GetValues(typeof(ActionType)).Cast<ActionType>().ToList();
-
         private DateTime _selectedTimestamp = DateTime.Now;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggerViewModel"/> class.
+        /// </summary>
+        /// <param name="loggerManager">The logger manager model interface.</param>
+        public LoggerViewModel(ILoggerManagerModel loggerManager)
+        {
+            this._loggerManager = loggerManager ?? throw new ArgumentNullException(nameof(loggerManager));
+            this.Logs = new ObservableCollection<LogEntryModel>();
+            this.ActionTypes = Enum.GetValues(typeof(ActionType)).Cast<ActionType>().ToList();
+
+            // Initialize commands
+            this.LoadAllLogsCommand = new RelayCommand(async () => await this.ExecuteLoadAllLogsAsync());
+            this.FilterLogsByUserIdCommand = new RelayCommand(async () => await this.ExecuteFilterLogsByUserIdAsync());
+            this.FilterLogsByTimestampCommand = new RelayCommand(async () => await this.ExecuteFilterLogsByTimestampAsync());
+            this.FilterLogsByActionTypeCommand = new RelayCommand(async () => await this.ExecuteFilterLogsByActionTypeAsync());
+            this.ApplyAllFiltersCommand = new RelayCommand(async () => await this.ExecuteApplyAllFiltersAsync());
+        }
+
+        /// <summary>
+        /// Gets the collection of log entries to display.
+        /// </summary>
+        public ObservableCollection<LogEntryModel> Logs { get; private set; }
+
+        /// <summary>
+        /// Gets the command to load all logs.
+        /// </summary>
+        public ICommand LoadAllLogsCommand { get; }
+
+        /// <summary>
+        /// Gets the command to filter logs by user ID.
+        /// </summary>
+        public ICommand FilterLogsByUserIdCommand { get; }
+
+        /// <summary>
+        /// Gets the command to filter logs by timestamp.
+        /// </summary>
+        public ICommand FilterLogsByTimestampCommand { get; }
+
+        /// <summary>
+        /// Gets the command to filter logs by action type.
+        /// </summary>
+        public ICommand FilterLogsByActionTypeCommand { get; }
+
+        /// <summary>
+        /// Gets the command to apply all filters simultaneously.
+        /// </summary>
+        public ICommand ApplyAllFiltersCommand { get; }
+
+        /// <summary>
+        /// Gets the list of available action types for filtering.
+        /// </summary>
+        public List<ActionType> ActionTypes { get; }
+
+        /// <summary>
+        /// Gets or sets the user ID input for filtering.
+        /// </summary>
         public string UserIdInput
         {
-            get => _userIdInput;
-            set { _userIdInput = value; OnPropertyChanged(); }
+            get => this._userIdInput;
+            set
+            {
+                this._userIdInput = value;
+                this.OnPropertyChanged();
+            }
         }
 
+        /// <summary>
+        /// Gets or sets the selected action type for filtering.
+        /// </summary>
         public ActionType SelectedActionType
         {
-            get => _selectedActionType;
+            get => this._selectedActionType;
             set
             {
-                if (_selectedActionType != value)
+                if (this._selectedActionType != value)
                 {
-                    _selectedActionType = value;
-                    Debug.WriteLine($"SelectedActionType updated: {_selectedActionType}");
-                    OnPropertyChanged();
+                    this._selectedActionType = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
+
+        /// <summary>
+        /// Gets or sets the selected timestamp for filtering.
+        /// </summary>
         public DateTime SelectedTimestamp
         {
-            get => _selectedTimestamp;
+            get => this._selectedTimestamp;
             set
             {
-                if (_selectedTimestamp != value)
+                if (this._selectedTimestamp != value)
                 {
-                    _selectedTimestamp = value;
-                    Debug.WriteLine($"SelectedTimestamp updated: {_selectedTimestamp}");
-                    OnPropertyChanged();
+                    this._selectedTimestamp = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
 
-
-        public LoggerViewModel(LoggerManagerModel loggerManager)
+        /// <summary>
+        /// Loads all available logs from the data source.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        private async Task ExecuteLoadAllLogsAsync()
         {
-            _loggerManager = loggerManager;
-            Logs = new ObservableCollection<LogEntryModel>();
-
-            LoadAllLogsCommand = new RelayCommand(async () => await LoadAllLogsAsync());
-            LoadLogsByUserIdCommand = new RelayCommand(async () => await LoadLogsByUserIdAsync());
-            LoadLogsBeforeTimestampCommand = new RelayCommand(async () => await LoadLogsBeforeTimestampAsync());
-            LoadLogsByActionTypeCommand = new RelayCommand(async () => await LoadLogsByActionTypeAsync());
-            LoadLogsWithParametersCommand = new RelayCommand(async () => await LoadLogsWithParametersAsync());
-
+            var logEntries = await this._loggerManager.GetAllLogs();
+            this.UpdateLogsCollection(logEntries);
         }
 
-        private async Task LoadAllLogsAsync()
+        /// <summary>
+        /// Filters logs by the provided user ID.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        private async Task ExecuteFilterLogsByUserIdAsync()
         {
-            await _loggerManager.LoadAllLogs();
-            UpdateLogs();
-        }
-
-        private async Task LoadLogsByUserIdAsync()
-        {
-            if (string.IsNullOrWhiteSpace(UserIdInput))
+            if (string.IsNullOrWhiteSpace(this.UserIdInput))
             {
-                Debug.WriteLine("No UserId provided, loading all logs...");
-                await _loggerManager.LoadAllLogs();
-                UpdateLogs();
+                var allLogs = await this._loggerManager.GetAllLogs();
+                this.UpdateLogsCollection(allLogs);
                 return;
             }
 
-            if (int.TryParse(UserIdInput, out int userId))
+            if (int.TryParse(this.UserIdInput, out int userId))
             {
-                await _loggerManager.LoadLogsByUserId(userId);
-                UpdateLogs();
+                try
+                {
+                    var filteredLogs = await this._loggerManager.GetLogsByUserId(userId);
+                    this.UpdateLogsCollection(filteredLogs);
+                }
+                catch (ArgumentException)
+                {
+                    // Handle invalid user ID gracefully - show all logs instead
+                    var allLogs = await this._loggerManager.GetAllLogs();
+                    this.UpdateLogsCollection(allLogs);
+                }
             }
         }
 
-        private async Task LoadLogsBeforeTimestampAsync()
+        /// <summary>
+        /// Filters logs by the selected timestamp.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        private async Task ExecuteFilterLogsByTimestampAsync()
         {
-            await _loggerManager.LoadLogsBeforeTimestamp(SelectedTimestamp);
-            UpdateLogs();
+            try
+            {
+                var filteredLogs = await this._loggerManager.GetLogsBeforeTimestamp(this.SelectedTimestamp);
+                this.UpdateLogsCollection(filteredLogs);
+            }
+            catch (ArgumentException)
+            {
+                // Handle invalid timestamp gracefully
+                var allLogs = await this._loggerManager.GetAllLogs();
+                this.UpdateLogsCollection(allLogs);
+            }
         }
 
-        private async Task LoadLogsByActionTypeAsync()
+        /// <summary>
+        /// Filters logs by the selected action type.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        private async Task ExecuteFilterLogsByActionTypeAsync()
         {
-            Debug.WriteLine(SelectedActionType);
-            await _loggerManager.LoadLogsByActionType(SelectedActionType);
-            UpdateLogs();
+            try
+            {
+                var filteredLogs = await this._loggerManager.GetLogsByActionType(this.SelectedActionType);
+                this.UpdateLogsCollection(filteredLogs);
+            }
+            catch (ArgumentNullException)
+            {
+                // Handle null action type gracefully
+                var allLogs = await this._loggerManager.GetAllLogs();
+                this.UpdateLogsCollection(allLogs);
+            }
         }
 
-        private async Task LoadLogsWithParametersAsync()
+        /// <summary>
+        /// Applies all selected filters simultaneously.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        private async Task ExecuteApplyAllFiltersAsync()
         {
             int? userId = null;
 
-            // Try to parse UserIdInput; if successful, assign the value, otherwise keep it null
-            if (int.TryParse(UserIdInput, out int parsedUserId))
+            if (int.TryParse(this.UserIdInput, out int parsedUserId))
             {
                 userId = parsedUserId;
             }
 
-            await _loggerManager.LoadLogsWithParameters(userId, SelectedActionType, SelectedTimestamp);
-            UpdateLogs();
+            try
+            {
+                var filteredLogs = await this._loggerManager.GetLogsWithParameters(userId, this.SelectedActionType, this.SelectedTimestamp);
+                this.UpdateLogsCollection(filteredLogs);
+            }
+            catch (Exception)
+            {
+                // Handle any exceptions gracefully
+                var allLogs = await this._loggerManager.GetAllLogs();
+                this.UpdateLogsCollection(allLogs);
+            }
         }
 
-        private void UpdateLogs()
+        /// <summary>
+        /// Updates the logs collection with the provided entries.
+        /// </summary>
+        /// <param name="logEntries">The log entries to display.</param>
+        private void UpdateLogsCollection(IEnumerable<LogEntryModel> logEntries)
         {
-            Debug.WriteLine("Updating logs...");
-            Logs.Clear();
-            foreach (var log in _loggerManager.LogsList)
+            this.Logs.Clear();
+
+            if (logEntries != null)
             {
-                Logs.Add(log);
+                foreach (var logEntry in logEntries)
+                {
+                    this.Logs.Add(logEntry);
+                }
             }
         }
     }

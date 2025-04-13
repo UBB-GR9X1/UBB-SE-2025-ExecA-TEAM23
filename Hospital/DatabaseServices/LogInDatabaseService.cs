@@ -1,5 +1,6 @@
 ﻿using Hospital.Configs;
 using Hospital.Exceptions;
+using Hospital.Interfaces;
 using Hospital.Models;
 using Microsoft.Data.SqlClient;
 using System;
@@ -7,20 +8,20 @@ using System.Threading.Tasks;
 
 namespace Hospital.DatabaseServices
 {
-    public class LogInDatabaseService
+    public class LogInDatabaseService : ILoginService
     {
-        private readonly Config _config;
+        private readonly IConfigProvider _configProvider;
 
-        public LogInDatabaseService()
+        public LogInDatabaseService(IConfigProvider configProvider)
         {
-            _config = Config.GetInstance();
+            _configProvider = configProvider ?? throw new ArgumentNullException(nameof(configProvider));
         }
 
         public async Task<UserAuthModel> GetUserByUsername(string username)
         {
             const string query = "SELECT UserId, Username, Password, Mail, Role, Name, BirthDate, Cnp, Address, PhoneNumber, RegistrationDate FROM Users U WHERE U.Username = @username";
 
-            using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+            using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
 
             // Open the database connection asynchronously
             await connection.OpenAsync().ConfigureAwait(false);
@@ -75,7 +76,7 @@ namespace Hospital.DatabaseServices
                     bloodType = "O-";
                     break;
             }
-            using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+            using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
             await connection.OpenAsync().ConfigureAwait(false);
 
             using SqlTransaction transaction = connection.BeginTransaction();
@@ -140,42 +141,19 @@ namespace Hospital.DatabaseServices
             }
         }
 
-        public async Task<bool> AuthenticationLogService(int userId, ActionType type)
+        public async Task<bool> AuthenticationLogService(int userId, ActionType actionType)
         {
             string query = "INSERT INTO Logs (UserId, ActionType) VALUES (@userId, @type)";
             try
             {
-                using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
+                using SqlConnection connection = new SqlConnection(_configProvider.GetDatabaseConnection());
 
                 await connection.OpenAsync().ConfigureAwait(false);
 
                 using SqlCommand command = new SqlCommand(query, connection);
 
                 command.Parameters.AddWithValue("@userId", userId);
-
-                switch (type)
-                {
-                    case ActionType.LOGIN:
-                        command.Parameters.AddWithValue("@type", "LOGIN");
-                        break;
-                    case ActionType.LOGOUT:
-                        command.Parameters.AddWithValue("@type", "LOGOUT");
-                        break;
-                    case ActionType.CREATE_ACCOUNT:
-                        command.Parameters.AddWithValue("@type", "CREATE_ACCOUNT");
-                        break;
-                    case ActionType.UPDATE_PROFILE:
-                        command.Parameters.AddWithValue("@type", "UPDATE_PROFILE");
-                        break;
-                    case ActionType.CHANGE_PASSWORD:
-                        command.Parameters.AddWithValue("@type", "CHANGE_PASSWORD");
-                        break;
-                    case ActionType.DELETE_ACCOUNT:
-                        command.Parameters.AddWithValue("@type", "DELETE_ACCOUNT");
-                        break;
-                    default:
-                        throw new AuthenticationException("Invalid type for Authentication Log");
-                }
+                command.Parameters.AddWithValue("@type", actionType.ToString());
 
                 int rowsAffected = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                 connection.Close();

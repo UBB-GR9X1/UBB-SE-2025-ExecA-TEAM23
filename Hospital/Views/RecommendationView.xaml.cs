@@ -7,6 +7,8 @@ using Hospital.Managers;
 using System.Threading.Tasks;
 using Hospital.DatabaseServices;
 using System;
+using Hospital.Configs;
+using Hospital.Interfaces;
 
 namespace Hospital.Views
 {
@@ -20,7 +22,10 @@ namespace Hospital.Views
             _formViewModel = new RecommendationSystemFormViewModel();
             this.DataContext = _formViewModel;
             this.InitializeComponent();
-            var doctorDBService = new DoctorsDatabaseService(); // Assuming you have a default constructor or create an instance as needed
+
+            IConfigProvider configProvider = Config.GetInstance();
+            var doctorDBService = new DoctorsDatabaseService(configProvider);
+
             _recommendationSystem = new RecommendationSystemModel(new DoctorManagerModel(doctorDBService));
 
         }
