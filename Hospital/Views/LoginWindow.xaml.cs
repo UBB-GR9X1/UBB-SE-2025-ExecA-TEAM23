@@ -55,7 +55,7 @@ namespace Hospital
                 await this.loginPageViewModel.Login(username, password);
 
 
-                if (this.loginPageViewModel.AuthManagerModel_.allUserInformation.Role == "Patient")
+                if (this.loginPageViewModel.GetUserRole() == "Patient")
                 {
                     PatientManagerModel patientManagerModel = new PatientManagerModel();
                     PatientViewModel patientViewModel = new PatientViewModel(patientManagerModel, this.loginPageViewModel.AuthManagerModel_.allUserInformation.UserId);
@@ -65,7 +65,7 @@ namespace Hospital
 
                     return;
                 }
-                else if (this.loginPageViewModel.AuthManagerModel_.allUserInformation.Role == "Doctor")
+                else if (this.loginPageViewModel.GetUserRole() == "Doctor")
                 {
                     DoctorsDatabaseService doctorDatabaseService = new DoctorsDatabaseService();
                     DoctorManagerModel doctorManagerModel = new DoctorManagerModel(doctorDatabaseService);
