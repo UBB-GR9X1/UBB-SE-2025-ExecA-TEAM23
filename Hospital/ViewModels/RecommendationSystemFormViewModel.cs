@@ -1,103 +1,229 @@
-﻿using Hospital.Models;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using System.Windows.Input;
-
-public class RecommendationSystemFormViewModel : INotifyPropertyChanged
+﻿namespace Hospital.ViewModels
 {
-    private readonly IRecommendationSystem _recommendationSystem;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Linq;
+    using System.Runtime.CompilerServices;
+    using System.Threading.Tasks;
+    using System.Windows.Input;
+    using Hospital.Models;
 
-    public ObservableCollection<string> SymptomStartOptions { get; }
-    public ObservableCollection<string> DiscomfortAreaOptions { get; }
-    public ObservableCollection<string> SymptomTypeOptions { get; }
-
-    private const string NoSymptomSelected = "None";
-
-    private string _selectedSymptomStart = string.Empty;
-    private string _selectedDiscomfortArea = string.Empty;
-    private string _selectedSymptomPrimary = NoSymptomSelected;
-    private string _selectedSymptomSecondary = NoSymptomSelected;
-    private string _selectedSymptomTertiary = NoSymptomSelected;
-
-    private string _doctorName;
-    private string _department;
-    private string _rating;
-
-    public string SelectedSymptomStart { get => _selectedSymptomStart; set { _selectedSymptomStart = value; OnPropertyChanged(); } }
-    public string SelectedDiscomfortArea { get => _selectedDiscomfortArea; set { _selectedDiscomfortArea = value; OnPropertyChanged(); } }
-    public string SelectedSymptomPrimary { get => _selectedSymptomPrimary; set { _selectedSymptomPrimary = value; OnPropertyChanged(); ValidateSymptomSelection(); } }
-    public string SelectedSymptomSecondary { get => _selectedSymptomSecondary; set { _selectedSymptomSecondary = value; OnPropertyChanged(); ValidateSymptomSelection(); } }
-    public string SelectedSymptomTertiary { get => _selectedSymptomTertiary; set { _selectedSymptomTertiary = value; OnPropertyChanged(); ValidateSymptomSelection(); } }
-
-    public string DoctorName { get => _doctorName; set { _doctorName = value; OnPropertyChanged(); } }
-    public string Department { get => _department; set { _department = value; OnPropertyChanged(); } }
-    public string Rating { get => _rating; set { _rating = value; OnPropertyChanged(); } }
-
-    public ICommand RecommendCommand { get; }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    public RecommendationSystemFormViewModel(IRecommendationSystem recommendationSystem)
+    /// <summary>
+    /// The view model for recommendation system.
+    /// </summary>
+    public partial class RecommendationSystemFormViewModel : INotifyPropertyChanged
     {
-        _recommendationSystem = recommendationSystem;
+        private const string NoSymptomSelected = "None";
+        private readonly RecommendationSystemModel recommendationSystem;
 
-        SymptomStartOptions = new ObservableCollection<string> { "Suddenly", "After Waking Up", "After Incident", "After Meeting Someone", "After Ingestion" };
-        DiscomfortAreaOptions = new ObservableCollection<string> { "Head", "Eyes", "Neck", "Stomach", "Chest", "Arm", "Leg", "Back", "Shoulder", "Foot" };
-        SymptomTypeOptions = new ObservableCollection<string> { "Pain", "Numbness", "Inflammation", "Tenderness", "Coloration", "Itching", "Burning", NoSymptomSelected };
+        private string selectedSymptomStart = string.Empty;
+        private string selectedDiscomfortArea = string.Empty;
+        private string selectedSymptomPrimary = NoSymptomSelected;
+        private string selectedSymptomSecondary = NoSymptomSelected;
+        private string selectedSymptomTertiary = NoSymptomSelected;
 
-        RecommendCommand = new RelayCommand(async () => await RecommendDoctorAsync());
-    }
+        private string doctorName;
+        private string doctorDepartment;
+        private string doctorRating;
 
-    public async Task<DoctorJointModel?> RecommendDoctorBasedOnSymptomsAsync()
-    {
-        if (!ValidateSymptomSelection())
-            return null;
-
-        return await _recommendationSystem.RecommendDoctorBasedOnSymptomsAsync(this);
-    }
-
-
-    private async Task RecommendDoctorAsync()
-    {
-        var doctor = await _recommendationSystem.RecommendDoctorBasedOnSymptomsAsync(this);
-
-        if (doctor != null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RecommendationSystemFormViewModel"/> class.
+        /// </summary>
+        /// <param name="recommendationSystem">The model for the view model.</param>
+        public RecommendationSystemFormViewModel(RecommendationSystemModel recommendationSystem)
         {
-            DoctorName = $"Doctor: {doctor.GetDoctorName()}";
-            Department = $"Department: {doctor.GetDoctorDepartment()}";
-            Rating = $"Rating: {doctor.GetDoctorRating():0.0}";
+            this.recommendationSystem = recommendationSystem;
+
+            this.doctorName = string.Empty;
+            this.doctorDepartment = string.Empty;
+            this.doctorRating = string.Empty;
+
+            this.SymptomStartOptions = new ObservableCollection<string> { "Suddenly", "After Waking Up", "After Incident", "After Meeting Someone", "After Ingestion" };
+            this.DiscomfortAreaOptions = new ObservableCollection<string> { "Head", "Eyes", "Neck", "Stomach", "Chest", "Arm", "Leg", "Back", "Shoulder", "Foot" };
+            this.SymptomTypeOptions = new ObservableCollection<string> { "Pain", "Numbness", "Inflammation", "Tenderness", "Coloration", "Itching", "Burning", NoSymptomSelected };
+
+            this.RecommendCommand = new RelayCommand(async () => await this.RecommendDoctorAsync());
         }
-        else
+
+        /// <summary>
+        /// This is the event handler for when the property is changed.
+        /// </summary>
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        /// <summary>
+        /// Gets a collection of when did the symptoms start options.
+        /// </summary>
+        public ObservableCollection<string> SymptomStartOptions { get; }
+
+        /// <summary>
+        /// Gets a collection of discomfort areas options.
+        /// </summary>
+        public ObservableCollection<string> DiscomfortAreaOptions { get; }
+
+        /// <summary>
+        /// Gets a collection of symptoms type options.
+        /// </summary>
+        public ObservableCollection<string> SymptomTypeOptions { get; }
+
+        /// <summary>
+        /// Gets or sets a string of when did the symptoms start options.
+        /// </summary>
+        public string SelectedSymptomStart
         {
-            DoctorName = "No suitable doctor found";
-            Department = string.Empty;
-            Rating = string.Empty;
+            get => this.selectedSymptomStart; set
+            {
+                this.selectedSymptomStart = value;
+                this.OnPropertyChanged();
+            }
         }
-    }
 
-    public bool ValidateSymptomSelection()
-    {
-        var symptoms = new List<string?>
+        /// <summary>
+        /// Gets or sets a string of discomfort areas options.
+        /// </summary>
+        public string SelectedDiscomfortArea
         {
-            SelectedSymptomStart,
-            SelectedDiscomfortArea,
-            SelectedSymptomPrimary,
-            SelectedSymptomSecondary,
-            SelectedSymptomTertiary
-        };
+            get => this.selectedDiscomfortArea; set
+            {
+                this.selectedDiscomfortArea = value;
+                this.OnPropertyChanged();
+            }
+        }
 
-        var nonEmptySymptoms = symptoms.Where(s => !string.IsNullOrEmpty(s)).ToList();
-        return nonEmptySymptoms.Distinct().Count() == nonEmptySymptoms.Count;
-    }
+        /// <summary>
+        /// Gets or sets a string of primary symptoms type options.
+        /// </summary>
+        public string SelectedSymptomPrimary
+        {
+            get => this.selectedSymptomPrimary; set
+            {
+                this.selectedSymptomPrimary = value;
+                this.OnPropertyChanged();
+                this.ValidateSymptomSelection();
+            }
+        }
 
+        /// <summary>
+        /// Gets or sets a string of secondary symptoms type options.
+        /// </summary>
+        public string SelectedSymptomSecondary
+        {
+            get => this.selectedSymptomSecondary; set
+            {
+                this.selectedSymptomSecondary = value;
+                this.OnPropertyChanged();
+                this.ValidateSymptomSelection();
+            }
+        }
 
-    private void OnPropertyChanged([CallerMemberName] string? name = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        /// <summary>
+        /// Gets or sets a string of tertiary symptoms type options.
+        /// </summary>
+        public string SelectedSymptomTertiary
+        {
+            get => this.selectedSymptomTertiary; set
+            {
+                this.selectedSymptomTertiary = value;
+                this.OnPropertyChanged();
+                this.ValidateSymptomSelection();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the doctor's name.
+        /// </summary>
+        public string DoctorName
+        {
+            get => this.doctorName; set
+            {
+                this.doctorName = value;
+                this.OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the doctor's department.
+        /// </summary>
+        public string DoctorDepartment
+        {
+            get => this.doctorDepartment; set
+            {
+                this.doctorDepartment = value;
+                this.OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the doctor's rating.
+        /// </summary>
+        public string DoctorRating
+        {
+            get => this.doctorRating; set
+            {
+                this.doctorRating = value;
+                this.OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Gets the command when the recommend doctor button is clicked.
+        /// </summary>
+        public ICommand RecommendCommand { get; }
+
+        /// <summary>
+        /// Calls the same method from the model.
+        /// </summary>
+        /// <returns>A task.</returns>
+        public async Task<DoctorJointModel?> RecommendDoctorBasedOnSymptomsAsync()
+        {
+            if (!this.ValidateSymptomSelection())
+            {
+                return null;
+            }
+
+            return await this.recommendationSystem.RecommendDoctorAsynchronous(this);
+        }
+
+        /// <summary>
+        /// Validator for symptoms.
+        /// </summary>
+        /// <returns>True if symptoms are valid False otherwise.</returns>
+        public bool ValidateSymptomSelection()
+        {
+            var symptoms = new List<string?>
+            {
+                this.SelectedSymptomStart,
+                this.SelectedDiscomfortArea,
+                this.SelectedSymptomPrimary,
+                this.SelectedSymptomSecondary,
+                this.SelectedSymptomTertiary,
+            };
+
+            var nonEmptySymptoms = symptoms.Where(s => !string.IsNullOrEmpty(s)).ToList();
+            return nonEmptySymptoms.Distinct().Count() == nonEmptySymptoms.Count;
+        }
+
+        private async Task RecommendDoctorAsync()
+        {
+            var doctor = await this.recommendationSystem.RecommendDoctorAsynchronous(this);
+
+            if (doctor != null)
+            {
+                this.DoctorName = $"Doctor: {doctor.GetDoctorName()}";
+                this.DoctorDepartment = $"Department: {doctor.GetDoctorDepartment()}";
+                this.DoctorRating = $"Rating: {doctor.GetDoctorRating():0.0}";
+            }
+            else
+            {
+                this.DoctorName = "No suitable doctor found";
+                this.DoctorDepartment = string.Empty;
+                this.DoctorRating = string.Empty;
+            }
+        }
+
+        private void OnPropertyChanged([CallerMemberName] string? name = null)
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
     }
 }
