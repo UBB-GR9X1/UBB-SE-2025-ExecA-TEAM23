@@ -8,19 +8,18 @@ namespace Hospital.ViewModels
 {
     public class PatientViewModel : INotifyPropertyChanged
     {
-        private readonly PatientManagerModel _patientManagerModel;
+        private readonly PatientManagerModel _patientManager;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        public PatientViewModel(PatientManagerModel patientManagerModel, int userId)
+        public PatientJointModel _originalPatient { get; private set; }
+
+        public PatientViewModel(PatientManagerModel patientManager, int userId)
         {
-            _patientManagerModel = patientManagerModel;
+            _patientManager = patientManager;
             _userId = userId;
             _originalPatient = PatientJointModel.Default;
             _ = LoadPatientInfoByUserIdAsync(userId);
         }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        public PatientJointModel _originalPatient { get; private set; }
 
         private int _userId;
         public int UserId
@@ -36,7 +35,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _name = "";
+        private string _name = string.Empty;
         public string Name
         {
             get => _name;
@@ -50,7 +49,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _email = "";
+        private string _email = string.Empty;
         public string Email
         {
             get => _email;
@@ -64,7 +63,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _username = "";
+        private string _username = string.Empty;
         public string Username
         {
             get => _username;
@@ -78,7 +77,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _address = "";
+        private string _address = string.Empty;
         public string Address
         {
             get => _address;
@@ -92,7 +91,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _phoneNumber = "";
+        private string _phoneNumber = string.Empty;
         public string PhoneNumber
         {
             get => _phoneNumber;
@@ -106,7 +105,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _emergencyContact = "";
+        private string _emergencyContact = string.Empty;
         public string EmergencyContact
         {
             get => _emergencyContact;
@@ -120,8 +119,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        // Non-editable fields
-        private string _bloodType = "";
+        private string _bloodType = string.Empty;
         public string BloodType
         {
             get => _bloodType;
@@ -135,7 +133,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _allergies = "";
+        private string _allergies = string.Empty;
         public string Allergies
         {
             get => _allergies;
@@ -163,15 +161,15 @@ namespace Hospital.ViewModels
             }
         }
 
-        private string _cnp = "";
+        private string _personalIdentificationNumber = string.Empty;
         public string Cnp
         {
-            get => _cnp;
+            get => _personalIdentificationNumber;
             set
             {
-                if (_cnp != value)
+                if (_personalIdentificationNumber != value)
                 {
-                    _cnp = value;
+                    _personalIdentificationNumber = value;
                     OnPropertyChanged();
                 }
             }
@@ -233,8 +231,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        // Password fields
-        private string _password = "";
+        private string _password = string.Empty;
         public string Password
         {
             get => _password;
@@ -258,12 +255,14 @@ namespace Hospital.ViewModels
             try
             {
                 IsLoading = true;
-                bool result = await _patientManagerModel.LoadPatientInfoByUserId(userId);
-                if (result && _patientManagerModel._patientInfo != PatientJointModel.Default)
+
+                bool success = await _patientManager.LoadPatientInfoByUserId(userId);
+                var patient = _patientManager._patientInfo;
+
+                if (success && patient != PatientJointModel.Default)
                 {
-                    var patient = _patientManagerModel._patientInfo;
                     Name = patient.PatientName;
-                    Email = patient.Mail;
+                    Email = patient.Email;
                     Password = patient.Password;
                     Username = patient.Username;
                     Address = patient.Address;
@@ -272,47 +271,56 @@ namespace Hospital.ViewModels
                     BloodType = patient.BloodType;
                     Allergies = patient.Allergies;
                     BirthDate = patient.BirthDate.ToDateTime(TimeOnly.MinValue);
-                    Cnp = patient.Cnp;
+                    Cnp = patient.CNP;
                     RegistrationDate = patient.RegistrationDate;
                     Weight = patient.Weight;
                     Height = patient.Height;
 
-                    _originalPatient = new PatientJointModel(userId, -1, Name, BloodType, EmergencyContact, Allergies, Weight, Height,
-                        Username, Password, Email, patient.BirthDate, Cnp, Address, PhoneNumber, RegistrationDate);
-
+                    _originalPatient = new PatientJointModel(
+                        userId,
+                        patient.PatientId,
+                        Name,
+                        BloodType,
+                        EmergencyContact,
+                        Allergies,
+                        Weight,
+                        Height,
+                        Username,
+                        Password,
+                        Email,
+                        patient.BirthDate,
+                        Cnp,
+                        Address,
+                        PhoneNumber,
+                        RegistrationDate
+                    );
                 }
 
                 IsLoading = false;
-                return result;
+                return success;
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
                 IsLoading = false;
-                Console.WriteLine($"Error loading patient info: {ex.Message}");
+                Console.WriteLine($"Error loading patient info: {exception.Message}");
                 return false;
             }
         }
-
 
         public async Task<bool> UpdateName(string name)
         {
             try
             {
                 IsLoading = true;
-                bool result = await _patientManagerModel.UpdateName(UserId, name);
-                if (result)
+                bool updated = await _patientManager.UpdateName(UserId, name);
+                if (updated)
                 {
                     Name = name;
                     _originalPatient.PatientName = name;
                 }
-                IsLoading = false;
-                return result;
+                return updated;
             }
-            catch (Exception ex)
-            {
-                IsLoading = false;
-                throw new Exception(ex.Message);
-            }
+            finally { IsLoading = false; }
         }
 
         public async Task<bool> UpdateEmail(string email)
@@ -320,20 +328,15 @@ namespace Hospital.ViewModels
             try
             {
                 IsLoading = true;
-                bool result = await _patientManagerModel.UpdateEmail(UserId, email);
-                if (result)
+                bool updated = await _patientManager.UpdateEmail(UserId, email);
+                if (updated)
                 {
                     Email = email;
-                    _originalPatient.Mail = email;
+                    _originalPatient.Email = email;
                 }
-                IsLoading = false;
-                return result;
+                return updated;
             }
-            catch (Exception ex)
-            {
-                IsLoading = false;
-                throw new Exception(ex.Message);
-            }
+            finally { IsLoading = false; }
         }
 
         public async Task<bool> UpdateUsername(string username)
@@ -341,20 +344,15 @@ namespace Hospital.ViewModels
             try
             {
                 IsLoading = true;
-                bool result = await _patientManagerModel.UpdateUsername(UserId, username);
-                if (result)
+                bool updated = await _patientManager.UpdateUsername(UserId, username);
+                if (updated)
                 {
                     Username = username;
                     _originalPatient.Username = username;
                 }
-                IsLoading = false;
-                return result;
+                return updated;
             }
-            catch (Exception ex)
-            {
-                IsLoading = false;
-                throw new Exception(ex.Message);
-            }
+            finally { IsLoading = false; }
         }
 
         public async Task<bool> UpdateAddress(string address)
@@ -362,40 +360,31 @@ namespace Hospital.ViewModels
             try
             {
                 IsLoading = true;
-                bool result = await _patientManagerModel.UpdateAddress(UserId, address);
-                if (result)
+                bool updated = await _patientManager.UpdateAddress(UserId, address);
+                if (updated)
                 {
                     Address = address;
                     _originalPatient.Address = address;
                 }
-                IsLoading = false;
-                return result;
+                return updated;
             }
-            catch (Exception ex)
-            {
-                IsLoading = false;
-                throw new Exception(ex.Message);
-            }
+            finally { IsLoading = false; }
         }
+
         public async Task<bool> UpdatePassword(string password)
         {
             try
             {
                 IsLoading = true;
-                bool result = await _patientManagerModel.UpdatePassword(UserId, password);
-                if (result)
+                bool updated = await _patientManager.UpdatePassword(UserId, password);
+                if (updated)
                 {
                     Password = password;
                     _originalPatient.Password = password;
                 }
-                IsLoading = false;
-                return result;
+                return updated;
             }
-            catch (Exception ex)
-            {
-                IsLoading = false;
-                throw new Exception(ex.Message);
-            }
+            finally { IsLoading = false; }
         }
 
         public async Task<bool> UpdatePhoneNumber(string phoneNumber)
@@ -403,20 +392,15 @@ namespace Hospital.ViewModels
             try
             {
                 IsLoading = true;
-                bool result = await _patientManagerModel.UpdatePhoneNumber(UserId, phoneNumber);
-                if (result)
+                bool updated = await _patientManager.UpdatePhoneNumber(UserId, phoneNumber);
+                if (updated)
                 {
                     PhoneNumber = phoneNumber;
                     _originalPatient.PhoneNumber = phoneNumber;
                 }
-                IsLoading = false;
-                return result;
+                return updated;
             }
-            catch (Exception ex)
-            {
-                IsLoading = false;
-                throw new Exception(ex.Message);
-            }
+            finally { IsLoading = false; }
         }
 
         public async Task<bool> UpdateEmergencyContact(string emergencyContact)
@@ -424,20 +408,15 @@ namespace Hospital.ViewModels
             try
             {
                 IsLoading = true;
-                bool result = await _patientManagerModel.UpdateEmergencyContact(UserId, emergencyContact);
-                if (result)
+                bool updated = await _patientManager.UpdateEmergencyContact(UserId, emergencyContact);
+                if (updated)
                 {
                     EmergencyContact = emergencyContact;
                     _originalPatient.EmergencyContact = emergencyContact;
                 }
-                IsLoading = false;
-                return result;
+                return updated;
             }
-            catch (Exception ex)
-            {
-                IsLoading = false;
-                throw new Exception(ex.Message);
-            }
+            finally { IsLoading = false; }
         }
 
         public async Task<bool> UpdateWeight(double weight)
@@ -445,20 +424,15 @@ namespace Hospital.ViewModels
             try
             {
                 IsLoading = true;
-                bool result = await _patientManagerModel.UpdateWeight(UserId, weight);
-                if (result)
+                bool updated = await _patientManager.UpdateWeight(UserId, weight);
+                if (updated)
                 {
                     Weight = weight;
                     _originalPatient.Weight = weight;
                 }
-                IsLoading = false;
-                return result;
+                return updated;
             }
-            catch (Exception ex)
-            {
-                IsLoading = false;
-                throw new Exception(ex.Message);
-            }
+            finally { IsLoading = false; }
         }
 
         public async Task<bool> UpdateHeight(int height)
@@ -466,25 +440,20 @@ namespace Hospital.ViewModels
             try
             {
                 IsLoading = true;
-                bool result = await _patientManagerModel.UpdateHeight(UserId, height);
-                if (result)
+                bool updated = await _patientManager.UpdateHeight(UserId, height);
+                if (updated)
                 {
                     Height = height;
                     _originalPatient.Height = height;
                 }
-                IsLoading = false;
-                return result;
+                return updated;
             }
-            catch (Exception ex)
-            {
-                IsLoading = false;
-                throw new Exception(ex.Message);
-            }
+            finally { IsLoading = false; }
         }
 
         public async Task<bool> LogUpdate(int userId, ActionType action)
         {
-            return await _patientManagerModel.LogUpdate(userId, action);
+            return await _patientManager.LogUpdate(userId, action);
         }
     }
 }

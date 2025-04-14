@@ -2,7 +2,7 @@
 
 namespace Hospital.Exceptions
 {
-    class InputProfileException(string message) : Exception(message)
+    public class InputProfileException(string message) : Exception(message)
     {
     }
 }

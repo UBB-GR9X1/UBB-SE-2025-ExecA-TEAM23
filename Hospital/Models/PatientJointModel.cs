@@ -14,29 +14,51 @@ namespace Hospital.Models
         public int Height { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
-        public string Mail { get; set; }
+        public string Email { get; set; }
         public DateOnly BirthDate { get; set; }
-        public string Cnp { get; set; }
+        public string CNP { get; set; }
         public string Address { get; set; }
         public string PhoneNumber { get; set; }
         public DateTime RegistrationDate { get; set; }
 
-        public static readonly PatientJointModel Default = new PatientJointModel(-1, -1, "", "", "", "", -1, -1, "", "", "", DateOnly.MaxValue, "", "", "", DateTime.Now);
-        public PatientJointModel(int userId, int patientId, string patientName, string bloodType, string emergencyContact, string allergies, double weight, int height, string username, string password, string mail, DateOnly birthDate, string cnp, string address, string phoneNumber, DateTime registrationDate)
+        public static readonly PatientJointModel Default = new(
+            -1, -1, string.Empty, string.Empty, string.Empty, string.Empty,
+            -1, -1, string.Empty, string.Empty, string.Empty,
+            DateOnly.MaxValue, string.Empty, string.Empty, string.Empty, DateTime.Now
+        );
+
+        public PatientJointModel(
+            int userId,
+            int patientId,
+            string patientName,
+            string bloodType,
+            string emergencyContact,
+            string allergies,
+            double weight,
+            int height,
+            string username,
+            string password,
+            string email,
+            DateOnly birthDate,
+            string cnp,
+            string address,
+            string phoneNumber,
+            DateTime registrationDate
+        )
         {
             UserId = userId;
             PatientId = patientId;
+            PatientName = patientName;
             BloodType = bloodType;
             EmergencyContact = emergencyContact;
             Allergies = allergies;
             Weight = weight;
             Height = height;
-            PatientName = patientName;
             Username = username;
             Password = password;
-            Mail = mail;
+            Email = email;
             BirthDate = birthDate;
-            Cnp = cnp;
+            CNP = cnp;
             Address = address;
             PhoneNumber = phoneNumber;
             RegistrationDate = registrationDate;

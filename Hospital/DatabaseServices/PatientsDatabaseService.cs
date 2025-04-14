@@ -76,7 +76,7 @@ namespace Hospital.DatabaseServices
                 return new List<PatientJointModel>();
             }
         }
-        public async Task<PatientJointModel> GetPatientByUserId(int UserId)
+        public virtual async Task<PatientJointModel> GetPatientByUserId(int UserId)
         {
             const string querySelectPatients = @"SELECT 
                     p.PatientId,
@@ -136,7 +136,7 @@ namespace Hospital.DatabaseServices
                 return new PatientJointModel(0, 0, "", "", "", "", 0, 0, "", "", "", new DateOnly(), "", "", "", new DateTime());
             }
         }
-        public async Task<bool> UpdatePassword(int UserId, string Password)
+        public virtual async Task<bool> UpdatePassword(int UserId, string Password)
         {
             const string queryUpdatePassword = @"UPDATE Users SET Password = @Password WHERE UserId = @UserId;";
             try
@@ -146,8 +146,8 @@ namespace Hospital.DatabaseServices
                 SqlCommand updateCommand = new SqlCommand(queryUpdatePassword, connection);
                 updateCommand.Parameters.AddWithValue("@UserId", UserId);
                 updateCommand.Parameters.AddWithValue("@Password", Password);
-                await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
-                return true;
+                int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return rowsAffected > 0;
             }
             catch (Exception e)
             {
@@ -155,18 +155,21 @@ namespace Hospital.DatabaseServices
                 return false;
             }
         }
-        public async Task<bool> UpdateEmail(int UserId, string Email)
+        public virtual async Task<bool> UpdateEmail(int UserId, string Email)
         {
             const string queryUpdateEmail = @"UPDATE Users SET Mail = @Email WHERE UserId = @UserId;";
             try
             {
                 using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);
                 await connection.OpenAsync().ConfigureAwait(false);
+
                 SqlCommand updateCommand = new SqlCommand(queryUpdateEmail, connection);
                 updateCommand.Parameters.AddWithValue("@UserId", UserId);
                 updateCommand.Parameters.AddWithValue("@Email", Email);
-                await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
-                return true;
+
+                int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+
+                return rowsAffected > 0;
             }
             catch (Exception e)
             {
@@ -174,7 +177,7 @@ namespace Hospital.DatabaseServices
                 return false;
             }
         }
-        public async Task<bool> UpdateUsername(int UserId, string Username)
+        public virtual async Task<bool> UpdateUsername(int UserId, string Username)
         {
             const string queryUpdateUsername = @"UPDATE Users SET Username = @Username WHERE UserId = @UserId;";
             try
@@ -184,8 +187,8 @@ namespace Hospital.DatabaseServices
                 SqlCommand updateCommand = new SqlCommand(queryUpdateUsername, connection);
                 updateCommand.Parameters.AddWithValue("@UserId", UserId);
                 updateCommand.Parameters.AddWithValue("@Username", Username);
-                await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
-                return true;
+                int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return rowsAffected > 0;
             }
             catch (Exception e)
             {
@@ -193,7 +196,7 @@ namespace Hospital.DatabaseServices
                 return false;
             }
         }
-        public async Task<bool> UpdateName(int UserId, string Name)
+        public virtual async Task<bool> UpdateName(int UserId, string Name)
         {
             const string queryUpdateName = @"UPDATE Users SET Name = @Name WHERE UserId = @UserId;";
             try
@@ -203,8 +206,8 @@ namespace Hospital.DatabaseServices
                 SqlCommand updateCommand = new SqlCommand(queryUpdateName, connection);
                 updateCommand.Parameters.AddWithValue("@UserId", UserId);
                 updateCommand.Parameters.AddWithValue("@Name", Name);
-                await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
-                return true;
+                int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return rowsAffected > 0;
             }
             catch (Exception e)
             {
@@ -212,7 +215,7 @@ namespace Hospital.DatabaseServices
                 return false;
             }
         }
-        public async Task<bool> UpdateBirthDate(int UserId, DateOnly BirthDate)
+        public virtual async Task<bool> UpdateBirthDate(int UserId, DateOnly BirthDate)
         {
             const string queryUpdateBirthDate = @"UPDATE Users SET BirthDate = @BirthDate WHERE UserId = @UserId;";
             try
@@ -222,8 +225,8 @@ namespace Hospital.DatabaseServices
                 SqlCommand updateCommand = new SqlCommand(queryUpdateBirthDate, connection);
                 updateCommand.Parameters.AddWithValue("@UserId", UserId);
                 updateCommand.Parameters.AddWithValue("@BirthDate", BirthDate);
-                await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
-                return true;
+                int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return rowsAffected > 0;
             }
             catch (Exception e)
             {
@@ -231,7 +234,7 @@ namespace Hospital.DatabaseServices
                 return false;
             }
         }
-        public async Task<bool> UpdateAddress(int UserId, string Address)
+        public virtual async Task<bool> UpdateAddress(int UserId, string Address)
         {
             const string queryUpdateAddress = @"UPDATE Users SET Address = @Address WHERE UserId = @UserId;";
             try
@@ -241,8 +244,8 @@ namespace Hospital.DatabaseServices
                 SqlCommand updateCommand = new SqlCommand(queryUpdateAddress, connection);
                 updateCommand.Parameters.AddWithValue("@UserId", UserId);
                 updateCommand.Parameters.AddWithValue("@Address", Address);
-                await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
-                return true;
+                int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return rowsAffected > 0;
             }
             catch (Exception e)
             {
@@ -250,7 +253,7 @@ namespace Hospital.DatabaseServices
                 return false;
             }
         }
-        public async Task<bool> UpdatePhoneNumber(int UserId, string PhoneNumber)
+        public virtual async Task<bool> UpdatePhoneNumber(int UserId, string PhoneNumber)
         {
             const string queryUpdatePhoneNumber = @"UPDATE Users SET PhoneNumber = @PhoneNumber WHERE UserId = @UserId;";
             try
@@ -260,8 +263,8 @@ namespace Hospital.DatabaseServices
                 SqlCommand updateCommand = new SqlCommand(queryUpdatePhoneNumber, connection);
                 updateCommand.Parameters.AddWithValue("@UserId", UserId);
                 updateCommand.Parameters.AddWithValue("@PhoneNumber", PhoneNumber);
-                await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
-                return true;
+                int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return rowsAffected > 0;
             }
             catch (Exception e)
             {
@@ -269,7 +272,7 @@ namespace Hospital.DatabaseServices
                 return false;
             }
         }
-        public async Task<bool> UpdateEmergencyContact(int UserId, string EmergencyContact)
+        public virtual async Task<bool> UpdateEmergencyContact(int UserId, string EmergencyContact)
         {
             const string queryUpdateEmergencyContact = @"UPDATE Patients SET EmergencyContact = @EmergencyContact WHERE UserId = @UserId;";
             try
@@ -279,8 +282,8 @@ namespace Hospital.DatabaseServices
                 SqlCommand updateCommand = new SqlCommand(queryUpdateEmergencyContact, connection);
                 updateCommand.Parameters.AddWithValue("@UserId", UserId);
                 updateCommand.Parameters.AddWithValue("@EmergencyContact", EmergencyContact);
-                await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
-                return true;
+                int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return rowsAffected > 0;
             }
             catch (Exception e)
             {
@@ -289,7 +292,7 @@ namespace Hospital.DatabaseServices
             }
         }
 
-        public async Task<bool> UpdateWeight(int UserId, double Weight)
+        public virtual async Task<bool> UpdateWeight(int UserId, double Weight)
         {
             const string queryUpdateWeight = @"UPDATE Patients SET Weight = @Weight WHERE UserId = @UserId;";
             try
@@ -299,8 +302,8 @@ namespace Hospital.DatabaseServices
                 SqlCommand updateCommand = new SqlCommand(queryUpdateWeight, connection);
                 updateCommand.Parameters.AddWithValue("@UserId", UserId);
                 updateCommand.Parameters.AddWithValue("@Weight", Weight);
-                await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
-                return true;
+                int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return rowsAffected > 0;
             }
             catch (Exception e)
             {
@@ -308,7 +311,7 @@ namespace Hospital.DatabaseServices
                 return false;
             }
         }
-        public async Task<bool> UpdateHeight(int UserId, int Height)
+        public virtual async Task<bool> UpdateHeight(int UserId, int Height)
         {
             const string queryUpdateHeight = @"UPDATE Patients SET Height = @Height WHERE UserId = @UserId;";
             try
@@ -318,8 +321,8 @@ namespace Hospital.DatabaseServices
                 SqlCommand updateCommand = new SqlCommand(queryUpdateHeight, connection);
                 updateCommand.Parameters.AddWithValue("@UserId", UserId);
                 updateCommand.Parameters.AddWithValue("@Height", Height);
-                await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
-                return true;
+                int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return rowsAffected > 0;
             }
             catch (Exception e)
             {
@@ -328,7 +331,7 @@ namespace Hospital.DatabaseServices
             }
         }
 
-        public async Task<bool> LogUpdate(int userId, ActionType type)
+        public virtual async Task<bool> LogUpdate(int userId, ActionType type)
         {
             string query = "INSERT INTO Logs (UserId, ActionType) VALUES (@userId, @type)";
             try

@@ -2,41 +2,54 @@
 
 namespace Hospital.Models
 {
-    class PatientDisplayModel
+    public class PatientDisplayModel
     {
         public int PatientId { get; set; }
-        public string Name { get; set; }
+        public string FullName { get; set; }
         public string CNP { get; set; }
         public string Username { get; set; }
-        public string Mail { get; set; }
+        public string Email { get; set; }
         public string Password { get; set; }
-        public DateOnly Birthdate { get; set; }
+        public DateOnly BirthDate { get; set; }
         public string Address { get; set; }
         public string PhoneNumber { get; set; }
         public string BloodType { get; set; }
         public string EmergencyContactName { get; set; }
-        public string Allergy { get; set; }
+        public string Allergies { get; set; }
         public float Weight { get; set; }
         public int Height { get; set; }
         public DateTime RegistrationDate { get; set; }
 
         public PatientDisplayModel(
-        int patientId, string name, string cnp, string username, string mail, string password,
-        DateOnly birthdate, string address, string phoneNumber, string bloodType,
-        string emergencyContactName, string allergy, float weight, int height, DateTime registrationDate)
+            int patientId,
+            string fullName,
+            string cnp,
+            string username,
+            string email,
+            string password,
+            DateOnly birthDate,
+            string address,
+            string phoneNumber,
+            string bloodType,
+            string emergencyContactName,
+            string allergies,
+            float weight,
+            int height,
+            DateTime registrationDate
+        )
         {
             PatientId = patientId;
-            Name = name;
+            FullName = fullName;
             CNP = cnp;
             Username = username;
-            Mail = mail;
+            Email = email;
             Password = password;
-            Birthdate = birthdate;
+            BirthDate = birthDate;
             Address = address;
             PhoneNumber = phoneNumber;
             BloodType = bloodType;
             EmergencyContactName = emergencyContactName;
-            Allergy = allergy;
+            Allergies = allergies;
             Weight = weight;
             Height = height;
             RegistrationDate = registrationDate;
