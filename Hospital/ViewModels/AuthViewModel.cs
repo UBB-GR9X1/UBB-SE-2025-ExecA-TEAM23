@@ -13,21 +13,16 @@ namespace Hospital.ViewModels
     /// <summary>
     /// The view model for Login and Create account.
     /// </summary>
-    public class AuthViewModel : IAuthViewModel
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="AuthViewModel"/> class.
+    /// </remarks>
+    /// <param name="userServiceModel">Servuce for Login or Create Account.</param>
+    public class AuthViewModel(IAuthManagerModel userServiceModel) : IAuthViewModel
     {
         /// <summary>
         /// Gets the Service (Model) for the user.
         /// </summary>
-        public IAuthManagerModel AuthManagerModel_ { get; private set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AuthViewModel"/> class.
-        /// </summary>
-        /// <param name="userServiceModel">Servuce for Login or Create Account.</param>
-        public AuthViewModel(IAuthManagerModel userServiceModel)
-        {
-            this.AuthManagerModel_ = userServiceModel;
-        }
+        public IAuthManagerModel AuthManagerModel_ { get; private set; } = userServiceModel;
 
         /// <summary>
         /// Logs the user in if the user exists and the password for the account is correct.
@@ -71,6 +66,15 @@ namespace Hospital.ViewModels
         public async Task CreateAccount(UserCreateAccountModel modelForCreatingUserAccount)
         {
             await this.AuthManagerModel_.CreateAccount(modelForCreatingUserAccount);
+        }
+
+        /// <summary>
+        /// Gets the user's role.
+        /// </summary>
+        /// <returns>user's role.</returns>
+        public string GetUserRole()
+        {
+            return userServiceModel.allUserInformation.Role;
         }
     }
 }
