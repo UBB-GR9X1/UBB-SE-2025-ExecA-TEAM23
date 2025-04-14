@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 public interface ISearchDoctorsViewModel
 {
-    ObservableCollection<DoctorModel> DoctorList { get; }
-    string DepartmentPartialName { get; set; }
+    ObservableCollection<DoctorModel> Doctors { get; }
+    string DepartmentSearchTerm { get; set; }
     DoctorModel SelectedDoctor { get; set; }
     bool IsProfileOpen { get; set; }
 
@@ -13,4 +13,3 @@ public interface ISearchDoctorsViewModel
     void ShowDoctorProfile(DoctorModel doctor);
     void CloseDoctorProfile();
 }
-

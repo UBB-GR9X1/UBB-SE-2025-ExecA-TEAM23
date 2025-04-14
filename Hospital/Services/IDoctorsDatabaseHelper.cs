@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Hospital.DatabaseServices
+namespace Hospital.Services
 {
     public interface IDoctorsDatabaseHelper
     {

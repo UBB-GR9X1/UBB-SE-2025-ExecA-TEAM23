@@ -1,6 +1,7 @@
 using Hospital.DatabaseServices;
 using Hospital.Exceptions;
 using Hospital.Managers;
+using Hospital.Services;
 using Hospital.ViewModels;
 using Hospital.Views;
 using Microsoft.Data.SqlClient;

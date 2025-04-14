@@ -1,7 +1,7 @@
-﻿using Hospital.DatabaseServices;
-using Hospital.Doctor_Dashboard;
+﻿using Hospital.Doctor_Dashboard;
 using Hospital.Managers;
 using Hospital.Models;
+using Hospital.Services;
 using Moq;
 using NUnit.Framework;
 using System;

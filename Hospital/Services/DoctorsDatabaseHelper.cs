@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Hospital.DatabaseServices
+namespace Hospital.Services
 {
     public class DoctorsDatabaseHelper : IDoctorsDatabaseHelper
     {

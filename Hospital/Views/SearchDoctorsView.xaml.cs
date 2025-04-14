@@ -16,7 +16,6 @@ namespace Hospital.Views
     {
         public SearchDoctorsViewModel ViewModel { get; private set; }
 
-        // For debouncing search input
         private CancellationTokenSource? _searchDebounceTokenSource;
         private const int SearchDebounceDelayMilliseconds = 300;
         private const string DefaultProfileImagePath = "ms-appx:///Assets/default-profile.png";
@@ -25,16 +24,13 @@ namespace Hospital.Views
         {
             this.InitializeComponent();
 
-            // This would normally be injected through dependency injection
             var doctorSearchService = new SearchDoctorsService(new DoctorsDatabaseHelper());
             ViewModel = new SearchDoctorsViewModel(doctorSearchService, string.Empty);
 
             this.DataContext = ViewModel;
 
-            // Register for property changed events to update UI when SelectedDoctor changes
             ViewModel.PropertyChanged += OnViewModelPropertyChanged;
 
-            // Load initial empty search results
             _ = ViewModel.LoadDoctors();
         }
 
@@ -53,30 +49,22 @@ namespace Hospital.Views
 
         private async Task PerformDebouncedSearch()
         {
-            // Cancel any previous search operation
             _searchDebounceTokenSource?.Cancel();
             _searchDebounceTokenSource = new CancellationTokenSource();
             var cancellationToken = _searchDebounceTokenSource.Token;
 
             try
             {
-                // Wait before executing the search to avoid too many searches while typing
                 await Task.Delay(SearchDebounceDelayMilliseconds, cancellationToken);
 
-                // If the token was canceled during the delay, this won't execute
                 if (!cancellationToken.IsCancellationRequested)
                 {
                     ViewModel.DepartmentPartialName = SearchTextBox.Text;
                     await ViewModel.LoadDoctors();
                 }
             }
-            catch (TaskCanceledException)
-            {
-                // This is expected when debouncing - no need to handle
-            }
             catch (Exception exception)
             {
-                // Add general exception handling to catch any other errors
                 System.Diagnostics.Debug.WriteLine($"Error in search: {exception.Message}");
             }
         }
@@ -88,7 +76,6 @@ namespace Hospital.Views
                 if (e?.ClickedItem is DoctorModel selectedDoctor)
                 {
                     ViewModel.ShowDoctorProfile(selectedDoctor);
-                    // The UI will be updated in the PropertyChanged event
                 }
             }
             catch (Exception exception)
@@ -120,10 +107,8 @@ namespace Hospital.Views
 
         private void RenderDoctorProfileData(DoctorModel doctor)
         {
-            // Load profile image
             LoadProfileImage(doctor.AvatarUrl);
 
-            // Populate UI text fields with doctor data
             DoctorNameText.Text = doctor.DoctorName ?? "Doctor";
             DepartmentText.Text = doctor.DepartmentName ?? string.Empty;
             RatingText.Text = doctor.Rating.ToString();
@@ -148,14 +133,12 @@ namespace Hospital.Views
             }
             catch
             {
-                // If image loading fails, use default image
                 DoctorProfileImage.Source = new BitmapImage(new Uri(DefaultProfileImagePath));
             }
         }
 
         private void ClearProfileDisplay()
         {
-            // Reset UI elements when no doctor is selected
             DoctorProfileImage.Source = new BitmapImage(new Uri(DefaultProfileImagePath));
             DoctorNameText.Text = string.Empty;
             DepartmentText.Text = string.Empty;
@@ -172,10 +155,8 @@ namespace Hospital.Views
 
         private void ProfileOverlay_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            // Make sure this event is only triggered when tapping the overlay itself
             if ((Grid)sender == ProfileOverlay)
             {
-                // Close profile when clicking outside the profile panel
                 ViewModel.CloseDoctorProfile();
                 System.Diagnostics.Debug.WriteLine("Profile closed by overlay tap");
                 e.Handled = true;
@@ -184,7 +165,6 @@ namespace Hospital.Views
 
         private void ProfilePanel_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            // Prevent taps on the profile panel from reaching the overlay
             e.Handled = true;
         }
     }

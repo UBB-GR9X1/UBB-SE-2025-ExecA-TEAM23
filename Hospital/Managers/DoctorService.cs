@@ -1,9 +1,8 @@
-using Hospital.DatabaseServices;
 using Hospital.Models;
+using Hospital.Services;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Hospital.Doctor_Dashboard;
 
 namespace Hospital.Managers
 {
@@ -102,6 +101,8 @@ namespace Hospital.Managers
 
         public async Task<bool> LogUpdate(int userId, ActionType action) =>
             await _doctorDatabaseHelper.UpdateLogService(userId, action);
+
+
 
         #region Validation Helpers
 

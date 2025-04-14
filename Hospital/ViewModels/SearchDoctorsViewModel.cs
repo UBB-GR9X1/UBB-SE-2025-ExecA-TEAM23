@@ -10,28 +10,29 @@ namespace Hospital.ViewModels
 {
     public class SearchDoctorsViewModel : ISearchDoctorsViewModel, INotifyPropertyChanged
     {
-        public readonly ISearchDoctorsService _searchDoctorsManager;
-        private string _departmentPartialName;
+        private readonly ISearchDoctorsService _searchDoctorsService;
+
+        private string _departmentSearchTerm;
         private DoctorModel _selectedDoctor = DoctorModel.Default;
         private bool _isProfileOpen;
+        private ObservableCollection<DoctorModel> _doctors;
 
-        private ObservableCollection<DoctorModel> _doctorList;
-        public ObservableCollection<DoctorModel> DoctorList
+        public ObservableCollection<DoctorModel> Doctors
         {
-            get => _doctorList;
+            get => _doctors;
             private set
             {
-                _doctorList = value;
+                _doctors = value;
                 OnPropertyChanged();
             }
         }
 
-        public string DepartmentPartialName
+        public string DepartmentSearchTerm
         {
-            get => _departmentPartialName;
+            get => _departmentSearchTerm;
             set
             {
-                _departmentPartialName = value;
+                _departmentSearchTerm = value;
                 OnPropertyChanged();
             }
         }
@@ -56,11 +57,11 @@ namespace Hospital.ViewModels
             }
         }
 
-        public SearchDoctorsViewModel(ISearchDoctorsService searchDoctorsManager, string departmentPartialName)
+        public SearchDoctorsViewModel(ISearchDoctorsService searchDoctorsService, string departmentSearchTerm)
         {
-            _searchDoctorsManager = searchDoctorsManager;
-            _departmentPartialName = departmentPartialName;
-            _doctorList = new ObservableCollection<DoctorModel>();
+            _searchDoctorsService = searchDoctorsService;
+            _departmentSearchTerm = departmentSearchTerm;
+            _doctors = new ObservableCollection<DoctorModel>();
             _isProfileOpen = false;
         }
 
@@ -68,13 +69,12 @@ namespace Hospital.ViewModels
         {
             try
             {
-                await _searchDoctorsManager.LoadDoctors(_departmentPartialName);
+                await _searchDoctorsService.LoadDoctors(_departmentSearchTerm);
 
-                // Clear and repopulate the collection with new results
-                DoctorList.Clear();
-                foreach (var doctor in _searchDoctorsManager.GetSearchedDoctors())
+                Doctors.Clear();
+                foreach (var doctor in _searchDoctorsService.GetSearchedDoctors())
                 {
-                    DoctorList.Add(doctor);
+                    Doctors.Add(doctor);
                 }
             }
             catch (Exception ex)
@@ -83,7 +83,6 @@ namespace Hospital.ViewModels
             }
         }
 
-        // Methods to handle the doctor profile
         public void ShowDoctorProfile(DoctorModel doctor)
         {
             SelectedDoctor = doctor;
@@ -96,13 +95,11 @@ namespace Hospital.ViewModels
             SelectedDoctor = DoctorModel.Default;
         }
 
-        // INotifyPropertyChanged implementation
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
     }
 }
