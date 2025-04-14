@@ -160,7 +160,7 @@ namespace AdminDashboardTests
         }
 
         [Test]
-        public void DoctorList_WhenChanged_TriggersPropertyChanged()
+        public void Doctors_WhenChanged_TriggersPropertyChanged()
         {
             bool propertyChangedFired = false;
             var newList = new ObservableCollection<DoctorModel>();
@@ -170,7 +170,7 @@ namespace AdminDashboardTests
                     propertyChangedFired = true;
             };
 
-            _viewModel.GetType().GetProperty("DoctorList")!
+            _viewModel.GetType().GetProperty("Doctors")!
                 .SetValue(_viewModel, newList);
 
             Assert.IsTrue(propertyChangedFired);
