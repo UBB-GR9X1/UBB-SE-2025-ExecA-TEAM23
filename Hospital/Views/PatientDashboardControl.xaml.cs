@@ -1,190 +1,153 @@
-using Hospital.Models;
 using Hospital.ViewModels;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml;
 using System;
-
+using Hospital.Models;
+using System.Threading.Tasks;
 
 namespace Hospital.Views
 {
     public sealed partial class PatientDashboardControl : UserControl
     {
-        private PatientViewModel? _viewModel;
-        public event Action? LogoutButtonClicked;
-        // Constructor
+        private PatientViewModel? _patientViewModel;
+
+        public event Action? Logout;
+
         public PatientDashboardControl()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
+
         public PatientDashboardControl(PatientViewModel patientViewModel)
         {
-            this.InitializeComponent();
-            _viewModel = patientViewModel;
-
-            this.DataContext = _viewModel; // Bind the ViewModel to the UserControl
+            InitializeComponent();
+            _patientViewModel = patientViewModel;
+            DataContext = _patientViewModel;
         }
 
-        // Update Button Click Handler
-        private async void OnUpdateButtonClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        private async void OnUpdateButtonClick(object sender, RoutedEventArgs e)
         {
             try
             {
-                bool changeMade = false;
-
-                if (_viewModel == null)
+                if (_patientViewModel == null)
                     throw new Exception("Patient is not initialized");
 
-                // Update Name
-                if (_viewModel.Name != _viewModel._originalPatient.PatientName)
-                {
-                    bool isNameUpdated = await _viewModel.UpdateName(_viewModel.Name);
-                    if (isNameUpdated)
-                    {
-                        changeMade = true;
-                    }
-                }
-
-                // Update Mail
-                if (_viewModel.Email != _viewModel._originalPatient.Mail)
-                {
-                    bool isEmailUpdated = await _viewModel.UpdateEmail(_viewModel.Email);
-                    if (isEmailUpdated)
-                    {
-                        changeMade = true;
-                    }
-                }
-
-                // Update Username
-                if (_viewModel.Username != _viewModel._originalPatient.Username)
-                {
-                    bool isUsernameUpdated = await _viewModel.UpdateUsername(_viewModel.Username);
-                    if (isUsernameUpdated)
-                    {
-                        changeMade = true;
-                    }
-                }
-
-                // Update Address
-                if (_viewModel.Address != _viewModel._originalPatient.Address)
-                {
-                    bool isAddressUpdated = await _viewModel.UpdateAddress(_viewModel.Address);
-                    if (isAddressUpdated)
-                    {
-                        changeMade = true;
-                    }
-                }
-
-                // Update Phone Number
-                if (_viewModel.PhoneNumber != _viewModel._originalPatient.PhoneNumber)
-                {
-                    bool isPhoneNumberUpdated = await _viewModel.UpdatePhoneNumber(_viewModel.PhoneNumber);
-                    if (isPhoneNumberUpdated)
-                    {
-                        changeMade = true;
-                    }
-                }
-
-                // Update Emergency Contact
-                if (_viewModel.EmergencyContact != _viewModel._originalPatient.EmergencyContact)
-                {
-                    bool isEmergencyContactUpdated = await _viewModel.UpdateEmergencyContact(_viewModel.EmergencyContact);
-                    if (isEmergencyContactUpdated)
-                    {
-                        changeMade = true;
-                    }
-                }
-
-                // Update Weight
-                if (_viewModel.Weight != _viewModel._originalPatient.Weight)
-                {
-                    bool isWeightUpdated = await _viewModel.UpdateWeight(_viewModel.Weight);
-                    if (isWeightUpdated)
-                    {
-                        changeMade = true;
-                    }
-                }
-
-                // Update Height
-                if (_viewModel.Height != _viewModel._originalPatient.Height)
-                {
-                    bool isHeightUpdated = await _viewModel.UpdateHeight(_viewModel.Height);
-                    if (isHeightUpdated)
-                    {
-                        changeMade = true;
-                    }
-                }
-
-                // Update Password
+                bool hasChanges = false;
                 bool passwordChanged = false;
-                if (_viewModel.Password != _viewModel._originalPatient.Password)
+
+                if (_patientViewModel.Name != _patientViewModel._originalPatient.PatientName)
                 {
-                    bool isPasswordUpdated = await _viewModel.UpdatePassword(_viewModel.Password);
-                    if (isPasswordUpdated)
+                    bool nameUpdated = await _patientViewModel.UpdateName(_patientViewModel.Name);
+                    hasChanges |= nameUpdated;
+                }
+
+                if (_patientViewModel.Email != _patientViewModel._originalPatient.Email)
+                {
+                    bool emailUpdated = await _patientViewModel.UpdateEmail(_patientViewModel.Email);
+                    hasChanges |= emailUpdated;
+                }
+
+                if (_patientViewModel.Username != _patientViewModel._originalPatient.Username)
+                {
+                    bool usernameUpdated = await _patientViewModel.UpdateUsername(_patientViewModel.Username);
+                    hasChanges |= usernameUpdated;
+                }
+
+                if (_patientViewModel.Address != _patientViewModel._originalPatient.Address)
+                {
+                    bool addressUpdated = await _patientViewModel.UpdateAddress(_patientViewModel.Address);
+                    hasChanges |= addressUpdated;
+                }
+
+                if (_patientViewModel.PhoneNumber != _patientViewModel._originalPatient.PhoneNumber)
+                {
+                    bool phoneUpdated = await _patientViewModel.UpdatePhoneNumber(_patientViewModel.PhoneNumber);
+                    hasChanges |= phoneUpdated;
+                }
+
+                if (_patientViewModel.EmergencyContact != _patientViewModel._originalPatient.EmergencyContact)
+                {
+                    bool emergencyUpdated = await _patientViewModel.UpdateEmergencyContact(_patientViewModel.EmergencyContact);
+                    hasChanges |= emergencyUpdated;
+                }
+
+                if (_patientViewModel.Weight != _patientViewModel._originalPatient.Weight)
+                {
+                    bool weightUpdated = await _patientViewModel.UpdateWeight(_patientViewModel.Weight);
+                    hasChanges |= weightUpdated;
+                }
+
+                if (_patientViewModel.Height != _patientViewModel._originalPatient.Height)
+                {
+                    bool heightUpdated = await _patientViewModel.UpdateHeight(_patientViewModel.Height);
+                    hasChanges |= heightUpdated;
+                }
+
+                if (_patientViewModel.Password != _patientViewModel._originalPatient.Password)
+                {
+                    bool passwordUpdated = await _patientViewModel.UpdatePassword(_patientViewModel.Password);
+                    if (passwordUpdated)
                     {
-                        changeMade = true;
+                        hasChanges = true;
                         passwordChanged = true;
                     }
                 }
 
-                if (changeMade)
+                if (hasChanges)
                 {
-                    if (passwordChanged)
-                        await _viewModel.LogUpdate(_viewModel.UserId, ActionType.CHANGE_PASSWORD);
-                    else
-                        await _viewModel.LogUpdate(_viewModel.UserId, ActionType.UPDATE_PROFILE);
-                    var validationDialog = new ContentDialog
-                    {
-                        Title = "Success",
-                        Content = "Changes applied successfully",
-                        CloseButtonText = "OK",
-                        XamlRoot = this.Content.XamlRoot
-                    };
-                    await validationDialog.ShowAsync();
-                }
+                    await _patientViewModel.LogUpdate(
+                        _patientViewModel.UserId,
+                        passwordChanged ? ActionType.CHANGE_PASSWORD : ActionType.UPDATE_PROFILE
+                    );
 
+                    await ShowDialogAsync("Success", "Changes applied successfully.");
+                }
                 else
                 {
-                    var validationDialog = new ContentDialog
-                    {
-                        Title = "No changes made",
-                        Content = "Please modify the fields you want to update",
-                        CloseButtonText = "OK",
-                        XamlRoot = this.Content.XamlRoot
-                    };
-                    await validationDialog.ShowAsync();
+                    await ShowDialogAsync("No Changes", "Please modify the fields you want to update.");
                 }
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                if (_viewModel != null)
+                if (_patientViewModel != null)
                 {
-                    _viewModel.Name = _viewModel._originalPatient.PatientName;
-                    _viewModel.Email = _viewModel._originalPatient.Mail;
-                    _viewModel.Username = _viewModel._originalPatient.Username;
-                    _viewModel.Address = _viewModel._originalPatient.Address;
-                    _viewModel.PhoneNumber = _viewModel._originalPatient.PhoneNumber;
-                    _viewModel.EmergencyContact = _viewModel._originalPatient.EmergencyContact;
-                    _viewModel.Weight = _viewModel._originalPatient.Weight;
-                    _viewModel.Height = _viewModel._originalPatient.Height;
-                    _viewModel.Password = _viewModel._originalPatient.Password;
-
-                    var validationDialog = new ContentDialog
-                    {
-                        Title = "Error",
-                        Content = $"{ex.Message}",
-                        CloseButtonText = "OK"
-                    };
-
-                    validationDialog.XamlRoot = this.Content.XamlRoot;
-                    await validationDialog.ShowAsync();
-                    await _viewModel.LoadPatientInfoByUserIdAsync(_viewModel.UserId);
+                    RestoreOriginalPatientData();
+                    await ShowDialogAsync("Error", exception.Message);
+                    await _patientViewModel.LoadPatientInfoByUserIdAsync(_patientViewModel.UserId);
                 }
             }
-            // Add additional handling (e.g., show a message to the user after all fields are updated)
-        }
-        private void Logout(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-        {
-            LogoutButtonClicked?.Invoke();
         }
 
+        private void RestoreOriginalPatientData()
+        {
+            var original = _patientViewModel!._originalPatient;
+            _patientViewModel!.Name = original.PatientName;
+            _patientViewModel.Email = original.Email;
+            _patientViewModel.Username = original.Username;
+            _patientViewModel.Address = original.Address;
+            _patientViewModel.PhoneNumber = original.PhoneNumber;
+            _patientViewModel.EmergencyContact = original.EmergencyContact;
+            _patientViewModel.Weight = original.Weight;
+            _patientViewModel.Height = original.Height;
+            _patientViewModel.Password = original.Password;
+        }
+
+        private async Task ShowDialogAsync(string title, string message)
+        {
+            var dialog = new ContentDialog
+            {
+                Title = title,
+                Content = message,
+                CloseButtonText = "OK",
+                XamlRoot = this.Content.XamlRoot
+            };
+
+            await dialog.ShowAsync();
+        }
+
+        private void OnLogoutButtonClick(object sender, RoutedEventArgs e)
+        {
+            Logout?.Invoke();
+        }
     }
 }

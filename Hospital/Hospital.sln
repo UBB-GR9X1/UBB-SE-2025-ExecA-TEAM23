@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		CodeCoverage.runsettings = CodeCoverage.runsettings
 	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatientDashboardProfilePart.Tests", "..\PatientDashboardProfilePart.Tests\PatientDashboardProfilePart.Tests.csproj", "{E6B9FABC-4445-6314-B4C5-2A22BE0304A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,6 +53,18 @@ Global
 		{82443FF4-8002-4CFC-B753-E6673AC2812E}.Release|x64.Build.0 = Release|Any CPU
 		{82443FF4-8002-4CFC-B753-E6673AC2812E}.Release|x86.ActiveCfg = Release|Any CPU
 		{82443FF4-8002-4CFC-B753-E6673AC2812E}.Release|x86.Build.0 = Release|Any CPU
+		{E6B9FABC-4445-6314-B4C5-2A22BE0304A3}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{E6B9FABC-4445-6314-B4C5-2A22BE0304A3}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{E6B9FABC-4445-6314-B4C5-2A22BE0304A3}.Debug|x64.ActiveCfg = Debug|x64
+		{E6B9FABC-4445-6314-B4C5-2A22BE0304A3}.Debug|x64.Build.0 = Debug|x64
+		{E6B9FABC-4445-6314-B4C5-2A22BE0304A3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E6B9FABC-4445-6314-B4C5-2A22BE0304A3}.Debug|x86.Build.0 = Debug|Any CPU
+		{E6B9FABC-4445-6314-B4C5-2A22BE0304A3}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{E6B9FABC-4445-6314-B4C5-2A22BE0304A3}.Release|ARM64.Build.0 = Release|Any CPU
+		{E6B9FABC-4445-6314-B4C5-2A22BE0304A3}.Release|x64.ActiveCfg = Release|Any CPU
+		{E6B9FABC-4445-6314-B4C5-2A22BE0304A3}.Release|x64.Build.0 = Release|Any CPU
+		{E6B9FABC-4445-6314-B4C5-2A22BE0304A3}.Release|x86.ActiveCfg = Release|Any CPU
+		{E6B9FABC-4445-6314-B4C5-2A22BE0304A3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
