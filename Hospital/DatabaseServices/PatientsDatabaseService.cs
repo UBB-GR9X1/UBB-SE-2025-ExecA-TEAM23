@@ -157,7 +157,7 @@ namespace Hospital.DatabaseServices
         }
         public virtual async Task<bool> UpdateEmail(int UserId, string Email)
         {
-            const string queryUpdateEmail = @"UPDATE Users SET Mail = @Email WHERE UserId = @UserId;";
+            const string queryUpdateEmail = @"UPDATE Users SET Mail = @Mail WHERE UserId = @UserId;";
             try
             {
                 using SqlConnection connection = new SqlConnection(_config.DatabaseConnection);

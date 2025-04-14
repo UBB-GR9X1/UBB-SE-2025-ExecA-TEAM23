@@ -47,9 +47,9 @@ namespace Hospital
                 }
                 else if (_viewModel._authManagerModel._userInfo.Role == "Doctor")
                 {
-                    DoctorsDatabaseService doctorDBService = new DoctorsDatabaseService();
-                    DoctorManagerModel doctorManagerModel = new DoctorManagerModel(doctorDBService);
-                    DoctorViewModel doctorViewModel = new DoctorViewModel(doctorManagerModel, _viewModel._authManagerModel._userInfo.UserId);
+                    DoctorsDatabaseHelper doctorDbHelper = new DoctorsDatabaseHelper();
+                    DoctorService doctorService = new DoctorService(doctorDbHelper);
+                    DoctorViewModel doctorViewModel = new DoctorViewModel(doctorService, _viewModel._authManagerModel._userInfo.UserId);
                     DoctorDashboardWindow doctorDashboardWindow = new DoctorDashboardWindow(doctorViewModel, _viewModel);
                     doctorDashboardWindow.Activate();
                     this.Close();

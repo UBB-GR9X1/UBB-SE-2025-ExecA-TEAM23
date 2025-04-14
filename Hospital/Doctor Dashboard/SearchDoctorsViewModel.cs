@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace Hospital.ViewModels
 {
-    public class SearchDoctorsViewModel : INotifyPropertyChanged
+    public class SearchDoctorsViewModel : ISearchDoctorsViewModel, INotifyPropertyChanged
     {
-        public readonly SearchDoctorsManagerModel _searchDoctorsManager;
+        public readonly ISearchDoctorsService _searchDoctorsManager;
         private string _departmentPartialName;
-        private DoctorDisplayModel _selectedDoctor = DoctorDisplayModel.Default;
+        private DoctorModel _selectedDoctor = DoctorModel.Default;
         private bool _isProfileOpen;
 
-        private ObservableCollection<DoctorDisplayModel> _doctorList;
-        public ObservableCollection<DoctorDisplayModel> DoctorList
+        private ObservableCollection<DoctorModel> _doctorList;
+        public ObservableCollection<DoctorModel> DoctorList
         {
             get => _doctorList;
             private set
@@ -36,7 +36,7 @@ namespace Hospital.ViewModels
             }
         }
 
-        public DoctorDisplayModel SelectedDoctor
+        public DoctorModel SelectedDoctor
         {
             get => _selectedDoctor;
             set
@@ -56,11 +56,11 @@ namespace Hospital.ViewModels
             }
         }
 
-        public SearchDoctorsViewModel(SearchDoctorsManagerModel searchDoctorsManager, string departmentPartialName)
+        public SearchDoctorsViewModel(ISearchDoctorsService searchDoctorsManager, string departmentPartialName)
         {
             _searchDoctorsManager = searchDoctorsManager;
             _departmentPartialName = departmentPartialName;
-            _doctorList = new ObservableCollection<DoctorDisplayModel>();
+            _doctorList = new ObservableCollection<DoctorModel>();
             _isProfileOpen = false;
         }
 
@@ -84,7 +84,7 @@ namespace Hospital.ViewModels
         }
 
         // Methods to handle the doctor profile
-        public void ShowDoctorProfile(DoctorDisplayModel doctor)
+        public void ShowDoctorProfile(DoctorModel doctor)
         {
             SelectedDoctor = doctor;
             IsProfileOpen = true;
@@ -93,7 +93,7 @@ namespace Hospital.ViewModels
         public void CloseDoctorProfile()
         {
             IsProfileOpen = false;
-            SelectedDoctor = DoctorDisplayModel.Default;
+            SelectedDoctor = DoctorModel.Default;
         }
 
         // INotifyPropertyChanged implementation
@@ -103,5 +103,6 @@ namespace Hospital.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
     }
 }

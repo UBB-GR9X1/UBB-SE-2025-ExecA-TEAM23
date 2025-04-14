@@ -8,7 +8,7 @@
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="250" Spacing="10">
             <TextBox x:Name="UsernameField" Header="Username" PlaceholderText="Enter username"/>
             <PasswordBox x:Name="PasswordField" Header="Password" PlaceholderText="Enter password"/>
-			<TextBox x:Name="EmailTextBox" Header="Email" PlaceholderText="Enter your email" InputScope="EmailSmtpAddress" />
+			<TextBox x:Name="EmailTextBox" Header="Mail" PlaceholderText="Enter your email" InputScope="EmailSmtpAddress" />
 			<TextBox x:Name="NameTextBox" Header="Full Name" PlaceholderText="Enter your full name" />
 			<CalendarDatePicker x:Name="BirthDateCalendarPicker" />
 			<TextBox x:Name="CNPTextBox" Header="CNP" PlaceholderText="Enter your CNP" MaxLength="13" InputScope="Number" />
