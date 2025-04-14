@@ -130,6 +130,12 @@ namespace AdminDashboardTests
         }
 
         [Test]
+        public void DepartmentSearchTerm_GetterReturnsInitialValue_AfterInitialization()
+        {
+            Assert.AreEqual(InitialDepartmentName, _viewModel.DepartmentSearchTerm);
+        }
+
+        [Test]
         public void SelectedDoctor_WhenChanged_TriggersPropertyChanged()
         {
             bool propertyChangedFired = false;
@@ -175,5 +181,7 @@ namespace AdminDashboardTests
 
             Assert.IsTrue(propertyChangedFired);
         }
+
+
     }
 }
