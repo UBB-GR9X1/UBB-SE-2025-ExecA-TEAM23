@@ -76,6 +76,18 @@ namespace Hospital
                     this.Close();
                     return;
                 }
+                else if (this.loginPageViewModel.GetUserRole() == "Admin")
+                {
+                    ILoggerDatabaseService loggerDatabaseService = new LoggerDatabaseService();
+
+                    AdminDashboardWindow adminDashboard = new AdminDashboardWindow(
+                        this.loginPageViewModel,
+                        loggerDatabaseService);
+
+                    adminDashboard.Activate();
+                    this.Close();
+                    return;
+                }
 
                 LogoutWindow newLogOutWindow = new LogoutWindow(this.loginPageViewModel);
                 newLogOutWindow.Activate();

@@ -335,6 +335,7 @@ namespace Hospital.Managers
             {
                 if (await this.LoadUserByUsername(modelForCreatingUserAccount.Username))
                 {
+                    await this.LogAction(ActionType.CREATE_ACCOUNT);
                     return await this.LogAction(ActionType.LOGIN);
                 }
             }
