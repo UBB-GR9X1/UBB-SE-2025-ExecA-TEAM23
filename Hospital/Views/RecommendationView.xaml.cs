@@ -7,6 +7,7 @@ using Hospital.Managers;
 using System.Threading.Tasks;
 using Hospital.DatabaseServices;
 using System;
+using Hospital.Services;
 
 namespace Hospital.Views
 {
