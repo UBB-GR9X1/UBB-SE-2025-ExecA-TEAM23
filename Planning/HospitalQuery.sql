@@ -1,4 +1,6 @@
+go
 use [HospitalApp]
+go
 -------------------------------------
 -- Clean up existing tables (if any)
 -------------------------------------

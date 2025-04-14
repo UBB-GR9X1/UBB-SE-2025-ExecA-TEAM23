@@ -4,61 +4,54 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using Hospital.Exceptions;
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+using System.Threading.Tasks;
 
 namespace Hospital.Views
 {
-    /// <summary>
-    /// An empty window that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class PatientDashboardWindow : Window
     {
-        private readonly AuthViewModel _authViewModel;
-        public PatientDashboardWindow(PatientViewModel patientViewModel, AuthViewModel authViewModel )
-        {
-            this.InitializeComponent();
-            // Create the PatientDashboardControl and set its DataContext
-            PatientDashboardControl patientDashboardControl = new PatientDashboardControl(patientViewModel);
-            _authViewModel = authViewModel;
-            patientDashboardControl.LogoutButtonClicked += Logout; // Add the event handler for the Logout button
-            // Add it to the grid
-            PatientDashboard.Content = patientDashboardControl; // PatientDashboard is the x:Name of your Grid
+        private readonly AuthViewModel _authenticationViewModel;
 
+        public PatientDashboardWindow(PatientViewModel patientViewModel, AuthViewModel authenticationViewModel)
+        {
+            InitializeComponent();
+            _authenticationViewModel = authenticationViewModel;
+
+            var patientDashboardControl = new PatientDashboardControl(patientViewModel);
+            patientDashboardControl.Logout += HandleLogoutRequested;
+
+            PatientDashboard.Content = patientDashboardControl;
         }
-        private async void Logout()
+
+        private async void HandleLogoutRequested()
         {
             try
             {
-                await _authViewModel.Logout(); // Log out the user
-                MainWindow main = new MainWindow();
-                main.Activate();
-                this.Close(); // Close logout window after successful logout
+                await _authenticationViewModel.Logout();
+                var loginWindow = new MainWindow();
+                loginWindow.Activate();
+                Close();
             }
-            catch (AuthenticationException ex)
+            catch (AuthenticationException authenticationException)
             {
-                var dialog = new ContentDialog
-                {
-                    Title = "Error",
-                    Content = $"{ex.Message}",
-                    CloseButtonText = "OK",
-                    XamlRoot = this.Content.XamlRoot
-                };
-                await dialog.ShowAsync();
+                await ShowErrorDialog("Authentication Error", authenticationException.Message);
             }
-            catch (SqlException err)
+            catch (SqlException databaseException)
             {
-                var validationDialog = new ContentDialog
-                {
-                    Title = "Error",
-                    Content = $"{err.Message}",
-                    CloseButtonText = "OK"
-                };
-
-                validationDialog.XamlRoot = this.Content.XamlRoot;
-                await validationDialog.ShowAsync();
+                await ShowErrorDialog("Database Error", databaseException.Message);
             }
         }
 
+        private async Task ShowErrorDialog(string title, string message)
+        {
+            var errorDialog = new ContentDialog
+            {
+                Title = title,
+                Content = message,
+                CloseButtonText = "OK",
+                XamlRoot = this.Content.XamlRoot
+            };
+            await errorDialog.ShowAsync();
+        }
     }
 }

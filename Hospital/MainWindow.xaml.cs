@@ -21,7 +21,6 @@ namespace Hospital
         public MainWindow()
         {
             this.InitializeComponent();
-
         }
 
         private void OpenApplicationButton_Click(object sender, RoutedEventArgs e)
