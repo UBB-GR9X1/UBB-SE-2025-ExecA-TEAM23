@@ -92,9 +92,11 @@ namespace Hospital.DatabaseServices
                 connectionToTheDatabase.Close();
                 return new UserAuthModel(userId, userName, password, mail, role);
             }
-
-            connectionToTheDatabase.Close();
-            throw new AuthenticationException("No user found with given username");
+            else
+            {
+                connectionToTheDatabase.Close();
+                throw new AuthenticationException("No user found with given username");
+            }
         }
 
         /// <summary>
@@ -198,10 +200,10 @@ namespace Hospital.DatabaseServices
             {
                 throw new AuthenticationException(errror_AuthentificationException.Message);
             }
-            catch (Exception)
+            catch (Exception exception)
             {
                 transaction.Rollback();
-                throw new AuthenticationException("Database error");
+                throw new AuthenticationException("Database error " + exception.Message);
             }
         }
 

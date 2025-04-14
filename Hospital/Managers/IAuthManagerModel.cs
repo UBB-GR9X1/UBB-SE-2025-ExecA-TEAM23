@@ -8,7 +8,7 @@ namespace Hospital.Managers
     using Hospital.Models;
 
     /// <summary>
-    /// Interface for IAuthManagerModel:
+    /// Interface for AuthManagerModel.
     /// </summary>
     public interface IAuthManagerModel
     {

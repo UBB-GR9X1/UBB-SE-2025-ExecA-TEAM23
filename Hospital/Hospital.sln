@@ -11,7 +11,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		CodeCoverage.runsettings = CodeCoverage.runsettings
 	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatientDashboardProfilePart.Tests", "..\PatientDashboardProfilePart.Tests\PatientDashboardProfilePart.Tests.csproj", "{E6B9FABC-4445-6314-B4C5-2A22BE0304A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoginPageTests", "..\LoginPageTests\LoginPageTests.csproj", "{5CACED06-0C08-43BE-AABA-360EC36C942D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +68,18 @@ Global
 		{E6B9FABC-4445-6314-B4C5-2A22BE0304A3}.Release|x64.Build.0 = Release|Any CPU
 		{E6B9FABC-4445-6314-B4C5-2A22BE0304A3}.Release|x86.ActiveCfg = Release|Any CPU
 		{E6B9FABC-4445-6314-B4C5-2A22BE0304A3}.Release|x86.Build.0 = Release|Any CPU
+		{5CACED06-0C08-43BE-AABA-360EC36C942D}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{5CACED06-0C08-43BE-AABA-360EC36C942D}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{5CACED06-0C08-43BE-AABA-360EC36C942D}.Debug|x64.ActiveCfg = Debug|x64
+		{5CACED06-0C08-43BE-AABA-360EC36C942D}.Debug|x64.Build.0 = Debug|x64
+		{5CACED06-0C08-43BE-AABA-360EC36C942D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5CACED06-0C08-43BE-AABA-360EC36C942D}.Debug|x86.Build.0 = Debug|Any CPU
+		{5CACED06-0C08-43BE-AABA-360EC36C942D}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{5CACED06-0C08-43BE-AABA-360EC36C942D}.Release|ARM64.Build.0 = Release|Any CPU
+		{5CACED06-0C08-43BE-AABA-360EC36C942D}.Release|x64.ActiveCfg = Release|Any CPU
+		{5CACED06-0C08-43BE-AABA-360EC36C942D}.Release|x64.Build.0 = Release|Any CPU
+		{5CACED06-0C08-43BE-AABA-360EC36C942D}.Release|x86.ActiveCfg = Release|Any CPU
+		{5CACED06-0C08-43BE-AABA-360EC36C942D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
