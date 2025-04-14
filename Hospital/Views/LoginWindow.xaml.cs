@@ -6,6 +6,7 @@ namespace Hospital
 {
     using System;
     using Hospital.DatabaseServices;
+    using Hospital.Doctor_Dashboard;
     using Hospital.Exceptions;
     using Hospital.Managers;
     using Hospital.ViewModels;
@@ -67,9 +68,9 @@ namespace Hospital
                 }
                 else if (this.loginPageViewModel.AuthManagerModel_.allUserInformation.Role == "Doctor")
                 {
-                    DoctorsDatabaseService doctorDatabaseService = new DoctorsDatabaseService();
-                    DoctorManagerModel doctorManagerModel = new DoctorManagerModel(doctorDatabaseService);
-                    DoctorViewModel doctorViewModel = new DoctorViewModel(doctorManagerModel, this.loginPageViewModel.AuthManagerModel_.allUserInformation.UserId);
+                    IDoctorsDatabaseHelper doctorsDatabaseHelper = new DoctorsDatabaseHelper();
+                    IDoctorService doctorService = new DoctorService(doctorsDatabaseHelper);
+                    IDoctorViewModel doctorViewModel = new DoctorViewModel(doctorService, this.loginPageViewModel.AuthManagerModel_.allUserInformation.UserId);
                     DoctorDashboardWindow doctorDashboardWindow = new DoctorDashboardWindow(doctorViewModel, this.loginPageViewModel);
                     doctorDashboardWindow.Activate();
                     this.Close();
