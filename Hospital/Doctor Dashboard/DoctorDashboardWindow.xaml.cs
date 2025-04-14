@@ -1,3 +1,4 @@
+using Hospital.Doctor_Dashboard;
 using Hospital.Exceptions;
 using Hospital.ViewModels;
 using Microsoft.Data.SqlClient;
@@ -16,7 +17,7 @@ namespace Hospital.Views
     public sealed partial class DoctorDashboardWindow : Window
     {
         private readonly AuthViewModel _authViewModel;
-        public DoctorDashboardWindow(DoctorViewModel doctorViewModel, AuthViewModel authViewModel)
+        public DoctorDashboardWindow(IDoctorViewModel doctorViewModel, AuthViewModel authViewModel)
         {
             this.InitializeComponent();
 

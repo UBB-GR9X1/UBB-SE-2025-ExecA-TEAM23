@@ -25,7 +25,7 @@ public class RecommendationSystemModel : IRecommendationSystem
     private const int Orthopedics = 6;
     private const int Dermatology = 7;
 
-    public RecommendationSystemModel(DoctorManagerModel doctorManager)
+    public RecommendationSystemModel(DoctorService doctorManager)
     {
         _doctorManager = doctorManager;
         InitializeSymptomToDepartmentScores();

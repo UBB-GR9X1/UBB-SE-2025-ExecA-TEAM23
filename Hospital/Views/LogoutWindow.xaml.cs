@@ -4,6 +4,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using Windows.System.UserProfile;
 
 namespace Hospital
 {
@@ -21,10 +22,13 @@ namespace Hospital
         {
             try
             {
-                await _viewModel.Logout(); // Log out the user
-                MainWindow main = new MainWindow();
-                main.Activate();
-                this.Close(); // Close logout window after successful logout
+                await _viewModel.Logout(); 
+
+
+                LoginWindow newLogInWindow = new LoginWindow();
+                newLogInWindow.Activate();
+
+                this.Close(); 
             }
             catch (AuthenticationException ex)
             {

@@ -17,6 +17,7 @@ namespace Hospital.Views
             DoctorManagerModel doctorManager = new DoctorManagerModel(doctorDbService);
             IRecommendationSystem recommendationSystem = new RecommendationSystemModel(doctorManager);
 
+
             this.DataContext = new RecommendationSystemFormViewModel(recommendationSystem);
             InitializeComponent();
         }
