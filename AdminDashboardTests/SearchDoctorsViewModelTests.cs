@@ -50,7 +50,7 @@ namespace AdminDashboardTests
         {
             await _viewModel.LoadDoctors();
 
-            Assert.AreEqual(2, _viewModel.DoctorList.Count);
+            Assert.AreEqual(2, _viewModel.Doctors.Count);
         }
 
         [Test]
@@ -58,7 +58,7 @@ namespace AdminDashboardTests
         {
             await _viewModel.LoadDoctors();
 
-            Assert.AreEqual("Dr. Jane Smith", _viewModel.DoctorList[0].DoctorName);
+            Assert.AreEqual("Dr. Jane Smith", _viewModel.Doctors[0].DoctorName);
         }
 
         [Test]
@@ -120,11 +120,11 @@ namespace AdminDashboardTests
             bool propertyChangedFired = false;
             _viewModel.PropertyChanged += (sender, eventArgs) =>
             {
-                if (eventArgs.PropertyName == nameof(_viewModel.DepartmentPartialName))
+                if (eventArgs.PropertyName == nameof(_viewModel.DepartmentSearchTerm))
                     propertyChangedFired = true;
             };
 
-            _viewModel.DepartmentPartialName = "NewDept";
+            _viewModel.DepartmentSearchTerm = "NewDept";
 
             Assert.IsTrue(propertyChangedFired);
         }
@@ -166,7 +166,7 @@ namespace AdminDashboardTests
             var newList = new ObservableCollection<DoctorModel>();
             _viewModel.PropertyChanged += (sender, eventArgs) =>
             {
-                if (eventArgs.PropertyName == nameof(_viewModel.DoctorList))
+                if (eventArgs.PropertyName == nameof(_viewModel.Doctors))
                     propertyChangedFired = true;
             };
 
