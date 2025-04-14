@@ -1,5 +1,5 @@
-﻿using Hospital.DatabaseServices;
-using Hospital.Models;
+﻿using Hospital.Models;
+using Hospital.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +9,12 @@ namespace Hospital.Managers
 {
     public class SearchDoctorsService : ISearchDoctorsService
     {
-        private readonly IDoctorsDatabaseHelper _doctorDatabaseHelper;
-
+        private readonly IDoctorsDatabaseHelper _doctorsDatabaseHelper;
         public List<DoctorModel> AvailableDoctors { get; private set; }
 
-        public SearchDoctorsService(IDoctorsDatabaseHelper doctorDatabaseHelper)
+        public SearchDoctorsService(IDoctorsDatabaseHelper doctorsDatabaseHelper)
         {
-            _doctorDatabaseHelper = doctorDatabaseHelper;
+            _doctorsDatabaseHelper = doctorsDatabaseHelper;
             AvailableDoctors = new List<DoctorModel>();
         }
 
@@ -24,9 +23,8 @@ namespace Hospital.Managers
             try
             {
                 AvailableDoctors.Clear();
-
-                var doctorsByDepartment = await _doctorDatabaseHelper.GetDoctorsByDepartmentPartialName(searchTerm);
-                var doctorsByName = await _doctorDatabaseHelper.GetDoctorsByPartialDoctorName(searchTerm);
+                var doctorsByDepartment = await _doctorsDatabaseHelper.GetDoctorsByDepartmentPartialName(searchTerm);
+                var doctorsByName = await _doctorsDatabaseHelper.GetDoctorsByPartialDoctorName(searchTerm);
 
                 foreach (var doctor in doctorsByDepartment)
                 {
@@ -44,9 +42,9 @@ namespace Hospital.Managers
 
                 AvailableDoctors = SortDoctorsByDefaultCriteria(AvailableDoctors);
             }
-            catch (Exception ex)
+            catch (Exception error)
             {
-                Console.WriteLine($"Error loading doctors: {ex.Message}");
+                Console.WriteLine($"Error loading doctors: {error.Message}");
             }
         }
 
@@ -57,24 +55,31 @@ namespace Hospital.Managers
 
         public List<DoctorModel> GetDoctorsSortedBy(SortCriteria sortCriteria)
         {
-            return sortCriteria switch
+            switch (sortCriteria)
             {
-                SortCriteria.RatingHighToLow => AvailableDoctors.OrderByDescending(d => d.Rating).ToList(),
-                SortCriteria.RatingLowToHigh => AvailableDoctors.OrderBy(d => d.Rating).ToList(),
-                SortCriteria.NameAscending => AvailableDoctors.OrderBy(d => d.DoctorName).ToList(),
-                SortCriteria.NameDescending => AvailableDoctors.OrderByDescending(d => d.DoctorName).ToList(),
-                SortCriteria.DepartmentAscending => AvailableDoctors.OrderBy(d => d.DepartmentName).ToList(),
-                SortCriteria.RatingThenNameThenDepartment => SortDoctorsByDefaultCriteria(AvailableDoctors),
-                _ => AvailableDoctors
-            };
+                case SortCriteria.RatingHighToLow:
+                    return AvailableDoctors.OrderByDescending(doctor => doctor.Rating).ToList();
+                case SortCriteria.RatingLowToHigh:
+                    return AvailableDoctors.OrderBy(doctor => doctor.Rating).ToList();
+                case SortCriteria.NameAscending:
+                    return AvailableDoctors.OrderBy(doctor => doctor.DoctorName).ToList();
+                case SortCriteria.NameDescending:
+                    return AvailableDoctors.OrderByDescending(doctor => doctor.DoctorName).ToList();
+                case SortCriteria.DepartmentAscending:
+                    return AvailableDoctors.OrderBy(doctor => doctor.DepartmentName).ToList();
+                case SortCriteria.RatingThenNameThenDepartment:
+                    return SortDoctorsByDefaultCriteria(AvailableDoctors);
+                default:
+                    return AvailableDoctors;
+            }
         }
 
         private List<DoctorModel> SortDoctorsByDefaultCriteria(List<DoctorModel> doctors)
         {
             return doctors
-                .OrderByDescending(d => d.Rating)
-                .ThenBy(d => d.DoctorName)
-                .ThenBy(d => d.DepartmentName)
+                .OrderByDescending(doctor => doctor.Rating)
+                .ThenBy(doctor => doctor.DoctorName)
+                .ThenBy(doctor => doctor.DepartmentName)
                 .ToList();
         }
     }

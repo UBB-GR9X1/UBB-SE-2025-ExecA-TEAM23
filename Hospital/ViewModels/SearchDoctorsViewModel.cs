@@ -77,9 +77,9 @@ namespace Hospital.ViewModels
                     Doctors.Add(doctor);
                 }
             }
-            catch (Exception ex)
+            catch (Exception error)
             {
-                Console.WriteLine($"Error loading doctors: {ex.Message}");
+                Console.WriteLine($"Error loading doctors: {error.Message}");
             }
         }
 

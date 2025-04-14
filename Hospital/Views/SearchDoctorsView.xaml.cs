@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Hospital.Services;
 
 namespace Hospital.Views
 {
@@ -59,7 +60,7 @@ namespace Hospital.Views
 
                 if (!cancellationToken.IsCancellationRequested)
                 {
-                    ViewModel.DepartmentPartialName = SearchTextBox.Text;
+                    ViewModel.DepartmentSearchTerm = SearchTextBox.Text;
                     await ViewModel.LoadDoctors();
                 }
             }
