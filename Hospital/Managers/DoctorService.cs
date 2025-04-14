@@ -3,6 +3,7 @@ using Hospital.Services;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Hospital.Doctor_Dashboard;
 
 namespace Hospital.Managers
 {
