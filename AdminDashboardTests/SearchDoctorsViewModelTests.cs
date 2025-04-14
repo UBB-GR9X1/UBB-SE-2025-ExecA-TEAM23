@@ -120,11 +120,11 @@ namespace AdminDashboardTests
             bool propertyChangedFired = false;
             _viewModel.PropertyChanged += (sender, eventArgs) =>
             {
-                if (eventArgs.PropertyName == nameof(_viewModel.DepartmentSearchTerm))
+                if (eventArgs.PropertyName == nameof(_viewModel.DepartmentPartialName))
                     propertyChangedFired = true;
             };
 
-            _viewModel.DepartmentSearchTerm = "NewDept";
+            _viewModel.DepartmentPartialName = "NewDept";
 
             Assert.IsTrue(propertyChangedFired);
         }
@@ -132,7 +132,7 @@ namespace AdminDashboardTests
         [Test]
         public void DepartmentSearchTerm_GetterReturnsInitialValue_AfterInitialization()
         {
-            Assert.AreEqual(InitialDepartmentName, _viewModel.DepartmentSearchTerm);
+            Assert.AreEqual(InitialDepartmentName, _viewModel.DepartmentPartialName);
         }
 
         [Test]

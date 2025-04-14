@@ -60,7 +60,7 @@ namespace Hospital.Views
 
                 if (!cancellationToken.IsCancellationRequested)
                 {
-                    ViewModel.DepartmentSearchTerm = SearchTextBox.Text;
+                    ViewModel.DepartmentPartialName = SearchTextBox.Text;
                     await ViewModel.LoadDoctors();
                 }
             }

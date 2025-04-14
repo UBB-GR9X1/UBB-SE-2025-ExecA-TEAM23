@@ -12,7 +12,7 @@ namespace Hospital.ViewModels
     {
         private readonly ISearchDoctorsService _searchDoctorsService;
 
-        private string _departmentSearchTerm;
+        private string _departmentPartialName;
         private DoctorModel _selectedDoctor = DoctorModel.Default;
         private bool _isProfileOpen;
         private ObservableCollection<DoctorModel> _doctors;
@@ -27,12 +27,12 @@ namespace Hospital.ViewModels
             }
         }
 
-        public string DepartmentSearchTerm
+        public string DepartmentPartialName
         {
-            get => _departmentSearchTerm;
+            get => _departmentPartialName;
             set
             {
-                _departmentSearchTerm = value;
+                _departmentPartialName = value;
                 OnPropertyChanged();
             }
         }
@@ -57,10 +57,10 @@ namespace Hospital.ViewModels
             }
         }
 
-        public SearchDoctorsViewModel(ISearchDoctorsService searchDoctorsService, string departmentSearchTerm)
+        public SearchDoctorsViewModel(ISearchDoctorsService searchDoctorsService, string departmentPartialName)
         {
             _searchDoctorsService = searchDoctorsService;
-            _departmentSearchTerm = departmentSearchTerm;
+            _departmentPartialName = departmentPartialName;
             _doctors = new ObservableCollection<DoctorModel>();
             _isProfileOpen = false;
         }
@@ -69,7 +69,7 @@ namespace Hospital.ViewModels
         {
             try
             {
-                await _searchDoctorsService.LoadDoctors(_departmentSearchTerm);
+                await _searchDoctorsService.LoadDoctors(_departmentPartialName);
 
                 Doctors.Clear();
                 foreach (var doctor in _searchDoctorsService.GetSearchedDoctors())
