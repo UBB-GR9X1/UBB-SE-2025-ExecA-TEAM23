@@ -1,6 +1,6 @@
 ﻿namespace Hospital.Configs
 {
-    class Config
+    public class Config
     {//2
         private Config() { }
 
@@ -48,7 +48,7 @@
         //private string _databaseConnection = "Data Source=DESKTOP-DK2UM26;Initial Catalog=HospitalApp;Integrated Security=True;TrustServerCertificate=True";
 
         //private string _databaseConnection = "Data Source=DESKTOP-5A6VJDA;Initial Catalog=HospitalDB;Integrated Security=True;TrustServerCertificate=True";
-        private string _databaseConnection = "Data Source=BLK16\\SQLEXPRESS;Initial Catalog=HospitalApp;Integrated Security=True;TrustServerCertificate=True";
+        private string _databaseConnection = "Data Source=DESKTOP-HGL99LI\\SQLEXPRESS;Initial Catalog=HospitalApp;Integrated Security=True;TrustServerCertificate=True";
         public virtual string DatabaseConnection { get { return _databaseConnection; } }
 
         public int patientId = 1;
