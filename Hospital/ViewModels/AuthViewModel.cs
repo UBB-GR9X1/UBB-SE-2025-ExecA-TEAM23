@@ -1,40 +1,76 @@
-﻿using Hospital.Exceptions;
-using Hospital.Managers;
-using System.Threading.Tasks;
-using Hospital.Models;
+﻿// <copyright file="AuthViewModel.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
 namespace Hospital.ViewModels
 {
-    public class AuthViewModel
-    {
-        public AuthManagerModel _authManagerModel { get; private set; }
+    using System.Threading.Tasks;
+    using Hospital.Exceptions;
+    using Hospital.Managers;
+    using Hospital.Models;
 
-        public AuthViewModel (AuthManagerModel auth)
+
+    /// <summary>
+    /// The view model for Login and Create account.
+    /// </summary>
+    public class AuthViewModel : IAuthViewModel
+    {
+        /// <summary>
+        /// Gets the Service (Model) for the user.
+        /// </summary>
+        public IAuthManagerModel AuthManagerModel_ { get; private set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthViewModel"/> class.
+        /// </summary>
+        /// <param name="userServiceModel">Servuce for Login or Create Account.</param>
+        public AuthViewModel(IAuthManagerModel userServiceModel)
         {
-            _authManagerModel = auth;
+            this.AuthManagerModel_ = userServiceModel;
         }
 
+        /// <summary>
+        /// Logs the user in if the user exists and the password for the account is correct.
+        /// </summary>
+        /// <param name="username">The user's username (from input).</param>
+        /// <param name="password">the user's password (from input).</param>
+        /// <returns>.</returns>
+        /// <exception cref="AuthenticationException">Checks if the user exists and if the password is correct / valid. If not 
+        /// it throws an exception.</exception>
         public async Task Login(string username, string password)
         {
-            bool userExists = await _authManagerModel.LoadUserByUsername(username);
+            bool checkIfUserExists = await this.AuthManagerModel_.LoadUserByUsername(username);
 
-            if (!userExists)
+            if (!checkIfUserExists)
+            {
                 throw new AuthenticationException("Username doesn't exist!");
+            }
 
-            bool validPassword = await _authManagerModel.VerifyPassword(password);
+            bool isThePasswordValid = await this.AuthManagerModel_.VerifyPassword(password);
 
-            if (!validPassword)
+            if (!isThePasswordValid)
+            {
                 throw new AuthenticationException("Invalid password!");
+            }
         }
 
+        /// <summary>
+        /// Logs the user out.
+        /// </summary>
+        /// <returns>.</returns>
         public async Task Logout()
         {
-            await _authManagerModel.Logout();
+            await this.AuthManagerModel_.Logout();
         }
 
-        public async Task CreateAccount(UserCreateAccountModel model)
+        /// <summary>
+        /// Creates an accout for the user.
+        /// </summary>
+        /// <param name="modelForCreatingUserAccount">The user's information Model given as UserCreateAccountModel.</param>
+        /// <returns>.</returns>
+        public async Task CreateAccount(UserCreateAccountModel modelForCreatingUserAccount)
         {
-            await _authManagerModel.CreateAccount(model);
+            await this.AuthManagerModel_.CreateAccount(modelForCreatingUserAccount);
         }
     }
 }

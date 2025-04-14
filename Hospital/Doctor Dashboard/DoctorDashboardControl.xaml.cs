@@ -16,7 +16,7 @@ namespace Hospital.Views
             InitializeComponent();
         } 
 
-        public DoctorDashboardControl(DoctorViewModel doctorViewModel)
+        public DoctorDashboardControl(IDoctorViewModel doctorViewModel)
         {
             InitializeComponent();
             _viewModel = doctorViewModel;
