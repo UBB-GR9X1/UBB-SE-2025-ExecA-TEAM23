@@ -9,16 +9,16 @@ namespace Hospital.Views
 {
     public sealed partial class PatientDashboardControl : UserControl
     {
-        private PatientViewModel? _patientViewModel;
+        private IPatientViewModel? _patientViewModel;
 
-        public event Action? Logout;
+        public event Action? LogoutButtonClicked;
 
         public PatientDashboardControl()
         {
             InitializeComponent();
         }
 
-        public PatientDashboardControl(PatientViewModel patientViewModel)
+        public PatientDashboardControl(IPatientViewModel patientViewModel)
         {
             InitializeComponent();
             _patientViewModel = patientViewModel;
@@ -145,9 +145,9 @@ namespace Hospital.Views
             await dialog.ShowAsync();
         }
 
-        private void OnLogoutButtonClick(object sender, RoutedEventArgs e)
+        private void Logout(object sender, RoutedEventArgs e)
         {
-            Logout?.Invoke();
+            LogoutButtonClicked?.Invoke();
         }
     }
 }

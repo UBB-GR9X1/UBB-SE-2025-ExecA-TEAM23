@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Hospital.DatabaseServices
 {
-    public class PatientsDatabaseService
+    public class PatientsDatabaseService : IPatientsDatabaseService
     {
         private readonly Config _config;
         public PatientsDatabaseService()
@@ -70,9 +70,9 @@ namespace Hospital.DatabaseServices
                 }
                 return patientList;
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(exception.Message);
                 return new List<PatientJointModel>();
             }
         }
@@ -130,9 +130,9 @@ namespace Hospital.DatabaseServices
                 }
                 return new PatientJointModel(0, 0, "", "", "", "", 0, 0, "", "", "", new DateOnly(), "", "", "", new DateTime());
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(exception.Message);
                 return new PatientJointModel(0, 0, "", "", "", "", 0, 0, "", "", "", new DateOnly(), "", "", "", new DateTime());
             }
         }
@@ -149,9 +149,9 @@ namespace Hospital.DatabaseServices
                 int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
                 return rowsAffected > 0;
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(exception.Message);
                 return false;
             }
         }
@@ -171,9 +171,9 @@ namespace Hospital.DatabaseServices
 
                 return rowsAffected > 0;
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(exception.Message);
                 return false;
             }
         }
@@ -190,9 +190,9 @@ namespace Hospital.DatabaseServices
                 int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
                 return rowsAffected > 0;
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(exception.Message);
                 return false;
             }
         }
@@ -209,9 +209,9 @@ namespace Hospital.DatabaseServices
                 int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
                 return rowsAffected > 0;
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(exception.Message);
                 return false;
             }
         }
@@ -228,9 +228,9 @@ namespace Hospital.DatabaseServices
                 int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
                 return rowsAffected > 0;
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(exception.Message);
                 return false;
             }
         }
@@ -247,9 +247,9 @@ namespace Hospital.DatabaseServices
                 int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
                 return rowsAffected > 0;
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(exception.Message);
                 return false;
             }
         }
@@ -266,9 +266,9 @@ namespace Hospital.DatabaseServices
                 int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
                 return rowsAffected > 0;
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(exception.Message);
                 return false;
             }
         }
@@ -285,9 +285,9 @@ namespace Hospital.DatabaseServices
                 int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
                 return rowsAffected > 0;
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(exception.Message);
                 return false;
             }
         }
@@ -305,9 +305,9 @@ namespace Hospital.DatabaseServices
                 int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
                 return rowsAffected > 0;
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(exception.Message);
                 return false;
             }
         }
@@ -324,9 +324,9 @@ namespace Hospital.DatabaseServices
                 int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
                 return rowsAffected > 0;
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(exception.Message);
                 return false;
             }
         }
