@@ -22,7 +22,7 @@ namespace Hospital.ViewModels
         /// <summary>
         /// Gets the Service (Model) for the user.
         /// </summary>
-        public IAuthManagerModel AuthManagerModel_ { get; private set; } = userServiceModel;
+        public IAuthManagerModel authManagerModel { get; private set; } = userServiceModel;
 
         /// <summary>
         /// Logs the user in if the user exists and the password for the account is correct.
@@ -34,14 +34,14 @@ namespace Hospital.ViewModels
         /// it throws an exception.</exception>
         public async Task Login(string username, string password)
         {
-            bool checkIfUserExists = await this.AuthManagerModel_.LoadUserByUsername(username);
+            bool checkIfUserExists = await this.authManagerModel.LoadUserByUsername(username);
 
             if (!checkIfUserExists)
             {
                 throw new AuthenticationException("Username doesn't exist!");
             }
 
-            bool isThePasswordValid = await this.AuthManagerModel_.VerifyPassword(password);
+            bool isThePasswordValid = await this.authManagerModel.VerifyPassword(password);
 
             if (!isThePasswordValid)
             {
@@ -55,7 +55,7 @@ namespace Hospital.ViewModels
         /// <returns>.</returns>
         public async Task Logout()
         {
-            await this.AuthManagerModel_.Logout();
+            await this.authManagerModel.Logout();
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace Hospital.ViewModels
         /// <returns>.</returns>
         public async Task CreateAccount(UserCreateAccountModel modelForCreatingUserAccount)
         {
-            await this.AuthManagerModel_.CreateAccount(modelForCreatingUserAccount);
+            await this.authManagerModel.CreateAccount(modelForCreatingUserAccount);
         }
 
         /// <summary>

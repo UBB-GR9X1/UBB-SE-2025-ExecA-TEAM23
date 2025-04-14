@@ -18,11 +18,11 @@ namespace Hospital.DatabaseServices
         /// Checks the action the user makes, loging in or loging out and adds it to the database.
         /// </summary>
         /// <param name="userId">The id (unique) of the user we are checking.</param>
-        /// <param name="actionType_loginORlogout">The acction the user makes: loging in / loging out.</param>
+        /// <param name="actionTypeLoginOrLogout">The acction the user makes: loging in / loging out.</param>
         /// <returns> 1 of the rows were modified.</returns>
         /// <exception cref="AuthenticationException">Throws exception if the type was not valid or if 
         /// there was a logger action error.</exception>
-        Task<bool> AuthenticationLogService(int userId, ActionType actionType_loginORlogout);
+        Task<bool> AuthenticationLogService(int userId, ActionType actionTypeLoginOrLogout);
 
         /// <summary>
         /// Creates a user account with the given information and adds it to the database.

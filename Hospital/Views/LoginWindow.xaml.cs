@@ -59,7 +59,7 @@ namespace Hospital
                 if (this.loginPageViewModel.GetUserRole() == "Patient")
                 {
                     PatientManagerModel patientManagerModel = new PatientManagerModel();
-                    PatientViewModel patientViewModel = new PatientViewModel(patientManagerModel, this.loginPageViewModel.AuthManagerModel_.allUserInformation.UserId);
+                    PatientViewModel patientViewModel = new PatientViewModel(patientManagerModel, this.loginPageViewModel.authManagerModel.allUserInformation.UserId);
                     PatientDashboardWindow patientDashboardWindow = new PatientDashboardWindow(patientViewModel, this.loginPageViewModel);
                     patientDashboardWindow.Activate();
                     this.Close();
@@ -70,7 +70,7 @@ namespace Hospital
                 {
                     IDoctorsDatabaseHelper doctorsDatabaseHelper = new DoctorsDatabaseHelper();
                     IDoctorService doctorService = new DoctorService(doctorsDatabaseHelper);
-                    IDoctorViewModel doctorViewModel = new DoctorViewModel(doctorService, this.loginPageViewModel.AuthManagerModel_.allUserInformation.UserId);
+                    IDoctorViewModel doctorViewModel = new DoctorViewModel(doctorService, this.loginPageViewModel.authManagerModel.allUserInformation.UserId);
                     DoctorDashboardWindow doctorDashboardWindow = new DoctorDashboardWindow(doctorViewModel, this.loginPageViewModel);
                     doctorDashboardWindow.Activate();
                     this.Close();
@@ -93,12 +93,12 @@ namespace Hospital
                 validationDialog.XamlRoot = this.Content.XamlRoot;
                 await validationDialog.ShowAsync();
             }
-            catch (SqlException error_SQLException)
+            catch (SqlException errorSQLException)
             {
                 var validationDialog = new ContentDialog
                 {
                     Title = "Error",
-                    Content = $"{error_SQLException.Message}",
+                    Content = $"{errorSQLException.Message}",
                     CloseButtonText = "OK",
                 };
 

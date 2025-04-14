@@ -17,7 +17,7 @@ namespace Hospital.ViewModels
         /// <summary>
         /// The service / model for creating an account / loging in.
         /// </summary>
-        IAuthManagerModel AuthManagerModel_ { get; }
+        IAuthManagerModel authManagerModel { get; }
 
         /// <summary>
         /// Creates an accout for the user.

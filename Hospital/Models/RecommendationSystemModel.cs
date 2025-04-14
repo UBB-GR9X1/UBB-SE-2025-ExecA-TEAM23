@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 
 public class RecommendationSystemModel
 {
-    private readonly DoctorService _doctorManager;
-    private Dictionary<string, Dictionary<int, int>> _symptomDepartmentScores;
+    private readonly DoctorService doctorManager;
+    private Dictionary<string, Dictionary<int, int>> symptomDepartmentScores;
 
     public RecommendationSystemModel(DoctorService doctorManager)
     {
-        _doctorManager = doctorManager;
-        _symptomDepartmentScores = new Dictionary<string, Dictionary<int, int>>();
+        this.doctorManager = doctorManager;
+        symptomDepartmentScores = new Dictionary<string, Dictionary<int, int>>();
         InitializeSymptomScores();
     }
 
     private void InitializeSymptomScores()
     {
-        _symptomDepartmentScores = new Dictionary<string, Dictionary<int, int>>
+        symptomDepartmentScores = new Dictionary<string, Dictionary<int, int>>
         {
             // Symptom Start Scores (less department dominance)
             { "Suddenly", new Dictionary<int, int> { { 1, 3 }, { 2, 3 }, { 3, 2 } } }, // Cardio/Neuro close
@@ -59,9 +59,9 @@ public class RecommendationSystemModel
 
             string normalizedSymptom = symptom.Trim();  // Remove leading/trailing spaces
 
-            if (_symptomDepartmentScores.ContainsKey(normalizedSymptom))
+            if (symptomDepartmentScores.ContainsKey(normalizedSymptom))
             {
-                foreach (var kvp in _symptomDepartmentScores[normalizedSymptom])
+                foreach (var kvp in symptomDepartmentScores[normalizedSymptom])
                 {
                     if (departmentScores.ContainsKey(kvp.Key))
                     {
@@ -103,7 +103,7 @@ public class RecommendationSystemModel
         int recommendedDepartment = departmentScores.OrderByDescending(kvp => kvp.Value).First().Key;
 
         // Get doctors from department
-        List<DoctorJointModel> doctors = await _doctorManager.GetDoctorsByDepartment(recommendedDepartment);
+        List<DoctorJointModel> doctors = await doctorManager.GetDoctorsByDepartment(recommendedDepartment);
 
 
         Console.WriteLine("Doctors Found:");
