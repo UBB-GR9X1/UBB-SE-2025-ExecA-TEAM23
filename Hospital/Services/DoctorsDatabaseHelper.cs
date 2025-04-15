@@ -4,8 +4,9 @@ using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace Hospital.DatabaseServices
+namespace Hospital.Services
 {
     public class DoctorsDatabaseHelper : IDoctorsDatabaseHelper
     {
@@ -62,13 +63,13 @@ namespace Hospital.DatabaseServices
 
                 throw new Exception($"No doctor found with user ID: {userId}");
             }
-            catch (SqlException e)
+            catch (SqlException error)
             {
-                throw new Exception($"SQL Error: {e.Message}");
+                throw new Exception($"SQL Error: {error.Message}");
             }
-            catch (Exception e)
+            catch (Exception error)
             {
-                throw new Exception($"Error: {e.Message}");
+                throw new Exception($"Error: {error.Message}");
             }
         }
 
@@ -127,14 +128,14 @@ namespace Hospital.DatabaseServices
                 }
                 return doctorList;
             }
-            catch (SqlException e)
+            catch (SqlException error)
             {
-                Console.WriteLine($"SQL Exception: {e.Message}");
+                Console.WriteLine($"SQL Exception: {error.Message}");
                 return new List<DoctorJointModel>();
             }
-            catch (Exception e)
+            catch (Exception error)
             {
-                Console.WriteLine($"General Exception: {e.Message}");
+                Console.WriteLine($"General Exception: {error.Message}");
                 return new List<DoctorJointModel>();
             }
         }
@@ -193,14 +194,14 @@ namespace Hospital.DatabaseServices
                 }
                 return doctorList;
             }
-            catch (SqlException e)
+            catch (SqlException error)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(error.Message);
                 return new List<DoctorModel>();
             }
-            catch (Exception e)
+            catch (Exception error)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(error.Message);
                 return new List<DoctorModel>();
             }
         }
@@ -269,14 +270,14 @@ namespace Hospital.DatabaseServices
                 }
                 return doctorList;
             }
-            catch (SqlException e)
+            catch (SqlException error)
             {
-                Console.WriteLine($"SQL Exception: {e.Message}");
+                Console.WriteLine($"SQL Exception: {error.Message}");
                 return new List<DoctorJointModel>();
             }
-            catch (Exception e)
+            catch (Exception error)
             {
-                Console.WriteLine($"General Exception: {e.Message}");
+                Console.WriteLine($"General Exception: {error.Message}");
                 return new List<DoctorJointModel>();
             }
         }
@@ -337,14 +338,14 @@ namespace Hospital.DatabaseServices
                 }
                 return doctorList;
             }
-            catch (SqlException e)
+            catch (SqlException error)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(error.Message);
                 return new List<DoctorModel>();
             }
-            catch (Exception e)
+            catch (Exception error)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(error.Message);
                 return new List<DoctorModel>();
             }
         }
@@ -368,14 +369,14 @@ namespace Hospital.DatabaseServices
                 int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
                 return rowsAffected > 0;
             }
-            catch (SqlException e)
+            catch (SqlException error)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(error.Message);
                 return false;
             }
-            catch (Exception e)
+            catch (Exception error)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(error.Message);
                 return false;
             }
         }
@@ -405,13 +406,13 @@ namespace Hospital.DatabaseServices
                 int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
                 return rowsAffected > 0;
             }
-            catch (SqlException e)
+            catch (SqlException error)
             {
-                throw new Exception(e.Message);
+                throw new Exception(error.Message);
             }
-            catch (Exception e)
+            catch (Exception error)
             {
-                throw new Exception(e.Message);
+                throw new Exception(error.Message);
             }
         }
 
@@ -434,13 +435,13 @@ namespace Hospital.DatabaseServices
                 int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
                 return rowsAffected > 0;
             }
-            catch (SqlException e)
+            catch (SqlException error)
             {
-                throw new Exception(e.Message);
+                throw new Exception(error.Message);
             }
-            catch (Exception e)
+            catch (Exception error)
             {
-                throw new Exception(e.Message);
+                throw new Exception(error.Message);
             }
         }
 
@@ -463,13 +464,13 @@ namespace Hospital.DatabaseServices
                 int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
                 return rowsAffected > 0;
             }
-            catch (SqlException e)
+            catch (SqlException error)
             {
-                throw new Exception(e.Message);
+                throw new Exception(error.Message);
             }
-            catch (Exception e)
+            catch (Exception error)
             {
-                throw new Exception(e.Message);
+                throw new Exception(error.Message);
             }
         }
 
@@ -492,13 +493,13 @@ namespace Hospital.DatabaseServices
                 int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
                 return rowsAffected > 0;
             }
-            catch (SqlException e)
+            catch (SqlException error)
             {
-                throw new Exception(e.Message);
+                throw new Exception(error.Message);
             }
-            catch (Exception e)
+            catch (Exception error)
             {
-                throw new Exception(e.Message);
+                throw new Exception(error.Message);
             }
         }
 
@@ -521,13 +522,13 @@ namespace Hospital.DatabaseServices
                 int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
                 return rowsAffected > 0;
             }
-            catch (SqlException e)
+            catch (SqlException error)
             {
-                throw new Exception(e.Message);
+                throw new Exception(error.Message);
             }
-            catch (Exception e)
+            catch (Exception error)
             {
-                throw new Exception(e.Message);
+                throw new Exception(error.Message);
             }
         }
 
@@ -550,13 +551,13 @@ namespace Hospital.DatabaseServices
                 int rowsAffected = await updateCommand.ExecuteNonQueryAsync().ConfigureAwait(false);
                 return rowsAffected > 0;
             }
-            catch (SqlException e)
+            catch (SqlException error)
             {
-                throw new Exception(e.Message);
+                throw new Exception(error.Message);
             }
-            catch (Exception e)
+            catch (Exception error)
             {
-                throw new Exception(e.Message);
+                throw new Exception(error.Message);
             }
         }
 

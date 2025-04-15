@@ -38,137 +38,150 @@ namespace AdminDashboardTests
         }
 
         [Test]
-        public void Constructor_ShouldInitializePropertiesCorrectly()
+        public async Task LoadDoctors_WhenCalled_CallsService()
         {
-            // Assert
-            Assert.IsNotNull(_viewModel.DoctorList);
-            Assert.IsFalse(_viewModel.IsProfileOpen);
-            Assert.AreEqual(InitialDepartmentName, _viewModel.DepartmentPartialName);
-            Assert.AreEqual(DoctorModel.Default, _viewModel.SelectedDoctor);
-        }
-
-        [Test]
-        public async Task LoadDoctors_ShouldCallServiceAndPopulateDoctorList()
-        {
-            // Act
             await _viewModel.LoadDoctors();
 
-            // Assert
-            _mockSearchDoctorsService.Verify(s => s.LoadDoctors(InitialDepartmentName), Times.Once);
-            Assert.AreEqual(2, _viewModel.DoctorList.Count);
-            Assert.AreEqual("Dr. Jane Smith", _viewModel.DoctorList[0].DoctorName);
+            _mockSearchDoctorsService.Verify(service => service.LoadDoctors(InitialDepartmentName), Times.Once);
         }
 
         [Test]
-        public async Task LoadDoctors_ShouldHandleServiceExceptionGracefully()
+        public async Task LoadDoctors_WhenCalled_PopulatesDoctorListWithCorrectCount()
         {
-            // Arrange
+            await _viewModel.LoadDoctors();
+
+            Assert.AreEqual(2, _viewModel.Doctors.Count);
+        }
+
+        [Test]
+        public async Task LoadDoctors_WhenCalled_PopulatesDoctorListWithCorrectData()
+        {
+            await _viewModel.LoadDoctors();
+
+            Assert.AreEqual("Dr. Jane Smith", _viewModel.Doctors[0].DoctorName);
+        }
+
+        [Test]
+        public async Task LoadDoctors_WhenServiceThrowsException_DoesNotPropagateException()
+        {
             _mockSearchDoctorsService.Setup(service => service.LoadDoctors(It.IsAny<string>()))
                 .ThrowsAsync(new Exception("Test error"));
 
-            var vm = new SearchDoctorsViewModel(_mockSearchDoctorsService.Object, "Any");
+            var viewModel = new SearchDoctorsViewModel(_mockSearchDoctorsService.Object, "Any");
 
-            // Act & Assert (no exception should be thrown)
-            Assert.DoesNotThrowAsync(async () => await vm.LoadDoctors());
+            Assert.DoesNotThrowAsync(async () => await viewModel.LoadDoctors());
         }
 
         [Test]
-        public void ShowDoctorProfile_ShouldSetSelectedDoctorAndOpenProfile()
+        public void ShowDoctorProfile_WithValidDoctor_SetsSelectedDoctor()
         {
-            // Arrange
             var doctor = new DoctorModel { DoctorName = "Dr. Show", DepartmentName = "Demo" };
 
-            // Act
             _viewModel.ShowDoctorProfile(doctor);
 
-            // Assert
             Assert.AreEqual(doctor, _viewModel.SelectedDoctor);
+        }
+
+        [Test]
+        public void ShowDoctorProfile_WithValidDoctor_SetsIsProfileOpenToTrue()
+        {
+            var doctor = new DoctorModel { DoctorName = "Dr. Show", DepartmentName = "Demo" };
+
+            _viewModel.ShowDoctorProfile(doctor);
+
             Assert.IsTrue(_viewModel.IsProfileOpen);
         }
 
         [Test]
-        public void CloseDoctorProfile_ShouldResetSelectedDoctorAndCloseProfile()
+        public void CloseDoctorProfile_WhenCalled_ResetsSelectedDoctorToDefault()
         {
-            // Arrange
             var doctor = new DoctorModel { DoctorName = "Dr. Close", DepartmentName = "Demo" };
             _viewModel.ShowDoctorProfile(doctor);
 
-            // Act
             _viewModel.CloseDoctorProfile();
 
-            // Assert
             Assert.AreEqual(DoctorModel.Default, _viewModel.SelectedDoctor);
+        }
+
+        [Test]
+        public void CloseDoctorProfile_WhenCalled_SetsIsProfileOpenToFalse()
+        {
+            var doctor = new DoctorModel { DoctorName = "Dr. Close", DepartmentName = "Demo" };
+            _viewModel.ShowDoctorProfile(doctor);
+
+            _viewModel.CloseDoctorProfile();
+
             Assert.IsFalse(_viewModel.IsProfileOpen);
         }
 
         [Test]
-        public void Setting_DepartmentPartialName_ShouldTriggerPropertyChanged()
+        public void DepartmentPartialName_WhenChanged_TriggersPropertyChanged()
         {
-            // Arrange
-            var triggered = false;
-            _viewModel.PropertyChanged += (s, e) =>
+            bool propertyChangedFired = false;
+            _viewModel.PropertyChanged += (sender, eventArgs) =>
             {
-                if (e.PropertyName == nameof(_viewModel.DepartmentPartialName)) triggered = true;
+                if (eventArgs.PropertyName == nameof(_viewModel.DepartmentPartialName))
+                    propertyChangedFired = true;
             };
 
-            // Act
             _viewModel.DepartmentPartialName = "NewDept";
 
-            // Assert
-            Assert.IsTrue(triggered);
+            Assert.IsTrue(propertyChangedFired);
         }
 
         [Test]
-        public void Setting_SelectedDoctor_ShouldTriggerPropertyChanged()
+        public void DepartmentSearchTerm_GetterReturnsInitialValue_AfterInitialization()
         {
-            // Arrange
-            var triggered = false;
-            _viewModel.PropertyChanged += (s, e) =>
+            Assert.AreEqual(InitialDepartmentName, _viewModel.DepartmentPartialName);
+        }
+
+        [Test]
+        public void SelectedDoctor_WhenChanged_TriggersPropertyChanged()
+        {
+            bool propertyChangedFired = false;
+            _viewModel.PropertyChanged += (sender, eventArgs) =>
             {
-                if (e.PropertyName == nameof(_viewModel.SelectedDoctor)) triggered = true;
+                if (eventArgs.PropertyName == nameof(_viewModel.SelectedDoctor))
+                    propertyChangedFired = true;
             };
 
-            // Act
             _viewModel.SelectedDoctor = new DoctorModel { DoctorName = "New" };
 
-            // Assert
-            Assert.IsTrue(triggered);
+            Assert.IsTrue(propertyChangedFired);
         }
 
         [Test]
-        public void Setting_IsProfileOpen_ShouldTriggerPropertyChanged()
+        public void IsProfileOpen_WhenChanged_TriggersPropertyChanged()
         {
-            // Arrange
-            var triggered = false;
-            _viewModel.PropertyChanged += (s, e) =>
+            bool propertyChangedFired = false;
+            _viewModel.PropertyChanged += (sender, eventArgs) =>
             {
-                if (e.PropertyName == nameof(_viewModel.IsProfileOpen)) triggered = true;
+                if (eventArgs.PropertyName == nameof(_viewModel.IsProfileOpen))
+                    propertyChangedFired = true;
             };
 
-            // Act
             _viewModel.IsProfileOpen = true;
 
-            // Assert
-            Assert.IsTrue(triggered);
+            Assert.IsTrue(propertyChangedFired);
         }
 
         [Test]
-        public void Setting_DoctorList_ShouldTriggerPropertyChanged()
+        public void Doctors_WhenChanged_TriggersPropertyChanged()
         {
-            // Arrange
-            var triggered = false;
+            bool propertyChangedFired = false;
             var newList = new ObservableCollection<DoctorModel>();
-            _viewModel.PropertyChanged += (s, e) =>
+            _viewModel.PropertyChanged += (sender, eventArgs) =>
             {
-                if (e.PropertyName == nameof(_viewModel.DoctorList)) triggered = true;
+                if (eventArgs.PropertyName == nameof(_viewModel.Doctors))
+                    propertyChangedFired = true;
             };
 
-            // Act
-            _viewModel.GetType().GetProperty("DoctorList")!
+            _viewModel.GetType().GetProperty("Doctors")!
                 .SetValue(_viewModel, newList);
 
-            // Assert
-            Assert.IsTrue(triggered);
+            Assert.IsTrue(propertyChangedFired);
         }
+
+
     }
 }
