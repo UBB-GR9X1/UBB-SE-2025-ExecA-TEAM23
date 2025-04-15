@@ -36,7 +36,7 @@ public class AuthServiceTests
         bool result = await _authService.CreateAccount(model);
         Assert.IsTrue(result);
 
-        string query = "DELETE FROM Users WHERE Username = @username";
+        string query = "DELETE FROM Logs WHERE UserId=(SELECT TOP 1 UserId FROM Users WHERE Username=@username)";
 
         using SqlConnection connectionToDatabase = new SqlConnection(Config.GetInstance().DatabaseConnection);
         await connectionToDatabase.OpenAsync().ConfigureAwait(false);
@@ -44,7 +44,12 @@ public class AuthServiceTests
         using SqlCommand command = new SqlCommand(query, connectionToDatabase);
         command.Parameters.AddWithValue("@username", "nexuser");
 
+        query = "DELETE FROM Users WHERE Username=@username";
         int rowsAffected = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+
+        using SqlCommand command2 = new SqlCommand(query, connectionToDatabase);
+        command2.Parameters.AddWithValue("@username", "nexuser");
+        int rowsAffected2 = await command2.ExecuteNonQueryAsync().ConfigureAwait(false);
     }
 
     [TestMethod]

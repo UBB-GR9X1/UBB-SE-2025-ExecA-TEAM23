@@ -16,7 +16,7 @@ namespace Hospital.Tests.IntegrationTest
     {
         private Mock<IConfigProvider> _mockConfigProvider;
         private LoggerRepository _loggerRepository;
-        private string _testConnectionString = "Data Source=DESKTOP-2KUEEF3;Initial Catalog=HospitalApp;Integrated Security=True;TrustServerCertificate=True";
+        private string _testConnectionString = Config.databaseConnection;
 
         [TestInitialize]
         public void Setup()
