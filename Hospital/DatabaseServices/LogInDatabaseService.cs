@@ -236,6 +236,9 @@ namespace Hospital.DatabaseServices
                     case ActionType.LOGOUT:
                         command.Parameters.AddWithValue("@type", "LOGOUT");
                         break;
+                    case ActionType.CREATE_ACCOUNT:
+                        command.Parameters.AddWithValue("@type", "CREATE_ACCOUNT");
+                        break;
                     default:
                         throw new AuthenticationException("Invalid type for Authentication Log");
                 }
