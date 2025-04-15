@@ -1,7 +1,6 @@
 using Hospital.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using Hospital.Doctor_Dashboard;
 
 namespace Hospital.Views
 {

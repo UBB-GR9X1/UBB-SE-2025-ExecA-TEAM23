@@ -1,3 +1,5 @@
+using Hospital.Services;
+
 namespace Hospital.Views
 {
     using Hospital.DatabaseServices;

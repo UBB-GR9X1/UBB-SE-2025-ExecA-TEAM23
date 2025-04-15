@@ -5,9 +5,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection.Metadata;
 using System.Threading.Tasks;
-using Hospital.Doctor_Dashboard;
 
-namespace Hospital.Doctor_Dashboard
+namespace Hospital.ViewModels
 {
     public interface IDoctorViewModel
     {

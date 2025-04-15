@@ -10,18 +10,19 @@ namespace Hospital.ViewModels
 {
     public class SearchDoctorsViewModel : ISearchDoctorsViewModel, INotifyPropertyChanged
     {
-        public readonly ISearchDoctorsService _searchDoctorsManager;
+        private readonly ISearchDoctorsService _searchDoctorsService;
+
         private string _departmentPartialName;
         private DoctorModel _selectedDoctor = DoctorModel.Default;
         private bool _isProfileOpen;
+        private ObservableCollection<DoctorModel> _doctors;
 
-        private ObservableCollection<DoctorModel> _doctorList;
-        public ObservableCollection<DoctorModel> DoctorList
+        public ObservableCollection<DoctorModel> Doctors
         {
-            get => _doctorList;
+            get => _doctors;
             private set
             {
-                _doctorList = value;
+                _doctors = value;
                 OnPropertyChanged();
             }
         }
@@ -56,11 +57,11 @@ namespace Hospital.ViewModels
             }
         }
 
-        public SearchDoctorsViewModel(ISearchDoctorsService searchDoctorsManager, string departmentPartialName)
+        public SearchDoctorsViewModel(ISearchDoctorsService searchDoctorsService, string departmentPartialName)
         {
-            _searchDoctorsManager = searchDoctorsManager;
+            _searchDoctorsService = searchDoctorsService;
             _departmentPartialName = departmentPartialName;
-            _doctorList = new ObservableCollection<DoctorModel>();
+            _doctors = new ObservableCollection<DoctorModel>();
             _isProfileOpen = false;
         }
 
@@ -68,22 +69,20 @@ namespace Hospital.ViewModels
         {
             try
             {
-                await _searchDoctorsManager.LoadDoctors(_departmentPartialName);
+                await _searchDoctorsService.LoadDoctors(_departmentPartialName);
 
-                // Clear and repopulate the collection with new results
-                DoctorList.Clear();
-                foreach (var doctor in _searchDoctorsManager.GetSearchedDoctors())
+                Doctors.Clear();
+                foreach (var doctor in _searchDoctorsService.GetSearchedDoctors())
                 {
-                    DoctorList.Add(doctor);
+                    Doctors.Add(doctor);
                 }
             }
-            catch (Exception ex)
+            catch (Exception error)
             {
-                Console.WriteLine($"Error loading doctors: {ex.Message}");
+                Console.WriteLine($"Error loading doctors: {error.Message}");
             }
         }
 
-        // Methods to handle the doctor profile
         public void ShowDoctorProfile(DoctorModel doctor)
         {
             SelectedDoctor = doctor;
@@ -96,13 +95,11 @@ namespace Hospital.ViewModels
             SelectedDoctor = DoctorModel.Default;
         }
 
-        // INotifyPropertyChanged implementation
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
     }
 }
