@@ -16,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatientDashboardProfilePart
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoginPageTests", "..\LoginPageTests\LoginPageTests.csproj", "{5CACED06-0C08-43BE-AABA-360EC36C942D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminDtests", "..\AdminDtests\AdminDtests.csproj", "{624B09D1-89B0-9BCE-6F47-08CDCB031ADE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM64 = Debug|ARM64
@@ -80,6 +82,18 @@ Global
 		{5CACED06-0C08-43BE-AABA-360EC36C942D}.Release|x64.Build.0 = Release|Any CPU
 		{5CACED06-0C08-43BE-AABA-360EC36C942D}.Release|x86.ActiveCfg = Release|Any CPU
 		{5CACED06-0C08-43BE-AABA-360EC36C942D}.Release|x86.Build.0 = Release|Any CPU
+		{624B09D1-89B0-9BCE-6F47-08CDCB031ADE}.Debug|ARM64.ActiveCfg = Debug|x64
+		{624B09D1-89B0-9BCE-6F47-08CDCB031ADE}.Debug|ARM64.Build.0 = Debug|x64
+		{624B09D1-89B0-9BCE-6F47-08CDCB031ADE}.Debug|x64.ActiveCfg = Debug|x64
+		{624B09D1-89B0-9BCE-6F47-08CDCB031ADE}.Debug|x64.Build.0 = Debug|x64
+		{624B09D1-89B0-9BCE-6F47-08CDCB031ADE}.Debug|x86.ActiveCfg = Debug|x64
+		{624B09D1-89B0-9BCE-6F47-08CDCB031ADE}.Debug|x86.Build.0 = Debug|x64
+		{624B09D1-89B0-9BCE-6F47-08CDCB031ADE}.Release|ARM64.ActiveCfg = Release|x64
+		{624B09D1-89B0-9BCE-6F47-08CDCB031ADE}.Release|ARM64.Build.0 = Release|x64
+		{624B09D1-89B0-9BCE-6F47-08CDCB031ADE}.Release|x64.ActiveCfg = Release|x64
+		{624B09D1-89B0-9BCE-6F47-08CDCB031ADE}.Release|x64.Build.0 = Release|x64
+		{624B09D1-89B0-9BCE-6F47-08CDCB031ADE}.Release|x86.ActiveCfg = Release|x64
+		{624B09D1-89B0-9BCE-6F47-08CDCB031ADE}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
