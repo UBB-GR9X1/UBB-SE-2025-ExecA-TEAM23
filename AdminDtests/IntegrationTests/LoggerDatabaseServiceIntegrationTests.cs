@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Hospital.Tests.IntegrationTest
@@ -15,7 +16,7 @@ namespace Hospital.Tests.IntegrationTest
     {
         private Mock<IConfigProvider> _mockConfigProvider;
         private LoggerDatabaseService _loggerService;
-        private string _testConnectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=HospitalTestDB;Integrated Security=True";
+        private string _testConnectionString = "Data Source=DESKTOP-2KUEEF3;Initial Catalog=HospitalApp;Integrated Security=True;TrustServerCertificate=True";
 
         [TestInitialize]
         public void Setup()
@@ -23,107 +24,211 @@ namespace Hospital.Tests.IntegrationTest
             _mockConfigProvider = new Mock<IConfigProvider>();
             _mockConfigProvider.Setup(config => config.GetDatabaseConnection())
                 .Returns(_testConnectionString);
-            
+
             _loggerService = new LoggerDatabaseService(_mockConfigProvider.Object);
-            
+
             // Set up test database
-            SetupTestDatabase().Wait();
+            try
+            {
+                SetupTestDatabase().Wait();
+            }
+            catch (Exception exception)
+            {
+                Debug.WriteLine($"Database setup error: {exception.Message}");
+                throw;
+            }
         }
 
         [TestCleanup]
         public void Cleanup()
         {
             // Clean up test data
-            CleanupTestDatabase().Wait();
+            try
+            {
+                CleanupTestDatabase().Wait();
+            }
+            catch (Exception exception)
+            {
+                Debug.WriteLine($"Database cleanup error: {exception.Message}");
+            }
         }
 
         [TestMethod]
         public async Task GetLogs_GetAllLogs_ReturnsAllLogs()
         {
-            // Arrange
-            await InsertTestLogs();
+            try
+            {
+                // Arrange
+                await ClearAllLogs();
+                await InsertTestLogs();
 
-            // Act
-            var logs = await _loggerService.GetAllLogs();
+                // Act
+                var logs = await _loggerService.GetAllLogs();
 
-            // Assert
-            Assert.IsNotNull(logs);
-            Assert.IsTrue(logs.Count > 0);
+                // Assert
+                Assert.IsNotNull(logs, "Logs should not be null");
+                Assert.IsTrue(logs.Count > 0, "Logs should contain entries");
+            }
+            catch (Exception exception)
+            {
+                Debug.WriteLine($"Test exception: {exception.Message}");
+                throw;
+            }
         }
 
         [TestMethod]
         public async Task GetLogsByUser_GetLogsByUserId_ReturnsUserLogs()
         {
-            // Arrange
-            const int testUserId = 99;
-            await InsertLogForUser(testUserId, ActionType.LOGIN);
-
-            // Act
-            var logs = await _loggerService.GetLogsByUserId(testUserId);
-
-            // Assert
-            Assert.IsNotNull(logs);
-            Assert.IsTrue(logs.Count > 0);
-            foreach (var log in logs)
+            try
             {
-                Assert.AreEqual(testUserId, log.UserId);
+                // Arrange
+                await ClearAllLogs();
+                const int testUserId = 99;
+                await InsertLogForUser(testUserId, ActionType.LOGIN);
+
+                // Act
+                var logs = await _loggerService.GetLogsByUserId(testUserId);
+
+                // Assert
+                Assert.IsNotNull(logs, "Logs should not be null");
+                Assert.IsTrue(logs.Count > 0, "Logs should contain entries for the specified user");
+                foreach (var log in logs)
+                {
+                    Assert.AreEqual(testUserId, log.UserId, "Log should belong to the specified user");
+                }
+
+                Debug.WriteLine($"GetLogsByUserId returned {logs.Count} logs for user {testUserId}");
+            }
+            catch (Exception exception)
+            {
+                Debug.WriteLine($"Test exception: {exception.Message}");
+                throw;
             }
         }
 
         [TestMethod]
         public async Task GetLogsByAction_GetLogsByActionType_ReturnsFilteredLogs()
         {
-            // Arrange
-            await InsertLogForUser(1, ActionType.LOGIN);
-            await InsertLogForUser(2, ActionType.LOGOUT);
-            
-            // Act
-            var logs = await _loggerService.GetLogsByActionType(ActionType.LOGIN);
-            
-            // Assert
-            Assert.IsNotNull(logs);
-            Assert.IsTrue(logs.Count > 0);
-            foreach (var log in logs)
+            try
             {
-                Assert.AreEqual(ActionType.LOGIN, log.ActionType);
+                // Arrange
+                await ClearAllLogs();
+                await InsertLogForUser(1, ActionType.LOGIN);
+                await InsertLogForUser(2, ActionType.LOGOUT);
+
+                // Act
+                var logs = await _loggerService.GetLogsByActionType(ActionType.LOGIN);
+
+                // Assert
+                Assert.IsNotNull(logs, "Logs should not be null");
+                Assert.IsTrue(logs.Count > 0, "Logs collection should contain at least one item");
+
+                foreach (var log in logs)
+                {
+                    Debug.WriteLine($"Log action type: {log.ActionType}");
+                    Assert.AreEqual(ActionType.LOGIN, log.ActionType, "Each log should have LOGIN action type");
+                }
+            }
+            catch (Exception exception)
+            {
+                Debug.WriteLine($"Test exception: {exception.Message}");
+                throw;
+            }
+        }
+
+        [TestMethod]
+        public async Task GetLogsBeforeTimestamp_ReturnsFilteredLogs()
+        {
+            try
+            {
+                // Arrange
+                await ClearAllLogs();
+                var now = DateTime.Now;
+                var olderTime = now.AddMinutes(-10);
+                var newerTime = now.AddMinutes(-5);
+                var filterTime = now.AddMinutes(-7);
+
+                await InsertLogForUserWithTimestamp(1, ActionType.LOGIN, olderTime);
+                await InsertLogForUserWithTimestamp(2, ActionType.LOGOUT, newerTime);
+
+                // Act
+                var logs = await _loggerService.GetLogsBeforeTimestamp(filterTime);
+
+                // Assert
+                Assert.IsNotNull(logs, "Logs should not be null");
+                Assert.IsTrue(logs.Count > 0, "Logs should contain at least one entry");
+
+                foreach (var log in logs)
+                {
+                    Debug.WriteLine($"Log timestamp: {log.Timestamp}, Filter time: {filterTime}");
+                    Assert.IsTrue(log.Timestamp < filterTime,
+                        $"Log timestamp {log.Timestamp} should be before filter time {filterTime}");
+                }
+            }
+            catch (Exception exception)
+            {
+                Debug.WriteLine($"Test exception: {exception.Message}");
+                throw;
             }
         }
 
         [TestMethod]
         public async Task LogAction_ChecksLogAction_InsertsLog()
         {
-            // Arrange
-            const int testUserId = 100;
-            var actionType = ActionType.CREATE_ACCOUNT;
-
-            // Ensure the test user exists in the database
-            await InsertTestUser(testUserId);
-
-            // Act
-            bool result = await _loggerService.LogAction(testUserId, actionType);
-
-            // Verify
-            var logs = await _loggerService.GetLogsByUserId(testUserId);
-
-            // Assert
-            Assert.IsTrue(result);
-            Assert.IsNotNull(logs);
-            Assert.IsTrue(logs.Count > 0);
-
-            var foundLog = false;
-            foreach (var log in logs)
+            try
             {
-                if (log.UserId == testUserId && log.ActionType == actionType)
+                // Arrange
+                await ClearAllLogs();
+                const int testUserId = 100;
+                var actionType = ActionType.CREATE_ACCOUNT;
+
+                // Ensure the test user exists in the database
+                await EnsureUserExists(testUserId);
+
+                // Act
+                bool result = await _loggerService.LogAction(testUserId, actionType);
+
+                // Verify
+                var logs = await _loggerService.GetLogsByUserId(testUserId);
+
+                // Assert
+                Assert.IsTrue(result, "LogAction should return true");
+                Assert.IsNotNull(logs, "Retrieved logs should not be null");
+                Assert.IsTrue(logs.Count > 0, "There should be logs for the test user");
+
+                var foundLog = false;
+                foreach (var log in logs)
                 {
-                    foundLog = true;
-                    break;
+                    Debug.WriteLine($"Found log: UserId={log.UserId}, ActionType={log.ActionType}");
+                    if (log.UserId == testUserId && log.ActionType == actionType)
+                    {
+                        foundLog = true;
+                        break;
+                    }
                 }
+                Assert.IsTrue(foundLog, "Should find a log with the correct user ID and action type");
             }
-            Assert.IsTrue(foundLog);
+            catch (Exception exception)
+            {
+                Debug.WriteLine($"Test exception: {exception.Message}");
+                throw;
+            }
         }
 
-        // Helper method to create test users
-        private async Task InsertTestUser(int userId)
+        private async Task ClearAllLogs()
+        {
+            using (var connection = new SqlConnection(_testConnectionString))
+            {
+                await connection.OpenAsync();
+                string clearLogsQuery = "DELETE FROM Logs";
+                using (var command = new SqlCommand(clearLogsQuery, connection))
+                {
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
+        private async Task EnsureUserExists(int userId)
         {
             using (var connection = new SqlConnection(_testConnectionString))
             {
@@ -144,12 +249,12 @@ namespace Hospital.Tests.IntegrationTest
                 {
                     // Insert the test user with all required fields
                     const string insertUserQuery = @"
-                SET IDENTITY_INSERT Users ON;
-                INSERT INTO Users (UserId, Username, Password, Mail, Role, Name, BirthDate, Cnp)
-                VALUES (@userId, 'testuser' + CAST(@userId AS NVARCHAR), 'password', 
-                       'test' + CAST(@userId AS NVARCHAR) + '@example.com', 'User',
-                       'Test User ' + CAST(@userId AS NVARCHAR), @birthDate, @cnp);
-                SET IDENTITY_INSERT Users OFF;";
+                        SET IDENTITY_INSERT Users ON;
+                        INSERT INTO Users (UserId, Username, Password, Mail, Role, Name, BirthDate, Cnp)
+                        VALUES (@userId, 'testuser' + CAST(@userId AS NVARCHAR), 'password', 
+                               'test' + CAST(@userId AS NVARCHAR) + '@example.com', 'User',
+                               'Test User ' + CAST(@userId AS NVARCHAR), @birthDate, @cnp);
+                        SET IDENTITY_INSERT Users OFF;";
 
                     using (var command = new SqlCommand(insertUserQuery, connection))
                     {
@@ -162,62 +267,62 @@ namespace Hospital.Tests.IntegrationTest
             }
         }
 
-
         private async Task SetupTestDatabase()
         {
             using (var connection = new SqlConnection(_testConnectionString))
             {
                 await connection.OpenAsync();
 
-                // Create test tables if they don't exist
-                const string createUsersTable = @"
-                    IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Users' AND xtype='U')
-                    CREATE TABLE Users (
-                        UserId INT PRIMARY KEY IDENTITY(1,1),
-                        Username NVARCHAR(50) NOT NULL,
-                        Password NVARCHAR(255) NOT NULL,
-                        Mail NVARCHAR(100) NOT NULL,
-                        Role NVARCHAR(50) NOT NULL,
-                        Name NVARCHAR(100),
-                        BirthDate DATETIME,
-                        Cnp NVARCHAR(13),
-                        Address NVARCHAR(255),
-                        PhoneNumber NVARCHAR(20),
-                        RegistrationDate DATETIME DEFAULT GETDATE()
-                    )";
+                // Check if the Users table exists
+                const string checkUsersTableQuery = @"
+                    IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Users')
+                    BEGIN
+                        CREATE TABLE Users (
+                            UserId INT IDENTITY(1,1) PRIMARY KEY,
+                            Username NVARCHAR(50) NOT NULL,
+                            Password NVARCHAR(100) NOT NULL,
+                            Mail NVARCHAR(100) NOT NULL,
+                            Role NVARCHAR(20) NOT NULL,
+                            Name NVARCHAR(100) NOT NULL,
+                            BirthDate DATE NOT NULL,
+                            Cnp NVARCHAR(13) NOT NULL
+                        );
+                    END";
 
-                // Add the Logs table with a proper foreign key constraint
-                const string createLogsTable = @"
-                    IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Logs' AND xtype='U')
+                using (var command = new SqlCommand(checkUsersTableQuery, connection))
+                {
+                    await command.ExecuteNonQueryAsync();
+                }
+
+                // Check if the Logs table exists
+                const string checkLogsTableQuery = @"
+                    IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Logs')
                     BEGIN
                         CREATE TABLE Logs (
-                            LogId INT PRIMARY KEY IDENTITY(1,1),
+                            LogId INT IDENTITY(1,1) PRIMARY KEY,
                             UserId INT NOT NULL,
                             ActionType NVARCHAR(50) NOT NULL,
-                            Timestamp DATETIME DEFAULT GETDATE(),
-                            CONSTRAINT FK_Logs_Users FOREIGN KEY (UserId) REFERENCES Users(UserId)
-                        )
+                            Timestamp DATETIME NOT NULL
+                        );
                     END";
 
-                using (var command = new SqlCommand(createUsersTable, connection))
+                using (var command = new SqlCommand(checkLogsTableQuery, connection))
                 {
                     await command.ExecuteNonQueryAsync();
                 }
 
-                using (var command = new SqlCommand(createLogsTable, connection))
-                {
-                    await command.ExecuteNonQueryAsync();
-                }
-
-                // Drop and recreate the foreign key if it exists but is causing issues
-                const string alterLogsFKQuery = @"
-                    IF EXISTS (SELECT * FROM sys.foreign_keys WHERE name = 'FK_Logs_Users')
+                // Check if foreign key exists and add it if it doesn't
+                const string checkForeignKeyQuery = @"
+                    IF NOT EXISTS (
+                        SELECT * FROM sys.foreign_keys 
+                        WHERE name = 'FK_Logs_Users' AND parent_object_id = OBJECT_ID('Logs')
+                    )
                     BEGIN
-                        ALTER TABLE Logs DROP CONSTRAINT FK_Logs_Users;
-                        ALTER TABLE Logs ADD CONSTRAINT FK_Logs_Users FOREIGN KEY (UserId) REFERENCES Users(UserId);
+                        ALTER TABLE Logs ADD CONSTRAINT FK_Logs_Users 
+                        FOREIGN KEY (UserId) REFERENCES Users(UserId);
                     END";
 
-                using (var command = new SqlCommand(alterLogsFKQuery, connection))
+                using (var command = new SqlCommand(checkForeignKeyQuery, connection))
                 {
                     await command.ExecuteNonQueryAsync();
                 }
@@ -245,15 +350,14 @@ namespace Hospital.Tests.IntegrationTest
             }
         }
 
-
         private async Task CleanupTestDatabase()
         {
             using (var connection = new SqlConnection(_testConnectionString))
             {
                 await connection.OpenAsync();
-                
+
                 const string cleanupQuery = "DELETE FROM Logs WHERE UserId IN (1, 2, 99, 100)";
-                
+
                 using (var command = new SqlCommand(cleanupQuery, connection))
                 {
                     await command.ExecuteNonQueryAsync();
@@ -277,46 +381,40 @@ namespace Hospital.Tests.IntegrationTest
 
         private async Task InsertLogForUser(int userId, ActionType actionType)
         {
-            using (var connection = new SqlConnection(_testConnectionString))
+            await InsertLogForUserWithTimestamp(userId, actionType, DateTime.Now);
+        }
+
+        private async Task InsertLogForUserWithTimestamp(int userId, ActionType actionType, DateTime timestamp)
+        {
+            try
             {
-                await connection.OpenAsync();
-
-                // First check if the user exists and insert with all required fields
-                const string checkUserQuery = @"
-            IF NOT EXISTS (SELECT 1 FROM Users WHERE UserId = @userId) 
-            BEGIN 
-                SET IDENTITY_INSERT Users ON; 
-                INSERT INTO Users (UserId, Username, Password, Mail, Role, Name, BirthDate, Cnp) 
-                VALUES (@userId, 'testuser' + CAST(@userId AS NVARCHAR), 'password', 
-                       'test' + CAST(@userId AS NVARCHAR) + '@example.com', 'User', 
-                       'Test User ' + CAST(@userId AS NVARCHAR), @birthDate, 
-                       @cnp); 
-                SET IDENTITY_INSERT Users OFF; 
-            END";
-
-                using (var checkCommand = new SqlCommand(checkUserQuery, connection))
+                using (var connection = new SqlConnection(_testConnectionString))
                 {
-                    checkCommand.Parameters.AddWithValue("@userId", userId);
-                    checkCommand.Parameters.AddWithValue("@birthDate", DateTime.Now.AddYears(-25)); // Default birth date
+                    await connection.OpenAsync();
 
-                    // Generate a unique CNP for each test user (13 digits as per schema constraint)
-                    string cnp = userId.ToString().PadLeft(10, '0') + "123"; // Creates a 13-digit CNP based on userId
-                    checkCommand.Parameters.AddWithValue("@cnp", cnp);
+                    // First ensure user exists
+                    await EnsureUserExists(userId);
 
-                    await checkCommand.ExecuteNonQueryAsync();
+                    // Now insert the log
+                    const string insertQuery = @"
+                        INSERT INTO Logs (UserId, ActionType, Timestamp) 
+                        VALUES (@userId, @actionType, @timestamp)";
+
+                    using (var command = new SqlCommand(insertQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@userId", userId);
+                        command.Parameters.AddWithValue("@actionType", actionType.ToString());
+                        command.Parameters.AddWithValue("@timestamp", timestamp);
+                        await command.ExecuteNonQueryAsync();
+                    }
+
+                    Debug.WriteLine($"Inserted log for user {userId}, action {actionType}, time {timestamp}");
                 }
-
-                // Now insert the log
-                const string insertQuery = "INSERT INTO Logs (UserId, ActionType, Timestamp) VALUES (@userId, @actionType, @timestamp)";
-
-                using (var command = new SqlCommand(insertQuery, connection))
-                {
-                    command.Parameters.AddWithValue("@userId", userId);
-                    command.Parameters.AddWithValue("@actionType", actionType.ToString());
-                    command.Parameters.AddWithValue("@timestamp", DateTime.Now);
-
-                    await command.ExecuteNonQueryAsync();
-                }
+            }
+            catch (Exception exception)
+            {
+                Debug.WriteLine($"Error inserting log: {exception.Message}");
+                throw;
             }
         }
     }
