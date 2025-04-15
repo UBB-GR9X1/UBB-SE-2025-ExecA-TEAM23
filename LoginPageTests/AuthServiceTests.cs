@@ -1,19 +1,19 @@
 using Hospital.Configs;
-using Hospital.DatabaseServices;
-using Hospital.Managers;
 using Hospital.Models;
+using Hospital.Repositories;
+using Hospital.Services;
 using Microsoft.Data.SqlClient;
 
 namespace LoginPageTests;
 
 [TestClass]
-public class AuthManagerModelTests
+public class AuthServiceTests
 {
-    IAuthManagerModel authManagerModel;
-    public AuthManagerModelTests()
+    IAuthService _authService;
+    public AuthServiceTests()
     {
-        ILogInDatabaseService logInDatabaseService = new LogInDatabaseService();
-        authManagerModel = new AuthManagerModel(logInDatabaseService);
+        ILogInRepository logInRepository = new LogInRepository();
+        _authService = new AuthService(logInRepository);
     }
 
     [TestMethod]
@@ -33,7 +33,7 @@ public class AuthManagerModelTests
                 180
             );
 
-        bool result = await authManagerModel.CreateAccount(model);
+        bool result = await _authService.CreateAccount(model);
         Assert.IsTrue(result);
 
         string query = "DELETE FROM Users WHERE Username = @username";
@@ -66,7 +66,7 @@ public class AuthManagerModelTests
 
         await Assert.ThrowsExceptionAsync<Hospital.Exceptions.AuthenticationException>(async () =>
         {
-            await authManagerModel.CreateAccount(model);
+            await _authService.CreateAccount(model);
         });
     }
 
@@ -89,7 +89,7 @@ public class AuthManagerModelTests
 
         await Assert.ThrowsExceptionAsync<Hospital.Exceptions.AuthenticationException>(async () =>
         {
-            await authManagerModel.CreateAccount(model);
+            await _authService.CreateAccount(model);
         });
     }
 
@@ -112,7 +112,7 @@ public class AuthManagerModelTests
 
         await Assert.ThrowsExceptionAsync<Hospital.Exceptions.AuthenticationException>(async () =>
         {
-            await authManagerModel.CreateAccount(model);
+            await _authService.CreateAccount(model);
         });
     }
 
@@ -135,7 +135,7 @@ public class AuthManagerModelTests
 
         await Assert.ThrowsExceptionAsync<Hospital.Exceptions.AuthenticationException>(async () =>
         {
-            await authManagerModel.CreateAccount(model);
+            await _authService.CreateAccount(model);
         });
     }
 
@@ -143,7 +143,7 @@ public class AuthManagerModelTests
     public async Task TestLoadUserbyUsername_WithValidUsername_ReturnsTrue()
     {
         // Task<bool> LoadUserByUsername(string username);
-        var result = await authManagerModel.LoadUserByUsername("john_doe");
+        var result = await _authService.LoadUserByUsername("john_doe");
         Assert.IsTrue(result);
     }
 
@@ -153,7 +153,7 @@ public class AuthManagerModelTests
         // Task<bool> LoadUserByUsername(string username);
         await Assert.ThrowsExceptionAsync<Hospital.Exceptions.AuthenticationException>(async () =>
         {
-            await authManagerModel.LoadUserByUsername("not_john_doe");
+            await _authService.LoadUserByUsername("not_john_doe");
         });
     }
 
@@ -161,7 +161,7 @@ public class AuthManagerModelTests
     public async Task VerifyPassword_IncorrectPassword_ReturnsFalse()
     {
         // Task<bool> VerifyPassword(string userInputPassword);
-        var result = await authManagerModel.VerifyPassword("wrong_password");
+        var result = await _authService.VerifyPassword("wrong_password");
         Assert.IsFalse(result);
     }
 

@@ -1,25 +1,25 @@
-using Hospital.Managers;
 using Hospital.Models;
-using Hospital.DatabaseServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Hospital.Repositories;
+using Hospital.Services;
 
 namespace Hospital.Tests.Managers
 {
     [TestClass]
-    public class LoggerManagerModelTests
+    public class LoggerServiceTests
     {
-        private Mock<ILoggerDatabaseService> _mockLoggerService;
-        private LoggerManagerModel _loggerManager;
+        private Mock<ILoggerRepository> _mockLoggerRepository;
+        private LoggerService _loggerService;
 
         [TestInitialize]
         public void Setup()
         {
-            _mockLoggerService = new Mock<ILoggerDatabaseService>();
-            _loggerManager = new LoggerManagerModel(_mockLoggerService.Object);
+            _mockLoggerRepository = new Mock<ILoggerRepository>();
+            _loggerService = new LoggerService(_mockLoggerRepository.Object);
         }
 
         [TestMethod]
@@ -31,16 +31,16 @@ namespace Hospital.Tests.Managers
                 new LogEntryModel(1, 1, ActionType.LOGIN, DateTime.Now),
                 new LogEntryModel(2, 2, ActionType.LOGOUT, DateTime.Now)
             };
-            _mockLoggerService.Setup(service => service.GetAllLogs())
+            _mockLoggerRepository.Setup(service => service.GetAllLogs())
                 .ReturnsAsync(expectedLogs);
 
             // Act
-            var result = await _loggerManager.GetAllLogs();
+            var result = await _loggerService.GetAllLogs();
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(expectedLogs.Count, result.Count);
-            _mockLoggerService.Verify(service => service.GetAllLogs(), Times.Once);
+            _mockLoggerRepository.Verify(service => service.GetAllLogs(), Times.Once);
         }
 
         [TestMethod]
@@ -53,16 +53,16 @@ namespace Hospital.Tests.Managers
                 new LogEntryModel(1, userId, ActionType.LOGIN, DateTime.Now),
                 new LogEntryModel(3, userId, ActionType.LOGOUT, DateTime.Now)
             };
-            _mockLoggerService.Setup(service => service.GetLogsByUserId(userId))
+            _mockLoggerRepository.Setup(service => service.GetLogsByUserId(userId))
                 .ReturnsAsync(expectedLogs);
 
             // Act
-            var result = await _loggerManager.GetLogsByUserId(userId);
+            var result = await _loggerService.GetLogsByUserId(userId);
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(expectedLogs.Count, result.Count);
-            _mockLoggerService.Verify(service => service.GetLogsByUserId(userId), Times.Once);
+            _mockLoggerRepository.Verify(service => service.GetLogsByUserId(userId), Times.Once);
         }
 
         [TestMethod]
@@ -75,16 +75,16 @@ namespace Hospital.Tests.Managers
                 new LogEntryModel(1, 1, actionType, DateTime.Now),
                 new LogEntryModel(4, 3, actionType, DateTime.Now)
             };
-            _mockLoggerService.Setup(service => service.GetLogsByActionType(actionType))
+            _mockLoggerRepository.Setup(service => service.GetLogsByActionType(actionType))
                 .ReturnsAsync(expectedLogs);
 
             // Act
-            var result = await _loggerManager.GetLogsByActionType(actionType);
+            var result = await _loggerService.GetLogsByActionType(actionType);
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(expectedLogs.Count, result.Count);
-            _mockLoggerService.Verify(service => service.GetLogsByActionType(actionType), Times.Once);
+            _mockLoggerRepository.Verify(service => service.GetLogsByActionType(actionType), Times.Once);
         }
 
         [TestMethod]
@@ -97,16 +97,16 @@ namespace Hospital.Tests.Managers
                 new LogEntryModel(1, 1, ActionType.LOGIN, timestamp.AddDays(-1)),
                 new LogEntryModel(3, 2, ActionType.CREATE_ACCOUNT, timestamp.AddHours(-2))
             };
-            _mockLoggerService.Setup(service => service.GetLogsBeforeTimestamp(timestamp))
+            _mockLoggerRepository.Setup(service => service.GetLogsBeforeTimestamp(timestamp))
                 .ReturnsAsync(expectedLogs);
 
             // Act
-            var result = await _loggerManager.GetLogsBeforeTimestamp(timestamp);
+            var result = await _loggerService.GetLogsBeforeTimestamp(timestamp);
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(expectedLogs.Count, result.Count);
-            _mockLoggerService.Verify(service => service.GetLogsBeforeTimestamp(timestamp), Times.Once);
+            _mockLoggerRepository.Verify(service => service.GetLogsBeforeTimestamp(timestamp), Times.Once);
         }
 
         [TestMethod]
@@ -120,16 +120,16 @@ namespace Hospital.Tests.Managers
             {
                 new LogEntryModel(5, userId, actionType, timestamp.AddDays(-1))
             };
-            _mockLoggerService.Setup(service => service.GetLogsWithParameters(userId, actionType, timestamp))
+            _mockLoggerRepository.Setup(service => service.GetLogsWithParameters(userId, actionType, timestamp))
                 .ReturnsAsync(expectedLogs);
 
             // Act
-            var result = await _loggerManager.GetLogsWithParameters(userId, actionType, timestamp);
+            var result = await _loggerService.GetLogsWithParameters(userId, actionType, timestamp);
 
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(expectedLogs.Count, result.Count);
-            _mockLoggerService.Verify(service => service.GetLogsWithParameters(userId, actionType, timestamp), Times.Once);
+            _mockLoggerRepository.Verify(service => service.GetLogsWithParameters(userId, actionType, timestamp), Times.Once);
         }
 
         [TestMethod]
@@ -138,15 +138,15 @@ namespace Hospital.Tests.Managers
             // Arrange
             int userId = 1;
             var actionType = ActionType.LOGIN;
-            _mockLoggerService.Setup(service => service.LogAction(userId, actionType))
+            _mockLoggerRepository.Setup(service => service.LogAction(userId, actionType))
                 .ReturnsAsync(true);
 
             // Act
-            var result = await _loggerManager.LogAction(userId, actionType);
+            var result = await _loggerService.LogAction(userId, actionType);
 
             // Assert
             Assert.IsTrue(result);
-            _mockLoggerService.Verify(service => service.LogAction(userId, actionType), Times.Once);
+            _mockLoggerRepository.Verify(service => service.LogAction(userId, actionType), Times.Once);
         }
     }
 }

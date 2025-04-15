@@ -1,19 +1,19 @@
-using Hospital.Managers;
+using Hospital.Repositories;
 using Hospital.Models;
 using Hospital.ViewModels;
 using Moq;
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
-using Hospital.Doctor_Dashboard;
+using Hospital.Services;
 
 namespace AdminDashboardTests
 {
     public class DoctorViewModelTests
     {
         private Mock<IDoctorService> _mockDoctorService;
-        private DoctorViewModel _viewModel;
-        private const int TestUserId = 123;
+        private DoctorViewModel _doctorViewModel;
+        private const int _testUserId = 123;
 
         [SetUp]
         public void Setup()
@@ -50,13 +50,13 @@ namespace AdminDashboardTests
                     Mail = "doctor@example.com"
                 });
 
-            _viewModel = new DoctorViewModel(_mockDoctorService.Object, TestUserId);
+            _doctorViewModel = new DoctorViewModel(_mockDoctorService.Object, _testUserId);
         }
 
         [Test]
         public async Task LoadDoctorInformationAsync_WhenSuccessful_ReturnsTrue()
         {
-            bool result = await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            bool result = await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
             Assert.IsTrue(result);
         }
@@ -64,57 +64,57 @@ namespace AdminDashboardTests
         [Test]
         public async Task LoadDoctorInformationAsync_WhenSuccessful_UpdatesDoctorName()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            Assert.AreEqual("Dr. Jane Doe", _viewModel.DoctorName);
+            Assert.AreEqual("Dr. Jane Doe", _doctorViewModel.DoctorName);
         }
 
         [Test]
         public async Task LoadDoctorInformationAsync_WhenSuccessful_UpdatesDepartmentName()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            Assert.AreEqual("Cardiology", _viewModel.DepartmentName);
+            Assert.AreEqual("Cardiology", _doctorViewModel.DepartmentName);
         }
 
         [Test]
         public async Task LoadDoctorInformationAsync_WhenSuccessful_UpdatesRating()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            Assert.AreEqual(4.5, _viewModel.Rating);
+            Assert.AreEqual(4.5, _doctorViewModel.Rating);
         }
 
         [Test]
         public async Task LoadDoctorInformationAsync_WhenSuccessful_UpdatesCareerInfo()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            Assert.AreEqual("Experienced Cardiologist", _viewModel.CareerInfo);
+            Assert.AreEqual("Experienced Cardiologist", _doctorViewModel.CareerInfo);
         }
 
         [Test]
         public async Task LoadDoctorInformationAsync_WhenSuccessful_UpdatesAvatarUrl()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            Assert.AreEqual("https://example.com/avatar.jpg", _viewModel.AvatarUrl);
+            Assert.AreEqual("https://example.com/avatar.jpg", _doctorViewModel.AvatarUrl);
         }
 
         [Test]
         public async Task LoadDoctorInformationAsync_WhenSuccessful_UpdatesPhoneNumber()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            Assert.AreEqual("1234567890", _viewModel.PhoneNumber);
+            Assert.AreEqual("1234567890", _doctorViewModel.PhoneNumber);
         }
 
         [Test]
         public async Task LoadDoctorInformationAsync_WhenSuccessful_UpdatesEmail()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            Assert.AreEqual("doctor@example.com", _viewModel.Mail);
+            Assert.AreEqual("doctor@example.com", _doctorViewModel.Mail);
         }
 
         [Test]
@@ -123,7 +123,7 @@ namespace AdminDashboardTests
             _mockDoctorService.Setup(service => service.LoadDoctorInformationByUserId(It.IsAny<int>()))
                 .ReturnsAsync(false);
 
-            bool result = await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            bool result = await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
             Assert.IsFalse(result);
         }
@@ -134,9 +134,9 @@ namespace AdminDashboardTests
             _mockDoctorService.Setup(service => service.LoadDoctorInformationByUserId(It.IsAny<int>()))
                 .ReturnsAsync(false);
 
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            Assert.AreEqual("Doctor profile not found", _viewModel.DoctorName);
+            Assert.AreEqual("Doctor profile not found", _doctorViewModel.DoctorName);
         }
 
         [Test]
@@ -145,9 +145,9 @@ namespace AdminDashboardTests
             _mockDoctorService.Setup(service => service.LoadDoctorInformationByUserId(It.IsAny<int>()))
                 .ReturnsAsync(false);
 
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            Assert.AreEqual("N/A", _viewModel.DepartmentName);
+            Assert.AreEqual("N/A", _doctorViewModel.DepartmentName);
         }
 
         [Test]
@@ -156,7 +156,7 @@ namespace AdminDashboardTests
             _mockDoctorService.Setup(service => service.LoadDoctorInformationByUserId(It.IsAny<int>()))
                 .ThrowsAsync(new Exception("Test exception"));
 
-            bool result = await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            bool result = await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
             Assert.IsFalse(result);
         }
@@ -167,9 +167,9 @@ namespace AdminDashboardTests
             _mockDoctorService.Setup(service => service.LoadDoctorInformationByUserId(It.IsAny<int>()))
                 .ThrowsAsync(new Exception("Test exception"));
 
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            Assert.AreEqual("Error loading profile", _viewModel.DoctorName);
+            Assert.AreEqual("Error loading profile", _doctorViewModel.DoctorName);
         }
 
         [Test]
@@ -178,9 +178,9 @@ namespace AdminDashboardTests
             _mockDoctorService.Setup(service => service.LoadDoctorInformationByUserId(It.IsAny<int>()))
                 .ThrowsAsync(new Exception("Test exception"));
 
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            Assert.AreEqual("Error", _viewModel.DepartmentName);
+            Assert.AreEqual("Error", _doctorViewModel.DepartmentName);
         }
 
         [Test]
@@ -189,9 +189,9 @@ namespace AdminDashboardTests
             _mockDoctorService.Setup(service => service.LoadDoctorInformationByUserId(It.IsAny<int>()))
                 .ThrowsAsync(new Exception("Test exception"));
 
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            Assert.AreEqual("Please try again later", _viewModel.CareerInfo);
+            Assert.AreEqual("Please try again later", _doctorViewModel.CareerInfo);
         }
 
         [Test]
@@ -202,7 +202,7 @@ namespace AdminDashboardTests
             _mockDoctorService.SetupGet(service => service.DoctorInformation)
                 .Returns(DoctorModel.Default);
 
-            bool result = await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            bool result = await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
             Assert.IsFalse(result);
         }
@@ -215,9 +215,9 @@ namespace AdminDashboardTests
             _mockDoctorService.SetupGet(service => service.DoctorInformation)
                 .Returns(DoctorModel.Default);
 
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            Assert.AreEqual("Doctor profile not found", _viewModel.DoctorName);
+            Assert.AreEqual("Doctor profile not found", _doctorViewModel.DoctorName);
         }
 
         [Test]
@@ -226,10 +226,10 @@ namespace AdminDashboardTests
             bool loadingDuringExecution = false;
 
             _mockDoctorService.Setup(service => service.LoadDoctorInformationByUserId(It.IsAny<int>()))
-                .Callback(() => loadingDuringExecution = _viewModel.IsLoading)
+                .Callback(() => loadingDuringExecution = _doctorViewModel.IsLoading)
                 .ReturnsAsync(true);
 
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
             Assert.IsTrue(loadingDuringExecution);
         }
@@ -237,9 +237,9 @@ namespace AdminDashboardTests
         [Test]
         public async Task LoadDoctorInformationAsync_AfterExecution_SetsIsLoadingToFalse()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            Assert.IsFalse(_viewModel.IsLoading);
+            Assert.IsFalse(_doctorViewModel.IsLoading);
         }
 
         [Test]
@@ -260,9 +260,9 @@ namespace AdminDashboardTests
                     Mail = "doctor@example.com"
                 });
 
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            Assert.AreEqual("Not specified", _viewModel.DoctorName);
+            Assert.AreEqual("Not specified", _doctorViewModel.DoctorName);
         }
 
         [Test]
@@ -283,9 +283,9 @@ namespace AdminDashboardTests
                     Mail = "doctor@example.com"
                 });
 
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            Assert.AreEqual("N/A", _viewModel.DepartmentName);
+            Assert.AreEqual("N/A", _doctorViewModel.DepartmentName);
         }
 
         [Test]
@@ -306,9 +306,9 @@ namespace AdminDashboardTests
                     Mail = "doctor@example.com"
                 });
 
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            Assert.AreEqual("N/A", _viewModel.CareerInfo);
+            Assert.AreEqual("N/A", _doctorViewModel.CareerInfo);
         }
 
         [Test]
@@ -329,9 +329,9 @@ namespace AdminDashboardTests
                     Mail = "doctor@example.com"
                 });
 
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            Assert.AreEqual("https://picsum.photos/200", _viewModel.AvatarUrl);
+            Assert.AreEqual("https://picsum.photos/200", _doctorViewModel.AvatarUrl);
         }
 
         [Test]
@@ -352,9 +352,9 @@ namespace AdminDashboardTests
                     Mail = "doctor@example.com"
                 });
 
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            Assert.AreEqual("Not provided", _viewModel.PhoneNumber);
+            Assert.AreEqual("Not provided", _doctorViewModel.PhoneNumber);
         }
 
         [Test]
@@ -375,9 +375,9 @@ namespace AdminDashboardTests
                     Mail = null
                 });
 
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            Assert.AreEqual("Not provided", _viewModel.Mail);
+            Assert.AreEqual("Not provided", _doctorViewModel.Mail);
         }
 
         [Test]
@@ -385,7 +385,7 @@ namespace AdminDashboardTests
         {
             var newName = "Dr. John Doe";
 
-            var result = await _viewModel.UpdateDoctorNameAsync(newName);
+            var result = await _doctorViewModel.UpdateDoctorNameAsync(newName);
 
             Assert.IsTrue(result);
         }
@@ -395,9 +395,9 @@ namespace AdminDashboardTests
         {
             var newName = "Dr. John Doe";
 
-            await _viewModel.UpdateDoctorNameAsync(newName);
+            await _doctorViewModel.UpdateDoctorNameAsync(newName);
 
-            Assert.AreEqual(newName, _viewModel.DoctorName);
+            Assert.AreEqual(newName, _doctorViewModel.DoctorName);
         }
 
         [Test]
@@ -405,9 +405,9 @@ namespace AdminDashboardTests
         {
             var newName = "Dr. John Doe";
 
-            await _viewModel.UpdateDoctorNameAsync(newName);
+            await _doctorViewModel.UpdateDoctorNameAsync(newName);
 
-            Assert.AreEqual(newName, _viewModel.OriginalDoctor.DoctorName);
+            Assert.AreEqual(newName, _doctorViewModel.OriginalDoctor.DoctorName);
         }
 
         [Test]
@@ -415,9 +415,9 @@ namespace AdminDashboardTests
         {
             var newName = "Dr. John Doe";
 
-            await _viewModel.UpdateDoctorNameAsync(newName);
+            await _doctorViewModel.UpdateDoctorNameAsync(newName);
 
-            _mockDoctorService.Verify(s => s.UpdateDoctorName(TestUserId, newName), Times.Once);
+            _mockDoctorService.Verify(s => s.UpdateDoctorName(_testUserId, newName), Times.Once);
         }
 
         [Test]
@@ -425,7 +425,7 @@ namespace AdminDashboardTests
         {
             var newDepartmentId = 789;
 
-            var result = await _viewModel.UpdateDepartmentAsync(newDepartmentId);
+            var result = await _doctorViewModel.UpdateDepartmentAsync(newDepartmentId);
 
             Assert.IsTrue(result);
         }
@@ -435,9 +435,9 @@ namespace AdminDashboardTests
         {
             var newDepartmentId = 789;
 
-            await _viewModel.UpdateDepartmentAsync(newDepartmentId);
+            await _doctorViewModel.UpdateDepartmentAsync(newDepartmentId);
 
-            Assert.AreEqual(newDepartmentId, _viewModel.DepartmentId);
+            Assert.AreEqual(newDepartmentId, _doctorViewModel.DepartmentId);
         }
 
         [Test]
@@ -445,9 +445,9 @@ namespace AdminDashboardTests
         {
             var newDepartmentId = 789;
 
-            await _viewModel.UpdateDepartmentAsync(newDepartmentId);
+            await _doctorViewModel.UpdateDepartmentAsync(newDepartmentId);
 
-            Assert.AreEqual(newDepartmentId, _viewModel.OriginalDoctor.DepartmentId);
+            Assert.AreEqual(newDepartmentId, _doctorViewModel.OriginalDoctor.DepartmentId);
         }
 
         [Test]
@@ -455,9 +455,9 @@ namespace AdminDashboardTests
         {
             var newDepartmentId = 789;
 
-            await _viewModel.UpdateDepartmentAsync(newDepartmentId);
+            await _doctorViewModel.UpdateDepartmentAsync(newDepartmentId);
 
-            _mockDoctorService.Verify(s => s.UpdateDepartment(TestUserId, newDepartmentId), Times.Once);
+            _mockDoctorService.Verify(s => s.UpdateDepartment(_testUserId, newDepartmentId), Times.Once);
         }
 
         [Test]
@@ -465,7 +465,7 @@ namespace AdminDashboardTests
         {
             var newCareerInfo = "Updated career information";
 
-            var result = await _viewModel.UpdateCareerInfoAsync(newCareerInfo);
+            var result = await _doctorViewModel.UpdateCareerInfoAsync(newCareerInfo);
 
             Assert.IsTrue(result);
         }
@@ -475,9 +475,9 @@ namespace AdminDashboardTests
         {
             var newCareerInfo = "Updated career information";
 
-            await _viewModel.UpdateCareerInfoAsync(newCareerInfo);
+            await _doctorViewModel.UpdateCareerInfoAsync(newCareerInfo);
 
-            Assert.AreEqual(newCareerInfo, _viewModel.CareerInfo);
+            Assert.AreEqual(newCareerInfo, _doctorViewModel.CareerInfo);
         }
 
         [Test]
@@ -485,9 +485,9 @@ namespace AdminDashboardTests
         {
             var newCareerInfo = "Updated career information";
 
-            await _viewModel.UpdateCareerInfoAsync(newCareerInfo);
+            await _doctorViewModel.UpdateCareerInfoAsync(newCareerInfo);
 
-            Assert.AreEqual(newCareerInfo, _viewModel.OriginalDoctor.CareerInfo);
+            Assert.AreEqual(newCareerInfo, _doctorViewModel.OriginalDoctor.CareerInfo);
         }
 
         [Test]
@@ -495,9 +495,9 @@ namespace AdminDashboardTests
         {
             var newCareerInfo = "Updated career information";
 
-            await _viewModel.UpdateCareerInfoAsync(newCareerInfo);
+            await _doctorViewModel.UpdateCareerInfoAsync(newCareerInfo);
 
-            _mockDoctorService.Verify(s => s.UpdateCareerInfo(TestUserId, newCareerInfo), Times.Once);
+            _mockDoctorService.Verify(s => s.UpdateCareerInfo(_testUserId, newCareerInfo), Times.Once);
         }
 
         [Test]
@@ -505,7 +505,7 @@ namespace AdminDashboardTests
         {
             var newAvatarUrl = "https://example.com/new-avatar.jpg";
 
-            var result = await _viewModel.UpdateAvatarUrlAsync(newAvatarUrl);
+            var result = await _doctorViewModel.UpdateAvatarUrlAsync(newAvatarUrl);
 
             Assert.IsTrue(result);
         }
@@ -515,9 +515,9 @@ namespace AdminDashboardTests
         {
             var newAvatarUrl = "https://example.com/new-avatar.jpg";
 
-            await _viewModel.UpdateAvatarUrlAsync(newAvatarUrl);
+            await _doctorViewModel.UpdateAvatarUrlAsync(newAvatarUrl);
 
-            Assert.AreEqual(newAvatarUrl, _viewModel.AvatarUrl);
+            Assert.AreEqual(newAvatarUrl, _doctorViewModel.AvatarUrl);
         }
 
         [Test]
@@ -525,9 +525,9 @@ namespace AdminDashboardTests
         {
             var newAvatarUrl = "https://example.com/new-avatar.jpg";
 
-            await _viewModel.UpdateAvatarUrlAsync(newAvatarUrl);
+            await _doctorViewModel.UpdateAvatarUrlAsync(newAvatarUrl);
 
-            Assert.AreEqual(newAvatarUrl, _viewModel.OriginalDoctor.AvatarUrl);
+            Assert.AreEqual(newAvatarUrl, _doctorViewModel.OriginalDoctor.AvatarUrl);
         }
 
         [Test]
@@ -535,9 +535,9 @@ namespace AdminDashboardTests
         {
             var newAvatarUrl = "https://example.com/new-avatar.jpg";
 
-            await _viewModel.UpdateAvatarUrlAsync(newAvatarUrl);
+            await _doctorViewModel.UpdateAvatarUrlAsync(newAvatarUrl);
 
-            _mockDoctorService.Verify(s => s.UpdateAvatarUrl(TestUserId, newAvatarUrl), Times.Once);
+            _mockDoctorService.Verify(s => s.UpdateAvatarUrl(_testUserId, newAvatarUrl), Times.Once);
         }
 
         [Test]
@@ -545,7 +545,7 @@ namespace AdminDashboardTests
         {
             var newPhoneNumber = "9876543210";
 
-            var result = await _viewModel.UpdatePhoneNumberAsync(newPhoneNumber);
+            var result = await _doctorViewModel.UpdatePhoneNumberAsync(newPhoneNumber);
 
             Assert.IsTrue(result);
         }
@@ -555,9 +555,9 @@ namespace AdminDashboardTests
         {
             var newPhoneNumber = "9876543210";
 
-            await _viewModel.UpdatePhoneNumberAsync(newPhoneNumber);
+            await _doctorViewModel.UpdatePhoneNumberAsync(newPhoneNumber);
 
-            Assert.AreEqual(newPhoneNumber, _viewModel.PhoneNumber);
+            Assert.AreEqual(newPhoneNumber, _doctorViewModel.PhoneNumber);
         }
 
         [Test]
@@ -565,9 +565,9 @@ namespace AdminDashboardTests
         {
             var newPhoneNumber = "9876543210";
 
-            await _viewModel.UpdatePhoneNumberAsync(newPhoneNumber);
+            await _doctorViewModel.UpdatePhoneNumberAsync(newPhoneNumber);
 
-            Assert.AreEqual(newPhoneNumber, _viewModel.OriginalDoctor.PhoneNumber);
+            Assert.AreEqual(newPhoneNumber, _doctorViewModel.OriginalDoctor.PhoneNumber);
         }
 
         [Test]
@@ -575,9 +575,9 @@ namespace AdminDashboardTests
         {
             var newPhoneNumber = "9876543210";
 
-            await _viewModel.UpdatePhoneNumberAsync(newPhoneNumber);
+            await _doctorViewModel.UpdatePhoneNumberAsync(newPhoneNumber);
 
-            _mockDoctorService.Verify(s => s.UpdatePhoneNumber(TestUserId, newPhoneNumber), Times.Once);
+            _mockDoctorService.Verify(s => s.UpdatePhoneNumber(_testUserId, newPhoneNumber), Times.Once);
         }
 
         [Test]
@@ -585,7 +585,7 @@ namespace AdminDashboardTests
         {
             var newEmail = "newemail@example.com";
 
-            var result = await _viewModel.UpdateMailAsync(newEmail);
+            var result = await _doctorViewModel.UpdateMailAsync(newEmail);
 
             Assert.IsTrue(result);
         }
@@ -595,9 +595,9 @@ namespace AdminDashboardTests
         {
             var newEmail = "newemail@example.com";
 
-            await _viewModel.UpdateMailAsync(newEmail);
+            await _doctorViewModel.UpdateMailAsync(newEmail);
 
-            Assert.AreEqual(newEmail, _viewModel.Mail);
+            Assert.AreEqual(newEmail, _doctorViewModel.Mail);
         }
 
         [Test]
@@ -605,9 +605,9 @@ namespace AdminDashboardTests
         {
             var newEmail = "newemail@example.com";
 
-            await _viewModel.UpdateMailAsync(newEmail);
+            await _doctorViewModel.UpdateMailAsync(newEmail);
 
-            Assert.AreEqual(newEmail, _viewModel.OriginalDoctor.Mail);
+            Assert.AreEqual(newEmail, _doctorViewModel.OriginalDoctor.Mail);
         }
 
         [Test]
@@ -615,9 +615,9 @@ namespace AdminDashboardTests
         {
             var newEmail = "newemail@example.com";
 
-            await _viewModel.UpdateMailAsync(newEmail);
+            await _doctorViewModel.UpdateMailAsync(newEmail);
 
-            _mockDoctorService.Verify(s => s.UpdateEmail(TestUserId, newEmail), Times.Once);
+            _mockDoctorService.Verify(s => s.UpdateEmail(_testUserId, newEmail), Times.Once);
         }
 
         [Test]
@@ -625,7 +625,7 @@ namespace AdminDashboardTests
         {
             var actionType = ActionType.UPDATE_PROFILE;
 
-            var result = await _viewModel.LogDoctorUpdateAsync(actionType);
+            var result = await _doctorViewModel.LogDoctorUpdateAsync(actionType);
 
             Assert.IsTrue(result);
         }
@@ -635,96 +635,96 @@ namespace AdminDashboardTests
         {
             var actionType = ActionType.UPDATE_PROFILE;
 
-            await _viewModel.LogDoctorUpdateAsync(actionType);
+            await _doctorViewModel.LogDoctorUpdateAsync(actionType);
 
-            _mockDoctorService.Verify(s => s.LogUpdate(TestUserId, actionType), Times.Once);
+            _mockDoctorService.Verify(s => s.LogUpdate(_testUserId, actionType), Times.Once);
         }
 
         [Test]
         public async Task RevertChanges_WhenCalled_RestoresDoctorName()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            string originalDoctorName = _viewModel.OriginalDoctor.DoctorName;
-            _viewModel.DoctorName = "Different Name";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            string originalDoctorName = _doctorViewModel.OriginalDoctor.DoctorName;
+            _doctorViewModel.DoctorName = "Different Name";
 
-            _viewModel.RevertChanges();
+            _doctorViewModel.RevertChanges();
 
-            Assert.AreEqual(originalDoctorName, _viewModel.DoctorName);
+            Assert.AreEqual(originalDoctorName, _doctorViewModel.DoctorName);
         }
 
         [Test]
         public async Task RevertChanges_WhenCalled_RestoresDepartmentName()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            string originalDepartmentName = _viewModel.OriginalDoctor.DepartmentName;
-            _viewModel.DepartmentName = "Different Department";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            string originalDepartmentName = _doctorViewModel.OriginalDoctor.DepartmentName;
+            _doctorViewModel.DepartmentName = "Different Department";
 
-            _viewModel.RevertChanges();
+            _doctorViewModel.RevertChanges();
 
-            Assert.AreEqual(originalDepartmentName, _viewModel.DepartmentName);
+            Assert.AreEqual(originalDepartmentName, _doctorViewModel.DepartmentName);
         }
 
         [Test]
         public async Task RevertChanges_WhenCalled_RestoresCareerInfo()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            string originalCareerInfo = _viewModel.OriginalDoctor.CareerInfo;
-            _viewModel.CareerInfo = "Different Career Info";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            string originalCareerInfo = _doctorViewModel.OriginalDoctor.CareerInfo;
+            _doctorViewModel.CareerInfo = "Different Career Info";
 
-            _viewModel.RevertChanges();
+            _doctorViewModel.RevertChanges();
 
-            Assert.AreEqual(originalCareerInfo, _viewModel.CareerInfo);
+            Assert.AreEqual(originalCareerInfo, _doctorViewModel.CareerInfo);
         }
 
         [Test]
         public async Task RevertChanges_WhenCalled_RestoresAvatarUrl()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            string originalAvatarUrl = _viewModel.OriginalDoctor.AvatarUrl;
-            _viewModel.AvatarUrl = "Different URL";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            string originalAvatarUrl = _doctorViewModel.OriginalDoctor.AvatarUrl;
+            _doctorViewModel.AvatarUrl = "Different URL";
 
-            _viewModel.RevertChanges();
+            _doctorViewModel.RevertChanges();
 
-            Assert.AreEqual(originalAvatarUrl, _viewModel.AvatarUrl);
+            Assert.AreEqual(originalAvatarUrl, _doctorViewModel.AvatarUrl);
         }
 
         [Test]
         public async Task RevertChanges_WhenCalled_RestoresPhoneNumber()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            string originalPhoneNumber = _viewModel.OriginalDoctor.PhoneNumber;
-            _viewModel.PhoneNumber = "Different Phone";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            string originalPhoneNumber = _doctorViewModel.OriginalDoctor.PhoneNumber;
+            _doctorViewModel.PhoneNumber = "Different Phone";
 
-            _viewModel.RevertChanges();
+            _doctorViewModel.RevertChanges();
 
-            Assert.AreEqual(originalPhoneNumber, _viewModel.PhoneNumber);
+            Assert.AreEqual(originalPhoneNumber, _doctorViewModel.PhoneNumber);
         }
 
         [Test]
         public async Task RevertChanges_WhenCalled_RestoresMail()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            string originalMail = _viewModel.OriginalDoctor.Mail;
-            _viewModel.Mail = "Different Mail";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            string originalMail = _doctorViewModel.OriginalDoctor.Mail;
+            _doctorViewModel.Mail = "Different Mail";
 
-            _viewModel.RevertChanges();
+            _doctorViewModel.RevertChanges();
 
-            Assert.AreEqual(originalMail, _viewModel.Mail);
+            Assert.AreEqual(originalMail, _doctorViewModel.Mail);
         }
 
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenAllFieldsChanged_ReturnsSuccessTrue()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            _viewModel.DoctorName = "New Doctor Name";
-            _viewModel.DepartmentId = 789;
-            _viewModel.DepartmentName = "New Department";
-            _viewModel.CareerInfo = "New Career Info";
-            _viewModel.AvatarUrl = "New Avatar URL";
-            _viewModel.PhoneNumber = "New Phone";
-            _viewModel.Mail = "new.email@example.com";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            _doctorViewModel.DoctorName = "New Doctor Name";
+            _doctorViewModel.DepartmentId = 789;
+            _doctorViewModel.DepartmentName = "New Department";
+            _doctorViewModel.CareerInfo = "New Career Info";
+            _doctorViewModel.AvatarUrl = "New Avatar URL";
+            _doctorViewModel.PhoneNumber = "New Phone";
+            _doctorViewModel.Mail = "new.email@example.com";
 
-            var (updateSuccessful, errorMessage) = await _viewModel.TryUpdateDoctorProfileAsync();
+            var (updateSuccessful, errorMessage) = await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
             Assert.IsTrue(updateSuccessful);
         }
@@ -732,16 +732,16 @@ namespace AdminDashboardTests
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenAllFieldsChanged_ReturnsNullErrorMessage()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            _viewModel.DoctorName = "New Doctor Name";
-            _viewModel.DepartmentId = 789;
-            _viewModel.DepartmentName = "New Department";
-            _viewModel.CareerInfo = "New Career Info";
-            _viewModel.AvatarUrl = "New Avatar URL";
-            _viewModel.PhoneNumber = "New Phone";
-            _viewModel.Mail = "new.email@example.com";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            _doctorViewModel.DoctorName = "New Doctor Name";
+            _doctorViewModel.DepartmentId = 789;
+            _doctorViewModel.DepartmentName = "New Department";
+            _doctorViewModel.CareerInfo = "New Career Info";
+            _doctorViewModel.AvatarUrl = "New Avatar URL";
+            _doctorViewModel.PhoneNumber = "New Phone";
+            _doctorViewModel.Mail = "new.email@example.com";
 
-            var (updateSuccessful, errorMessage) = await _viewModel.TryUpdateDoctorProfileAsync();
+            var (updateSuccessful, errorMessage) = await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
             Assert.IsNull(errorMessage);
         }
@@ -749,128 +749,128 @@ namespace AdminDashboardTests
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenAllFieldsChanged_CallsUpdateDoctorName()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            _viewModel.DoctorName = "New Doctor Name";
-            _viewModel.DepartmentId = 789;
-            _viewModel.DepartmentName = "New Department";
-            _viewModel.CareerInfo = "New Career Info";
-            _viewModel.AvatarUrl = "New Avatar URL";
-            _viewModel.PhoneNumber = "New Phone";
-            _viewModel.Mail = "new.email@example.com";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            _doctorViewModel.DoctorName = "New Doctor Name";
+            _doctorViewModel.DepartmentId = 789;
+            _doctorViewModel.DepartmentName = "New Department";
+            _doctorViewModel.CareerInfo = "New Career Info";
+            _doctorViewModel.AvatarUrl = "New Avatar URL";
+            _doctorViewModel.PhoneNumber = "New Phone";
+            _doctorViewModel.Mail = "new.email@example.com";
 
-            await _viewModel.TryUpdateDoctorProfileAsync();
+            await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
-            _mockDoctorService.Verify(s => s.UpdateDoctorName(TestUserId, "New Doctor Name"), Times.Once);
+            _mockDoctorService.Verify(s => s.UpdateDoctorName(_testUserId, "New Doctor Name"), Times.Once);
         }
 
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenAllFieldsChanged_CallsUpdateDepartment()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            _viewModel.DoctorName = "New Doctor Name";
-            _viewModel.DepartmentId = 789;
-            _viewModel.DepartmentName = "New Department";
-            _viewModel.CareerInfo = "New Career Info";
-            _viewModel.AvatarUrl = "New Avatar URL";
-            _viewModel.PhoneNumber = "New Phone";
-            _viewModel.Mail = "new.email@example.com";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            _doctorViewModel.DoctorName = "New Doctor Name";
+            _doctorViewModel.DepartmentId = 789;
+            _doctorViewModel.DepartmentName = "New Department";
+            _doctorViewModel.CareerInfo = "New Career Info";
+            _doctorViewModel.AvatarUrl = "New Avatar URL";
+            _doctorViewModel.PhoneNumber = "New Phone";
+            _doctorViewModel.Mail = "new.email@example.com";
 
-            await _viewModel.TryUpdateDoctorProfileAsync();
+            await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
-            _mockDoctorService.Verify(s => s.UpdateDepartment(TestUserId, 789), Times.Once);
+            _mockDoctorService.Verify(s => s.UpdateDepartment(_testUserId, 789), Times.Once);
         }
 
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenAllFieldsChanged_CallsUpdateCareerInfo()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            _viewModel.DoctorName = "New Doctor Name";
-            _viewModel.DepartmentId = 789;
-            _viewModel.DepartmentName = "New Department";
-            _viewModel.CareerInfo = "New Career Info";
-            _viewModel.AvatarUrl = "New Avatar URL";
-            _viewModel.PhoneNumber = "New Phone";
-            _viewModel.Mail = "new.email@example.com";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            _doctorViewModel.DoctorName = "New Doctor Name";
+            _doctorViewModel.DepartmentId = 789;
+            _doctorViewModel.DepartmentName = "New Department";
+            _doctorViewModel.CareerInfo = "New Career Info";
+            _doctorViewModel.AvatarUrl = "New Avatar URL";
+            _doctorViewModel.PhoneNumber = "New Phone";
+            _doctorViewModel.Mail = "new.email@example.com";
 
-            await _viewModel.TryUpdateDoctorProfileAsync();
+            await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
-            _mockDoctorService.Verify(s => s.UpdateCareerInfo(TestUserId, "New Career Info"), Times.Once);
+            _mockDoctorService.Verify(s => s.UpdateCareerInfo(_testUserId, "New Career Info"), Times.Once);
         }
 
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenAllFieldsChanged_CallsUpdateAvatarUrl()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            _viewModel.DoctorName = "New Doctor Name";
-            _viewModel.DepartmentId = 789;
-            _viewModel.DepartmentName = "New Department";
-            _viewModel.CareerInfo = "New Career Info";
-            _viewModel.AvatarUrl = "New Avatar URL";
-            _viewModel.PhoneNumber = "New Phone";
-            _viewModel.Mail = "new.email@example.com";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            _doctorViewModel.DoctorName = "New Doctor Name";
+            _doctorViewModel.DepartmentId = 789;
+            _doctorViewModel.DepartmentName = "New Department";
+            _doctorViewModel.CareerInfo = "New Career Info";
+            _doctorViewModel.AvatarUrl = "New Avatar URL";
+            _doctorViewModel.PhoneNumber = "New Phone";
+            _doctorViewModel.Mail = "new.email@example.com";
 
-            await _viewModel.TryUpdateDoctorProfileAsync();
+            await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
-            _mockDoctorService.Verify(s => s.UpdateAvatarUrl(TestUserId, "New Avatar URL"), Times.Once);
+            _mockDoctorService.Verify(s => s.UpdateAvatarUrl(_testUserId, "New Avatar URL"), Times.Once);
         }
 
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenAllFieldsChanged_CallsUpdatePhoneNumber()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            _viewModel.DoctorName = "New Doctor Name";
-            _viewModel.DepartmentId = 789;
-            _viewModel.DepartmentName = "New Department";
-            _viewModel.CareerInfo = "New Career Info";
-            _viewModel.AvatarUrl = "New Avatar URL";
-            _viewModel.PhoneNumber = "New Phone";
-            _viewModel.Mail = "new.email@example.com";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            _doctorViewModel.DoctorName = "New Doctor Name";
+            _doctorViewModel.DepartmentId = 789;
+            _doctorViewModel.DepartmentName = "New Department";
+            _doctorViewModel.CareerInfo = "New Career Info";
+            _doctorViewModel.AvatarUrl = "New Avatar URL";
+            _doctorViewModel.PhoneNumber = "New Phone";
+            _doctorViewModel.Mail = "new.email@example.com";
 
-            await _viewModel.TryUpdateDoctorProfileAsync();
+            await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
-            _mockDoctorService.Verify(s => s.UpdatePhoneNumber(TestUserId, "New Phone"), Times.Once);
+            _mockDoctorService.Verify(s => s.UpdatePhoneNumber(_testUserId, "New Phone"), Times.Once);
         }
 
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenAllFieldsChanged_CallsUpdateEmail()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            _viewModel.DoctorName = "New Doctor Name";
-            _viewModel.DepartmentId = 789;
-            _viewModel.DepartmentName = "New Department";
-            _viewModel.CareerInfo = "New Career Info";
-            _viewModel.AvatarUrl = "New Avatar URL";
-            _viewModel.PhoneNumber = "New Phone";
-            _viewModel.Mail = "new.email@example.com";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            _doctorViewModel.DoctorName = "New Doctor Name";
+            _doctorViewModel.DepartmentId = 789;
+            _doctorViewModel.DepartmentName = "New Department";
+            _doctorViewModel.CareerInfo = "New Career Info";
+            _doctorViewModel.AvatarUrl = "New Avatar URL";
+            _doctorViewModel.PhoneNumber = "New Phone";
+            _doctorViewModel.Mail = "new.email@example.com";
 
-            await _viewModel.TryUpdateDoctorProfileAsync();
+            await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
-            _mockDoctorService.Verify(s => s.UpdateEmail(TestUserId, "new.email@example.com"), Times.Once);
+            _mockDoctorService.Verify(s => s.UpdateEmail(_testUserId, "new.email@example.com"), Times.Once);
         }
 
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenAllFieldsChanged_CallsLogUpdate()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            _viewModel.DoctorName = "New Doctor Name";
-            _viewModel.DepartmentId = 789;
-            _viewModel.DepartmentName = "New Department";
-            _viewModel.CareerInfo = "New Career Info";
-            _viewModel.AvatarUrl = "New Avatar URL";
-            _viewModel.PhoneNumber = "New Phone";
-            _viewModel.Mail = "new.email@example.com";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            _doctorViewModel.DoctorName = "New Doctor Name";
+            _doctorViewModel.DepartmentId = 789;
+            _doctorViewModel.DepartmentName = "New Department";
+            _doctorViewModel.CareerInfo = "New Career Info";
+            _doctorViewModel.AvatarUrl = "New Avatar URL";
+            _doctorViewModel.PhoneNumber = "New Phone";
+            _doctorViewModel.Mail = "new.email@example.com";
 
-            await _viewModel.TryUpdateDoctorProfileAsync();
+            await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
-            _mockDoctorService.Verify(s => s.LogUpdate(TestUserId, ActionType.UPDATE_PROFILE), Times.Once);
+            _mockDoctorService.Verify(s => s.LogUpdate(_testUserId, ActionType.UPDATE_PROFILE), Times.Once);
         }
 
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenNoChanges_ReturnsFalse()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            var (updateSuccessful, errorMessage) = await _viewModel.TryUpdateDoctorProfileAsync();
+            var (updateSuccessful, errorMessage) = await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
             Assert.IsFalse(updateSuccessful);
         }
@@ -878,9 +878,9 @@ namespace AdminDashboardTests
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenNoChanges_ReturnsNullErrorMessage()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            var (updateSuccessful, errorMessage) = await _viewModel.TryUpdateDoctorProfileAsync();
+            var (updateSuccessful, errorMessage) = await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
             Assert.IsNull(errorMessage);
         }
@@ -888,9 +888,9 @@ namespace AdminDashboardTests
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenNoChanges_DoesNotCallUpdateDoctorName()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            await _viewModel.TryUpdateDoctorProfileAsync();
+            await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
             _mockDoctorService.Verify(s => s.UpdateDoctorName(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
         }
@@ -898,9 +898,9 @@ namespace AdminDashboardTests
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenNoChanges_DoesNotCallUpdateDepartment()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            await _viewModel.TryUpdateDoctorProfileAsync();
+            await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
             _mockDoctorService.Verify(s => s.UpdateDepartment(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
         }
@@ -908,9 +908,9 @@ namespace AdminDashboardTests
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenNoChanges_DoesNotCallUpdateCareerInfo()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            await _viewModel.TryUpdateDoctorProfileAsync();
+            await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
             _mockDoctorService.Verify(s => s.UpdateCareerInfo(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
         }
@@ -918,9 +918,9 @@ namespace AdminDashboardTests
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenNoChanges_DoesNotCallUpdateAvatarUrl()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            await _viewModel.TryUpdateDoctorProfileAsync();
+            await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
             _mockDoctorService.Verify(s => s.UpdateAvatarUrl(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
         }
@@ -928,9 +928,9 @@ namespace AdminDashboardTests
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenNoChanges_DoesNotCallUpdatePhoneNumber()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            await _viewModel.TryUpdateDoctorProfileAsync();
+            await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
             _mockDoctorService.Verify(s => s.UpdatePhoneNumber(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
         }
@@ -938,9 +938,9 @@ namespace AdminDashboardTests
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenNoChanges_DoesNotCallUpdateEmail()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            await _viewModel.TryUpdateDoctorProfileAsync();
+            await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
             _mockDoctorService.Verify(s => s.UpdateEmail(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
         }
@@ -948,9 +948,9 @@ namespace AdminDashboardTests
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenNoChanges_DoesNotCallLogUpdate()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
 
-            await _viewModel.TryUpdateDoctorProfileAsync();
+            await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
             _mockDoctorService.Verify(s => s.LogUpdate(It.IsAny<int>(), It.IsAny<ActionType>()), Times.Never);
         }
@@ -958,33 +958,33 @@ namespace AdminDashboardTests
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenOnlyDoctorNameChanged_CallsUpdateDoctorName()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            _viewModel.DoctorName = "New Doctor Name";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            _doctorViewModel.DoctorName = "New Doctor Name";
 
-            await _viewModel.TryUpdateDoctorProfileAsync();
+            await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
-            _mockDoctorService.Verify(s => s.UpdateDoctorName(TestUserId, "New Doctor Name"), Times.Once);
+            _mockDoctorService.Verify(s => s.UpdateDoctorName(_testUserId, "New Doctor Name"), Times.Once);
         }
 
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenOnlyPhoneNumberChanged_CallsUpdatePhoneNumber()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            _viewModel.PhoneNumber = "New Phone";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            _doctorViewModel.PhoneNumber = "New Phone";
 
-            await _viewModel.TryUpdateDoctorProfileAsync();
+            await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
-            _mockDoctorService.Verify(s => s.UpdatePhoneNumber(TestUserId, "New Phone"), Times.Once);
+            _mockDoctorService.Verify(s => s.UpdatePhoneNumber(_testUserId, "New Phone"), Times.Once);
         }
 
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenPartialChanges_ReturnsTrue()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            _viewModel.DoctorName = "New Doctor Name";
-            _viewModel.PhoneNumber = "New Phone";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            _doctorViewModel.DoctorName = "New Doctor Name";
+            _doctorViewModel.PhoneNumber = "New Phone";
 
-            var (updateSuccessful, errorMessage) = await _viewModel.TryUpdateDoctorProfileAsync();
+            var (updateSuccessful, errorMessage) = await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
             Assert.IsTrue(updateSuccessful);
         }
@@ -992,11 +992,11 @@ namespace AdminDashboardTests
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenPartialChanges_ReturnsNullErrorMessage()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            _viewModel.DoctorName = "New Doctor Name";
-            _viewModel.PhoneNumber = "New Phone";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            _doctorViewModel.DoctorName = "New Doctor Name";
+            _doctorViewModel.PhoneNumber = "New Phone";
 
-            var (updateSuccessful, errorMessage) = await _viewModel.TryUpdateDoctorProfileAsync();
+            var (updateSuccessful, errorMessage) = await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
             Assert.IsNull(errorMessage);
         }
@@ -1004,14 +1004,14 @@ namespace AdminDashboardTests
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenPartialChanges_OnlyCallsRelevantUpdateMethods()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            _viewModel.DoctorName = "New Doctor Name";
-            _viewModel.PhoneNumber = "New Phone";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            _doctorViewModel.DoctorName = "New Doctor Name";
+            _doctorViewModel.PhoneNumber = "New Phone";
 
-            await _viewModel.TryUpdateDoctorProfileAsync();
+            await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
-            _mockDoctorService.Verify(s => s.UpdateDoctorName(TestUserId, "New Doctor Name"), Times.Once);
-            _mockDoctorService.Verify(s => s.UpdatePhoneNumber(TestUserId, "New Phone"), Times.Once);
+            _mockDoctorService.Verify(s => s.UpdateDoctorName(_testUserId, "New Doctor Name"), Times.Once);
+            _mockDoctorService.Verify(s => s.UpdatePhoneNumber(_testUserId, "New Phone"), Times.Once);
             _mockDoctorService.Verify(s => s.UpdateDepartment(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
             _mockDoctorService.Verify(s => s.UpdateCareerInfo(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
             _mockDoctorService.Verify(s => s.UpdateAvatarUrl(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
@@ -1021,25 +1021,25 @@ namespace AdminDashboardTests
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenPartialChanges_CallsLogUpdate()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            _viewModel.DoctorName = "New Doctor Name";
-            _viewModel.PhoneNumber = "New Phone";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            _doctorViewModel.DoctorName = "New Doctor Name";
+            _doctorViewModel.PhoneNumber = "New Phone";
 
-            await _viewModel.TryUpdateDoctorProfileAsync();
+            await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
-            _mockDoctorService.Verify(s => s.LogUpdate(TestUserId, ActionType.UPDATE_PROFILE), Times.Once);
+            _mockDoctorService.Verify(s => s.LogUpdate(_testUserId, ActionType.UPDATE_PROFILE), Times.Once);
         }
 
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenExceptionOccurs_ReturnsFalse()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            _viewModel.DoctorName = "New Doctor Name";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            _doctorViewModel.DoctorName = "New Doctor Name";
 
             _mockDoctorService.Setup(s => s.UpdateDoctorName(It.IsAny<int>(), It.IsAny<string>()))
                 .ThrowsAsync(new Exception("Test exception"));
 
-            var (updateSuccessful, errorMessage) = await _viewModel.TryUpdateDoctorProfileAsync();
+            var (updateSuccessful, errorMessage) = await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
             Assert.IsFalse(updateSuccessful);
         }
@@ -1047,13 +1047,13 @@ namespace AdminDashboardTests
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenExceptionOccurs_ReturnsErrorMessage()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            _viewModel.DoctorName = "New Doctor Name";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            _doctorViewModel.DoctorName = "New Doctor Name";
 
             _mockDoctorService.Setup(s => s.UpdateDoctorName(It.IsAny<int>(), It.IsAny<string>()))
                 .ThrowsAsync(new Exception("Test exception"));
 
-            var (updateSuccessful, errorMessage) = await _viewModel.TryUpdateDoctorProfileAsync();
+            var (updateSuccessful, errorMessage) = await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
             Assert.AreEqual("Test exception", errorMessage);
         }
@@ -1061,16 +1061,16 @@ namespace AdminDashboardTests
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenExceptionOccurs_RevertsToDoctorNameOriginalValue()
         {
-            await _viewModel.LoadDoctorInformationAsync(TestUserId);
-            string originalDoctorName = _viewModel.OriginalDoctor.DoctorName;
-            _viewModel.DoctorName = "New Doctor Name";
+            await _doctorViewModel.LoadDoctorInformationAsync(_testUserId);
+            string originalDoctorName = _doctorViewModel.OriginalDoctor.DoctorName;
+            _doctorViewModel.DoctorName = "New Doctor Name";
 
             _mockDoctorService.Setup(s => s.UpdateDoctorName(It.IsAny<int>(), It.IsAny<string>()))
                 .ThrowsAsync(new Exception("Test exception"));
 
-            await _viewModel.TryUpdateDoctorProfileAsync();
+            await _doctorViewModel.TryUpdateDoctorProfileAsync();
 
-            Assert.AreEqual(originalDoctorName, _viewModel.DoctorName);
+            Assert.AreEqual(originalDoctorName, _doctorViewModel.DoctorName);
         }
 
         [Test]
@@ -1080,7 +1080,7 @@ namespace AdminDashboardTests
                 .ThrowsAsync(new Exception("Test exception"));
 
             var exception = Assert.ThrowsAsync<Exception>(async () =>
-                await _viewModel.UpdateDoctorNameAsync("New Name"));
+                await _doctorViewModel.UpdateDoctorNameAsync("New Name"));
 
             Assert.AreEqual("Test exception", exception.Message);
         }
@@ -1091,10 +1091,10 @@ namespace AdminDashboardTests
             bool loadingDuringExecution = false;
 
             _mockDoctorService.Setup(s => s.UpdateDoctorName(It.IsAny<int>(), It.IsAny<string>()))
-                .Callback(() => loadingDuringExecution = _viewModel.IsLoading)
+                .Callback(() => loadingDuringExecution = _doctorViewModel.IsLoading)
                 .ReturnsAsync(true);
 
-            await _viewModel.UpdateDoctorNameAsync("New Name");
+            await _doctorViewModel.UpdateDoctorNameAsync("New Name");
 
             Assert.IsTrue(loadingDuringExecution);
         }
@@ -1102,9 +1102,9 @@ namespace AdminDashboardTests
         [Test]
         public async Task UpdateDoctorNameAsync_AfterExecution_SetsIsLoadingToFalse()
         {
-            await _viewModel.UpdateDoctorNameAsync("New Name");
+            await _doctorViewModel.UpdateDoctorNameAsync("New Name");
 
-            Assert.IsFalse(_viewModel.IsLoading);
+            Assert.IsFalse(_doctorViewModel.IsLoading);
         }
 
         [Test]
@@ -1113,7 +1113,7 @@ namespace AdminDashboardTests
             _mockDoctorService.Setup(s => s.UpdateDoctorName(It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(false);
 
-            var result = await _viewModel.UpdateDoctorNameAsync("New Name");
+            var result = await _doctorViewModel.UpdateDoctorNameAsync("New Name");
 
             Assert.IsFalse(result);
         }
@@ -1121,25 +1121,25 @@ namespace AdminDashboardTests
         [Test]
         public async Task UpdateDoctorNameAsync_WhenServiceReturnsFalse_DoesNotUpdateDoctorName()
         {
-            string originalDoctorName = _viewModel.DoctorName;
+            string originalDoctorName = _doctorViewModel.DoctorName;
             string testName = "New Name";
 
             _mockDoctorService.Setup(s => s.UpdateDoctorName(It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(false);
 
-            await _viewModel.UpdateDoctorNameAsync(testName);
+            await _doctorViewModel.UpdateDoctorNameAsync(testName);
 
-            Assert.AreEqual(originalDoctorName, _viewModel.DoctorName);
+            Assert.AreEqual(originalDoctorName, _doctorViewModel.DoctorName);
         }
 
         [Test]
         public void PropertyChangedEvent_WhenUserIdChanges_RaisesPropertyChangedEvent()
         {
             var propertiesChanged = new System.Collections.Generic.List<string>();
-            _viewModel.PropertyChanged += (sender, args) =>
+            _doctorViewModel.PropertyChanged += (sender, args) =>
                 propertiesChanged.Add(args.PropertyName);
 
-            _viewModel.UserId = 456;
+            _doctorViewModel.UserId = 456;
 
             Assert.Contains("UserId", propertiesChanged);
         }
@@ -1148,10 +1148,10 @@ namespace AdminDashboardTests
         public void PropertyChangedEvent_WhenDoctorNameChanges_RaisesPropertyChangedEvent()
         {
             var propertiesChanged = new System.Collections.Generic.List<string>();
-            _viewModel.PropertyChanged += (sender, args) =>
+            _doctorViewModel.PropertyChanged += (sender, args) =>
                 propertiesChanged.Add(args.PropertyName);
 
-            _viewModel.DoctorName = "New Name";
+            _doctorViewModel.DoctorName = "New Name";
 
             Assert.Contains("DoctorName", propertiesChanged);
         }
@@ -1160,10 +1160,10 @@ namespace AdminDashboardTests
         public void PropertyChangedEvent_WhenDepartmentIdChanges_RaisesPropertyChangedEvent()
         {
             var propertiesChanged = new System.Collections.Generic.List<string>();
-            _viewModel.PropertyChanged += (sender, args) =>
+            _doctorViewModel.PropertyChanged += (sender, args) =>
                 propertiesChanged.Add(args.PropertyName);
 
-            _viewModel.DepartmentId = 789;
+            _doctorViewModel.DepartmentId = 789;
 
             Assert.Contains("DepartmentId", propertiesChanged);
         }
@@ -1172,10 +1172,10 @@ namespace AdminDashboardTests
         public void PropertyChangedEvent_WhenDepartmentNameChanges_RaisesPropertyChangedEvent()
         {
             var propertiesChanged = new System.Collections.Generic.List<string>();
-            _viewModel.PropertyChanged += (sender, args) =>
+            _doctorViewModel.PropertyChanged += (sender, args) =>
                 propertiesChanged.Add(args.PropertyName);
 
-            _viewModel.DepartmentName = "New Department";
+            _doctorViewModel.DepartmentName = "New Department";
 
             Assert.Contains("DepartmentName", propertiesChanged);
         }
@@ -1184,10 +1184,10 @@ namespace AdminDashboardTests
         public void PropertyChangedEvent_WhenRatingChanges_RaisesPropertyChangedEvent()
         {
             var propertiesChanged = new System.Collections.Generic.List<string>();
-            _viewModel.PropertyChanged += (sender, args) =>
+            _doctorViewModel.PropertyChanged += (sender, args) =>
                 propertiesChanged.Add(args.PropertyName);
 
-            _viewModel.Rating = 5.0;
+            _doctorViewModel.Rating = 5.0;
 
             Assert.Contains("Rating", propertiesChanged);
         }
@@ -1196,10 +1196,10 @@ namespace AdminDashboardTests
         public void PropertyChangedEvent_WhenCareerInfoChanges_RaisesPropertyChangedEvent()
         {
             var propertiesChanged = new System.Collections.Generic.List<string>();
-            _viewModel.PropertyChanged += (sender, args) =>
+            _doctorViewModel.PropertyChanged += (sender, args) =>
                 propertiesChanged.Add(args.PropertyName);
 
-            _viewModel.CareerInfo = "New Career Info";
+            _doctorViewModel.CareerInfo = "New Career Info";
 
             Assert.Contains("CareerInfo", propertiesChanged);
         }
@@ -1208,10 +1208,10 @@ namespace AdminDashboardTests
         public void PropertyChangedEvent_WhenAvatarUrlChanges_RaisesPropertyChangedEvent()
         {
             var propertiesChanged = new System.Collections.Generic.List<string>();
-            _viewModel.PropertyChanged += (sender, args) =>
+            _doctorViewModel.PropertyChanged += (sender, args) =>
                 propertiesChanged.Add(args.PropertyName);
 
-            _viewModel.AvatarUrl = "New Avatar URL";
+            _doctorViewModel.AvatarUrl = "New Avatar URL";
 
             Assert.Contains("AvatarUrl", propertiesChanged);
         }
@@ -1220,10 +1220,10 @@ namespace AdminDashboardTests
         public void PropertyChangedEvent_WhenPhoneNumberChanges_RaisesPropertyChangedEvent()
         {
             var propertiesChanged = new System.Collections.Generic.List<string>();
-            _viewModel.PropertyChanged += (sender, args) =>
+            _doctorViewModel.PropertyChanged += (sender, args) =>
                 propertiesChanged.Add(args.PropertyName);
 
-            _viewModel.PhoneNumber = "New Phone";
+            _doctorViewModel.PhoneNumber = "New Phone";
 
             Assert.Contains("PhoneNumber", propertiesChanged);
         }
@@ -1232,10 +1232,10 @@ namespace AdminDashboardTests
         public void PropertyChangedEvent_WhenMailChanges_RaisesPropertyChangedEvent()
         {
             var propertiesChanged = new System.Collections.Generic.List<string>();
-            _viewModel.PropertyChanged += (sender, args) =>
+            _doctorViewModel.PropertyChanged += (sender, args) =>
                 propertiesChanged.Add(args.PropertyName);
 
-            _viewModel.Mail = "new.email@example.com";
+            _doctorViewModel.Mail = "new.email@example.com";
 
             Assert.Contains("Mail", propertiesChanged);
         }
@@ -1244,10 +1244,10 @@ namespace AdminDashboardTests
         public void PropertyChangedEvent_WhenIsLoadingChanges_RaisesPropertyChangedEvent()
         {
             var propertiesChanged = new System.Collections.Generic.List<string>();
-            _viewModel.PropertyChanged += (sender, args) =>
+            _doctorViewModel.PropertyChanged += (sender, args) =>
                 propertiesChanged.Add(args.PropertyName);
 
-            _viewModel.IsLoading = true;
+            _doctorViewModel.IsLoading = true;
 
             Assert.Contains("IsLoading", propertiesChanged);
         }
@@ -1255,7 +1255,7 @@ namespace AdminDashboardTests
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenOriginalDoctorIsNull_ReturnsFalse()
         {
-            var viewModel = new DoctorViewModel(_mockDoctorService.Object, TestUserId);
+            var viewModel = new DoctorViewModel(_mockDoctorService.Object, _testUserId);
             var property = typeof(DoctorViewModel).GetProperty("OriginalDoctor");
             property.SetValue(viewModel, null);
 
@@ -1267,7 +1267,7 @@ namespace AdminDashboardTests
         [Test]
         public async Task TryUpdateDoctorProfileAsync_WhenOriginalDoctorIsNull_ReturnsCorrectErrorMessage()
         {
-            var viewModel = new DoctorViewModel(_mockDoctorService.Object, TestUserId);
+            var viewModel = new DoctorViewModel(_mockDoctorService.Object, _testUserId);
             var property = typeof(DoctorViewModel).GetProperty("OriginalDoctor");
             property.SetValue(viewModel, null);
 

@@ -1,10 +1,9 @@
-﻿using Hospital.DatabaseServices;
-using Hospital.Models;
+﻿using Hospital.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Hospital.Doctor_Dashboard
+namespace Hospital.Services
 {
     public interface IDoctorService
     {

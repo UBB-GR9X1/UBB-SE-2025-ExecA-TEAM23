@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using Hospital.Managers;
 using Hospital.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -16,7 +15,8 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using System.Windows;
 using Hospital.Helpers;
-using Hospital.DatabaseServices;
+using Hospital.Repositories;
+using Hospital.Services;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -28,12 +28,12 @@ namespace Hospital.Views
         private readonly LoggerViewModel _loggerViewModel;
 
         // In LoggerView constructor
-        public LoggerView(ILoggerDatabaseService loggerDatabaseService)
+        public LoggerView(ILoggerRepository loggerRepository)
         {
             this.InitializeComponent();
 
-            LoggerManagerModel loggerManagerModel = new LoggerManagerModel(loggerDatabaseService);
-            _loggerViewModel = new LoggerViewModel(loggerManagerModel);
+            LoggerService loggerService = new LoggerService(loggerRepository);
+            _loggerViewModel = new LoggerViewModel(loggerService);
 
             this.BindUserInterface();
             this.LoadInitialLogs();

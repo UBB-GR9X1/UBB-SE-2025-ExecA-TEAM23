@@ -1,22 +1,22 @@
 using Hospital.Models;
-using Hospital.Services;
+using Hospital.Repositories;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
-public class DepartmentManagerModel
+public class DepartmentService
 {
     private ObservableCollection<Department> s_departmentList;
-    private DepartmentsDatabaseService _departmentsDBService;
+    private DepartmentRepository _departmentRepository;
 
-    public DepartmentManagerModel(DepartmentsDatabaseService departmentsDBService)
+    public DepartmentService(DepartmentRepository departmentsDBService)
     {
-        _departmentsDBService = departmentsDBService;
+        _departmentRepository = departmentsDBService;
         s_departmentList = new ObservableCollection<Department>();
 
     }
     public async Task LoadDepartments()
     {
-        var departments = await _departmentsDBService.GetDepartmentsFromDB();
+        var departments = await _departmentRepository.GetDepartmentsFromDB();
         s_departmentList.Clear();
         foreach (var department in departments)
         {

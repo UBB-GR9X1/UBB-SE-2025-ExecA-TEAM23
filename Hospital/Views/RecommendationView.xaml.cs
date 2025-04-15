@@ -1,9 +1,8 @@
+using Hospital.Repositories;
 using Hospital.Services;
 
 namespace Hospital.Views
 {
-    using Hospital.DatabaseServices;
-    using Hospital.Managers;
     using Hospital.Models;
     using Hospital.ViewModels;
     using Microsoft.UI.Xaml.Controls;
@@ -18,7 +17,7 @@ namespace Hospital.Views
         /// </summary>
         public RecommendationView()
         {
-            var doctorDbService = new DoctorsDatabaseHelper();
+            var doctorDbService = new DoctorRepository();
             DoctorService doctorManager = new DoctorService(doctorDbService);
             RecommendationSystemModel recommendationSystem = new RecommendationSystemModel(doctorManager);
 

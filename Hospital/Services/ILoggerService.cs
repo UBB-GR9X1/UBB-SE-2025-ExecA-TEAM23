@@ -1,8 +1,8 @@
-﻿// <copyright file="ILoggerManagerModel.cs"  company="PlaceholderCompany">
+﻿// <copyright file="ILoggerService.cs"  company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace Hospital.Managers
+namespace Hospital.Services
 {
     using System;
     using System.Collections.Generic;
@@ -12,7 +12,7 @@ namespace Hospital.Managers
     /// <summary>
     /// Interface for managing system logging operations.
     /// </summary>
-    public interface ILoggerManagerModel
+    public interface ILoggerService
     {
         /// <summary>
         /// Retrieves all logs from the system.

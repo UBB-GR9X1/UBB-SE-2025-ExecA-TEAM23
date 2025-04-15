@@ -1,18 +1,17 @@
-﻿using Hospital.Configs;
-using Hospital.Models;
-using Microsoft.Data.SqlClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Hospital.Configs;
+using Hospital.Models;
+using Microsoft.Data.SqlClient;
 
-namespace Hospital.Services
+namespace Hospital.Repositories
 {
-    public class DoctorsDatabaseHelper : IDoctorsDatabaseHelper
+    public class DoctorRepository : IDoctorRepository
     {
         private readonly Config _config;
 
-        public DoctorsDatabaseHelper()
+        public DoctorRepository()
         {
             _config = Config.GetInstance();
         }

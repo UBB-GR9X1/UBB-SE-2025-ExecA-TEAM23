@@ -1,28 +1,28 @@
-using Hospital.Managers;
 using Hospital.Models;
 using Hospital.ViewModels;
-using Hospital.DatabaseServices;
 using Hospital.Exceptions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Threading.Tasks;
 using System.Security.Authentication;
+using Hospital.Repositories;
+using Hospital.Services;
 namespace Hospital.Tests.IntegrationTest
 {
     [TestClass]
     public class AuthViewModelLoggingIntegrationTests
     {
-        private Mock<ILogInDatabaseService> _mockLoginService;
-        private Mock<IAuthManagerModel> _mockAuthManager;
+        private Mock<ILogInRepository> _mockLoggerRepository;
+        private Mock<IAuthService> _mockAuthService;
         private AuthViewModel _authViewModel;
 
         [TestInitialize]
         public void Setup()
         {
-            _mockLoginService = new Mock<ILogInDatabaseService>();
-            _mockAuthManager = new Mock<IAuthManagerModel>();
-            _authViewModel = new AuthViewModel(_mockAuthManager.Object);
+            _mockLoggerRepository = new Mock<ILogInRepository>();
+            _mockAuthService = new Mock<IAuthService>();
+            _authViewModel = new AuthViewModel(_mockAuthService.Object);
         }
 
         [TestMethod]
@@ -35,19 +35,19 @@ namespace Hospital.Tests.IntegrationTest
 
             var userModel = new UserAuthModel(userId, username, password, "test@example.com", "Patient");
 
-            _mockAuthManager.Setup(manage => manage.LoadUserByUsername(username))
+            _mockAuthService.Setup(manage => manage.LoadUserByUsername(username))
                 .ReturnsAsync(true);
-            _mockAuthManager.Setup(manage => manage.VerifyPassword(password))
+            _mockAuthService.Setup(manage => manage.VerifyPassword(password))
                 .ReturnsAsync(true);
-            _mockAuthManager.Setup(manage => manage.allUserInformation)
+            _mockAuthService.Setup(manage => manage.allUserInformation)
                 .Returns(userModel);
 
             // Act
             await _authViewModel.Login(username, password);
 
             // Assert
-            _mockAuthManager.Verify(manage => manage.LoadUserByUsername(username), Times.Once);
-            _mockAuthManager.Verify(manage => manage.VerifyPassword(password), Times.Once);
+            _mockAuthService.Verify(manage => manage.LoadUserByUsername(username), Times.Once);
+            _mockAuthService.Verify(manage => manage.VerifyPassword(password), Times.Once);
         }
 
         [TestMethod]
@@ -60,19 +60,19 @@ namespace Hospital.Tests.IntegrationTest
 
             var userModel = new UserAuthModel(userId, username, "correct_password", "test@example.com", "Patient");
 
-            _mockAuthManager.Setup(manage => manage.LoadUserByUsername(username))
+            _mockAuthService.Setup(manage => manage.LoadUserByUsername(username))
                 .ReturnsAsync(true);
-            _mockAuthManager.Setup(manage => manage.VerifyPassword(password))
+            _mockAuthService.Setup(manage => manage.VerifyPassword(password))
                 .ReturnsAsync(false);
-            _mockAuthManager.Setup(manage => manage.allUserInformation)
+            _mockAuthService.Setup(manage => manage.allUserInformation)
                 .Returns(userModel);
 
             // Act & Assert
             await Assert.ThrowsExceptionAsync<Exceptions.AuthenticationException>(async () =>
                 await _authViewModel.Login(username, password));
 
-            _mockAuthManager.Verify(manage => manage.LoadUserByUsername(username), Times.Once);
-            _mockAuthManager.Verify(manage => manage.VerifyPassword(password), Times.Once);
+            _mockAuthService.Verify(manage => manage.LoadUserByUsername(username), Times.Once);
+            _mockAuthService.Verify(manage => manage.VerifyPassword(password), Times.Once);
         }
 
         [TestMethod]
@@ -82,29 +82,29 @@ namespace Hospital.Tests.IntegrationTest
             const string username = "nonexistent";
             const string password = "password";
 
-            _mockAuthManager.Setup(manage => manage.LoadUserByUsername(username))
+            _mockAuthService.Setup(manage => manage.LoadUserByUsername(username))
                 .ReturnsAsync(false);
 
             // Act & Assert
             await Assert.ThrowsExceptionAsync<Exceptions.AuthenticationException>(async () =>
                 await _authViewModel.Login(username, password));
 
-            _mockAuthManager.Verify(manage => manage.LoadUserByUsername(username), Times.Once);
-            _mockAuthManager.Verify(manage => manage.VerifyPassword(It.IsAny<string>()), Times.Never);
+            _mockAuthService.Verify(manage => manage.LoadUserByUsername(username), Times.Once);
+            _mockAuthService.Verify(manage => manage.VerifyPassword(It.IsAny<string>()), Times.Never);
         }
 
         [TestMethod]
         public async Task LogoutAction_CheckIfLogoutWorks_LogLogoutAction()
         {
             // Arrange
-            _mockAuthManager.Setup(manage => manage.Logout())
+            _mockAuthService.Setup(manage => manage.Logout())
                 .ReturnsAsync(true);
 
             // Act
             await _authViewModel.Logout();
 
             // Assert
-            _mockAuthManager.Verify(manage => manage.Logout(), Times.Once);
+            _mockAuthService.Verify(manage => manage.Logout(), Times.Once);
         }
 
         [TestMethod]
@@ -120,14 +120,14 @@ namespace Hospital.Tests.IntegrationTest
                 birthDate, validCnp, BloodType.A_Positive,
                 "1234567890", 70, 175);
 
-            _mockAuthManager.Setup(manage => manage.CreateAccount(model))
+            _mockAuthService.Setup(manage => manage.CreateAccount(model))
                 .ReturnsAsync(true);
 
             // Act
             await _authViewModel.CreateAccount(model);
 
             // Assert
-            _mockAuthManager.Verify(manage => manage.CreateAccount(model), Times.Once);
+            _mockAuthService.Verify(manage => manage.CreateAccount(model), Times.Once);
         }
 
         [TestMethod]
@@ -137,7 +137,7 @@ namespace Hospital.Tests.IntegrationTest
             const string expectedRole = "Doctor";
             var userModel = new UserAuthModel(1, "testuser", "password", "test@example.com", expectedRole);
 
-            _mockAuthManager.Setup(manage => manage.allUserInformation)
+            _mockAuthService.Setup(manage => manage.allUserInformation)
                 .Returns(userModel);
 
             // Act

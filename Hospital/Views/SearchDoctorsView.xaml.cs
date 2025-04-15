@@ -1,5 +1,4 @@
-using Hospital.DatabaseServices;
-using Hospital.Managers;
+using Hospital.Repositories;
 using Hospital.Models;
 using Hospital.ViewModels;
 using Microsoft.UI.Xaml;
@@ -9,6 +8,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Hospital.Repositories;
 using Hospital.Services;
 
 namespace Hospital.Views
@@ -25,7 +25,7 @@ namespace Hospital.Views
         {
             this.InitializeComponent();
 
-            var doctorSearchService = new SearchDoctorsService(new DoctorsDatabaseHelper());
+            var doctorSearchService = new SearchDoctorsService(new DoctorRepository());
             ViewModel = new SearchDoctorsViewModel(doctorSearchService, string.Empty);
 
             this.DataContext = ViewModel;

@@ -1,18 +1,18 @@
-﻿// <copyright file="ILoggerDatabaseService.cs"  company="PlaceholderCompany">
+﻿// <copyright file="ILoggerRepository.cs"  company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace Hospital.DatabaseServices
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using Hospital.Models;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Hospital.Models;
 
+namespace Hospital.Repositories
+{
     /// <summary>
     /// Interface for logger service operations.
     /// </summary>
-    public interface ILoggerDatabaseService
+    public interface ILoggerRepository
     {
         /// <summary>
         /// Gets all logs from the system.

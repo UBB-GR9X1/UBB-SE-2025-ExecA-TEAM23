@@ -1,5 +1,5 @@
-﻿using Hospital.Managers;
-using Hospital.Models;
+﻿using Hospital.Models;
+using Hospital.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;

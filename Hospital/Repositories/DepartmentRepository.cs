@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 using Hospital.Configs;
 using Hospital.Models;
 using Microsoft.Data.SqlClient;
-namespace Hospital.Services
+namespace Hospital.Repositories
 {
-    public class DepartmentsDatabaseService
+    public class DepartmentRepository
     {
         private readonly Config configs;
 
-        public DepartmentsDatabaseService()
+        public DepartmentRepository()
         {
             configs = Config.GetInstance();
         }
