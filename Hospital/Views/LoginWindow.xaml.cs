@@ -2,6 +2,8 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
+using Hospital.Services;
+
 namespace Hospital
 {
     using System;

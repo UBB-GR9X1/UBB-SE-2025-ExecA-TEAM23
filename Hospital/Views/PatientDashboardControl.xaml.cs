@@ -145,7 +145,7 @@ namespace Hospital.Views
             await dialog.ShowAsync();
         }
 
-        private void Logout(object sender, RoutedEventArgs e)
+        private void OnLogoutButtonClick(object sender, RoutedEventArgs e)
         {
             LogoutButtonClicked?.Invoke();
         }
