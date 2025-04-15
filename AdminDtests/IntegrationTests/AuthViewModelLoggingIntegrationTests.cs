@@ -26,7 +26,7 @@ namespace Hospital.Tests.IntegrationTest
         }
 
         [TestMethod]
-        public async Task Login_WhenCredentialsAreValid_ShouldLogLoginAction()
+        public async Task LoginValid_ValidateCredentials_LogLoginAction()
         {
             // Arrange
             const string username = "testuser";
@@ -51,7 +51,7 @@ namespace Hospital.Tests.IntegrationTest
         }
 
         [TestMethod]
-        public async Task Login_WhenPasswordIsInvalid_ShouldNotLogLoginAction()
+        public async Task LoginInvalid_IfPasswordIsInvalid_NotLogLoginAction()
         {
             // Arrange
             const string username = "testuser";
@@ -76,7 +76,7 @@ namespace Hospital.Tests.IntegrationTest
         }
 
         [TestMethod]
-        public async Task Login_WhenUserDoesNotExist_ShouldNotLogLoginAction()
+        public async Task LoginNonExistentUser_ChecksForAUserDoesNotExist_NotLogLoginAction()
         {
             // Arrange
             const string username = "nonexistent";
@@ -94,7 +94,7 @@ namespace Hospital.Tests.IntegrationTest
         }
 
         [TestMethod]
-        public async Task Logout_WhenUserIsLoggedIn_ShouldLogLogoutAction()
+        public async Task LogoutAction_CheckIfLogoutWorks_LogLogoutAction()
         {
             // Arrange
             _mockAuthManager.Setup(manage => manage.Logout())
@@ -108,7 +108,7 @@ namespace Hospital.Tests.IntegrationTest
         }
 
         [TestMethod]
-        public async Task CreateAccount_WhenAccountCreationSucceeds_ShouldLogCreateAndLoginActions()
+        public async Task CreateAccount_CreationAnAccountWithValidData_LogCreateAndLoginActions()
         {
             // Arrange
             const int userId = 1;
@@ -131,7 +131,7 @@ namespace Hospital.Tests.IntegrationTest
         }
 
         [TestMethod]
-        public void GetUserRole_ShouldReturnCurrentUserRole()
+        public void GetUserRole_GetsUserRole_CurrentUserRole()
         {
             // Arrange
             const string expectedRole = "Doctor";
