@@ -35,14 +35,14 @@ namespace Hospital.Configs
             return configurationInstance;
         }
 
-        static public readonly string databaseConnection = "Data Source=DESKTOP-HGL99LI\\SQLEXPRESS;Initial Catalog=HospitalApp;Integrated Security=True;TrustServerCertificate=True";
+        private readonly string databaseConnection = "Data Source=DESKTOP-HGL99LI\\SQLEXPRESS;Initial Catalog=HospitalApp;Integrated Security=True;TrustServerCertificate=True";
 
         /// <summary>
         /// Gets the database connection.
         /// </summary>
         public virtual string DatabaseConnection
         {
-            get { return databaseConnection; }
+            get { return this.databaseConnection; }
         }
 
         /// <summary>

@@ -16,7 +16,7 @@ namespace Hospital.Tests.IntegrationTest
     {
         private Mock<IConfigProvider> _mockConfigProvider;
         private LoggerRepository _loggerRepository;
-        private string _testConnectionString = Config.databaseConnection;
+        private string _testConnectionString = Config.GetInstance().GetDatabaseConnection();
 
         [TestInitialize]
         public void Setup()
