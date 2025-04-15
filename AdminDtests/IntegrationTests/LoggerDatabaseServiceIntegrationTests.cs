@@ -38,7 +38,7 @@ namespace Hospital.Tests.IntegrationTest
         }
 
         [TestMethod]
-        public async Task GetAllLogs_ReturnsAllLogs()
+        public async Task GetLogs_GetAllLogs_ReturnsAllLogs()
         {
             // Arrange
             await InsertTestLogs();
@@ -52,7 +52,7 @@ namespace Hospital.Tests.IntegrationTest
         }
 
         [TestMethod]
-        public async Task GetLogsByUserId_ValidId_ReturnsUserLogs()
+        public async Task GetLogsByUser_GetLogsByUserId_ReturnsUserLogs()
         {
             // Arrange
             const int testUserId = 99;
@@ -71,7 +71,7 @@ namespace Hospital.Tests.IntegrationTest
         }
 
         [TestMethod]
-        public async Task GetLogsByActionType_ValidType_ReturnsFilteredLogs()
+        public async Task GetLogsByAction_GetLogsByActionType_ReturnsFilteredLogs()
         {
             // Arrange
             await InsertLogForUser(1, ActionType.LOGIN);
@@ -90,7 +90,7 @@ namespace Hospital.Tests.IntegrationTest
         }
 
         [TestMethod]
-        public async Task LogAction_ValidData_InsertsLog()
+        public async Task LogAction_ChecksLogAction_InsertsLog()
         {
             // Arrange
             const int testUserId = 100;
