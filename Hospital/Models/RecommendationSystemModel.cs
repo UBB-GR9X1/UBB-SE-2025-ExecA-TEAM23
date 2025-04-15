@@ -1,127 +1,109 @@
-﻿using Hospital.Managers;
-using Hospital.Models;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-
-public class RecommendationSystemModel
+﻿namespace Hospital.Models
 {
-    private readonly DoctorService _doctorManager;
-    private Dictionary<string, Dictionary<int, int>> _symptomDepartmentScores;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Hospital.Managers;
 
-    public RecommendationSystemModel(DoctorService doctorManager)
+    /// <summary>
+    /// The model of our recommendation system.
+    /// </summary>
+    public class RecommendationSystemModel
     {
-        _doctorManager = doctorManager;
-        _symptomDepartmentScores = new Dictionary<string, Dictionary<int, int>>();
-        InitializeSymptomScores();
-    }
+        private const int Cardiology = 1;
+        private const int Neurology = 2;
+        private const int Pediatrics = 3;
+        private const int Ophthalmology = 4;
+        private const int Gastroenterology = 5;
+        private const int Orthopedics = 6;
+        private const int Dermatology = 7;
 
-    private void InitializeSymptomScores()
-    {
-        _symptomDepartmentScores = new Dictionary<string, Dictionary<int, int>>
+        private readonly DoctorService doctorService;
+        private Dictionary<string, Dictionary<int, int>> symptomToDepartmentScoreMapping;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RecommendationSystemModel"/> class.
+        /// </summary>
+        /// <param name="doctorService">The doctor service containing all methods needed to find the optimal department.</param>
+        public RecommendationSystemModel(DoctorService doctorService)
         {
-            // Symptom Start Scores (less department dominance)
-            { "Suddenly", new Dictionary<int, int> { { 1, 3 }, { 2, 3 }, { 3, 2 } } }, // Cardio/Neuro close
-            { "After Waking Up", new Dictionary<int, int> { { 2, 0 }, { 5, 3 } } }, // Neuro now leads
-            { "After Incident", new Dictionary<int, int> { { 6, 4 }, { 2, 3 } } }, // Ortho/Neuro compete
-            { "After Meeting Someone", new Dictionary<int, int> { { 7, 5 }, { 4, 2 } } }, // Derm + Ophthalmology
-            { "After Ingestion", new Dictionary<int, int> { { 5, 4 }, { 3, 4 }, { 1, 2 } } }, // Gastro/Peds/Cardio
+            this.doctorService = doctorService;
+            this.symptomToDepartmentScoreMapping = new Dictionary<string, Dictionary<int, int>>();
+            this.InitializeSymptomToDepartmentScores();
+        }
 
-            // Discomfort Areas (balanced overlaps)
-            { "Eyes", new Dictionary<int, int> { { 4, 5 }, { 2, 3 }, { 7, 2 } } }, // Eye + Neuro + Derm
-            { "Head", new Dictionary<int, int> { { 2, 5 }, { 1, 4 }, { 3, 3 } } }, // Neuro > Cardio > Peds
-            { "Chest", new Dictionary<int, int> { { 1, 6 }, { 2, 0 }, { 5, 2 } } }, // Cardio primary
-            { "Stomach", new Dictionary<int, int> { { 5, 5 }, { 3, 4 }, { 2, 2 } } }, // Gastro > Peds > Neuro
-            { "Arm", new Dictionary<int, int> { { 6, 5 }, { 7, 3 }, { 2, 2 } } }, // Ortho > Derm > Neuro
-            { "Leg", new Dictionary<int, int> { { 6, 5 }, { 7, 3 }, { 1, 2 } } }, // Ortho > Derm > Cardio
-
-            // Symptom Types (cross-department relevance)
-            { "Pain", new Dictionary<int, int> { { 1, 4 }, { 6, 4 }, { 2, 0 } } }, // Cardio/Ortho/Neuro
-            { "Numbness", new Dictionary<int, int> { { 2, 5 }, { 6, 3 }, { 1, 2 } } }, // Neuro focus
-            { "Inflammation", new Dictionary<int, int> { { 7, 4 }, { 5, 4 }, { 4, 2 } } }, // Derm/Gastro
-            { "Tenderness", new Dictionary<int, int> { { 6, 4 }, { 5, 3 }, { 2, 2 } } }, // Ortho/Gastro/Neuro
-            { "Coloration", new Dictionary<int, int> { { 7, 5 }, { 4, 4 }, { 2, 1 } } } // Derm/Eye/Neuro
-        };
-
-
-
-    }
-
-    public async Task<DoctorJointModel?> RecommendDoctor(RecommendationSystemFormViewModel formViewModel)
-    {
-        Dictionary<int, int> departmentScores = new Dictionary<int, int>();
-
-        void AddPoints(string symptom)
+        /// <summary>
+        /// Method to recommend doctors.
+        /// </summary>
+        /// <param name="viewModel">The view model for the model.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+        public async Task<DoctorJointModel?> RecommendDoctorAsynchronous(Hospital.ViewModels.RecommendationSystemFormViewModel viewModel)
         {
-            if (string.IsNullOrWhiteSpace(symptom)) return;
+            Dictionary<int, int> departmentScores = new Dictionary<int, int>();
 
-            string normalizedSymptom = symptom.Trim();  // Remove leading/trailing spaces
-
-            if (_symptomDepartmentScores.ContainsKey(normalizedSymptom))
+            void AddSymptomScore(string symptom)
             {
-                foreach (var kvp in _symptomDepartmentScores[normalizedSymptom])
+                if (string.IsNullOrWhiteSpace(symptom))
                 {
-                    if (departmentScores.ContainsKey(kvp.Key))
+                    return;
+                }
+
+                if (this.symptomToDepartmentScoreMapping.TryGetValue(symptom.Trim(), out var scores))
+                {
+                    foreach (var keyValuePair in scores)
                     {
-                        departmentScores[kvp.Key] += kvp.Value;
-                    }
-                    else
-                    {
-                        departmentScores[kvp.Key] = kvp.Value;
+                        if (!departmentScores.ContainsKey(keyValuePair.Key))
+                        {
+                            departmentScores[keyValuePair.Key] = 0;
+                        }
+
+                        departmentScores[keyValuePair.Key] += keyValuePair.Value;
                     }
                 }
             }
-            else
+
+            AddSymptomScore(viewModel.SelectedSymptomStart);
+            AddSymptomScore(viewModel.SelectedDiscomfortArea);
+            AddSymptomScore(viewModel.SelectedSymptomPrimary);
+            AddSymptomScore(viewModel.SelectedSymptomSecondary);
+            AddSymptomScore(viewModel.SelectedSymptomTertiary);
+
+            if (departmentScores.Count == 0)
             {
-                Debug.WriteLine($"Warning: '{normalizedSymptom}' not found in dictionary!");
+                return null;
             }
+
+            int bestDepartmentId = departmentScores.OrderByDescending(department => department.Value).First().Key;
+            var doctors = await this.doctorService.GetDoctorsByDepartment(bestDepartmentId);
+
+            return doctors
+                .OrderByDescending(doctor => doctor.GetRegistrationDate())
+                .ThenBy(doctor => doctor.GetBirthDate())
+                .ThenBy(doctor => doctor.GetDoctorRating())
+                .FirstOrDefault();
         }
 
-        Debug.WriteLine($"Selected Symptoms: '{formViewModel.SelectedSymptomStart}', '{formViewModel.SelectedDiscomfortArea}', '{formViewModel.SelectedSymptom1}', '{formViewModel.SelectedSymptom2}', '{formViewModel.SelectedSymptom3}'");
-
-
-        // Accumulate department points based on symptoms
-        AddPoints(formViewModel.SelectedSymptomStart);
-        AddPoints(formViewModel.SelectedDiscomfortArea);
-        AddPoints(formViewModel.SelectedSymptom1);
-        AddPoints(formViewModel.SelectedSymptom2);
-        AddPoints(formViewModel.SelectedSymptom3);
-
-        Console.WriteLine("Final Department Scores:");
-        foreach (var entry in departmentScores)
+        private void InitializeSymptomToDepartmentScores()
         {
-            Console.WriteLine($"Department {entry.Key}: {entry.Value} points");
+            this.symptomToDepartmentScoreMapping = new Dictionary<string, Dictionary<int, int>>
+            {
+                { "Suddenly", new Dictionary<int, int> { { Cardiology, 3 }, { Neurology, 3 }, { Pediatrics, 2 } } },
+                { "After Waking Up", new Dictionary<int, int> { { Neurology, 0 }, { Gastroenterology, 3 } } },
+                { "After Incident", new Dictionary<int, int> { { Orthopedics, 4 }, { Neurology, 3 } } },
+                { "After Meeting Someone", new Dictionary<int, int> { { Dermatology, 5 }, { Ophthalmology, 2 } } },
+                { "After Ingestion", new Dictionary<int, int> { { Gastroenterology, 4 }, { Pediatrics, 4 }, { Cardiology, 2 } } },
+                { "Eyes", new Dictionary<int, int> { { Ophthalmology, 5 }, { Neurology, 3 }, { Dermatology, 2 } } },
+                { "Head", new Dictionary<int, int> { { Neurology, 5 }, { Cardiology, 4 }, { Pediatrics, 3 } } },
+                { "Chest", new Dictionary<int, int> { { Cardiology, 6 }, { Neurology, 0 }, { Gastroenterology, 2 } } },
+                { "Stomach", new Dictionary<int, int> { { Gastroenterology, 5 }, { Pediatrics, 4 }, { Neurology, 2 } } },
+                { "Arm", new Dictionary<int, int> { { Orthopedics, 5 }, { Dermatology, 3 }, { Neurology, 2 } } },
+                { "Leg", new Dictionary<int, int> { { Orthopedics, 5 }, { Dermatology, 3 }, { Cardiology, 2 } } },
+                { "Pain", new Dictionary<int, int> { { Cardiology, 4 }, { Orthopedics, 4 }, { Neurology, 0 } } },
+                { "Numbness", new Dictionary<int, int> { { Neurology, 5 }, { Orthopedics, 3 }, { Cardiology, 2 } } },
+                { "Inflammation", new Dictionary<int, int> { { Dermatology, 4 }, { Gastroenterology, 4 }, { Ophthalmology, 2 } } },
+                { "Tenderness", new Dictionary<int, int> { { Orthopedics, 4 }, { Gastroenterology, 3 }, { Neurology, 2 } } },
+                { "Coloration", new Dictionary<int, int> { { Dermatology, 5 }, { Ophthalmology, 4 }, { Neurology, 1 } } },
+            };
         }
-
-
-        if (departmentScores.Count == 0)
-            return null; // No valid department found
-
-        // Select the department with the highest score
-        int recommendedDepartment = departmentScores.OrderByDescending(kvp => kvp.Value).First().Key;
-
-        // Get doctors from department
-        List<DoctorJointModel> doctors = await _doctorManager.GetDoctorsByDepartment(recommendedDepartment);
-
-
-        Console.WriteLine("Doctors Found:");
-        foreach (var doc in doctors)
-        {
-            Console.WriteLine($"Doctor: {doc.GetDoctorName()}, Department: {doc.GetDoctorDepartment()}");
-        }
-        // Sorting logic
-        DoctorJointModel? recommendedDoctor = doctors
-            .OrderByDescending(d => d.GetRegistrationDate())
-            .ThenBy(d => d.GetBirthDate()) // Prefer younger doctors
-            .ThenBy(d => d.GetDoctorRating()) // Prefer experienced doctors
-            .FirstOrDefault();
-        //.LastOrDefault();
-
-        // Debug output
-        //Console.WriteLine($"Recommended Doctor: {recommendedDoctor?.GetDoctorName() ?? "None"} (Department {recommendedDepartment})");
-
-        return recommendedDoctor;
     }
 }
