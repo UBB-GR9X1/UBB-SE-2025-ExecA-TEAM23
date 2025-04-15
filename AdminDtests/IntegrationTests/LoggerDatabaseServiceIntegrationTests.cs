@@ -315,7 +315,7 @@ namespace Hospital.Tests.IntegrationTest
                     command.Parameters.AddWithValue("@actionType", actionType.ToString());
                     command.Parameters.AddWithValue("@timestamp", DateTime.Now);
 
-                    await command.Execute   NonQueryAsync();
+                    await command.ExecuteNonQueryAsync();
                 }
             }
         }

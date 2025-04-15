@@ -68,11 +68,11 @@ namespace Hospital.Tests.IntegrationTest
                 .Returns(userModel);
 
             // Act & Assert
-            await Assert.ThrowsExceptionAsync<AuthenticationException>(async () =>
+            await Assert.ThrowsExceptionAsync<Exceptions.AuthenticationException>(async () =>
                 await _authViewModel.Login(username, password));
 
             _mockAuthManager.Verify(manage => manage.LoadUserByUsername(username), Times.Once);
-            _mockAuthManager.Verify(mmanage => manage.VerifyPassword(password), Times.Once);
+            _mockAuthManager.Verify(manage => manage.VerifyPassword(password), Times.Once);
         }
 
         [TestMethod]
@@ -86,7 +86,7 @@ namespace Hospital.Tests.IntegrationTest
                 .ReturnsAsync(false);
 
             // Act & Assert
-            await Assert.ThrowsExceptionAsync<AuthenticationException>(async () =>
+            await Assert.ThrowsExceptionAsync<Exceptions.AuthenticationException>(async () =>
                 await _authViewModel.Login(username, password));
 
             _mockAuthManager.Verify(manage => manage.LoadUserByUsername(username), Times.Once);

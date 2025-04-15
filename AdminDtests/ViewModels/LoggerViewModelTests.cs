@@ -140,7 +140,7 @@ namespace Hospital.Tests.ViewModels
 
             // Assert
             Assert.AreEqual(expectedLogs.Count, _viewModel.Logs.Count);
-            _mockLoggerManager.Verify(mmanage => manage.GetLogsWithParameters(
+            _mockLoggerManager.Verify(manage => manage.GetLogsWithParameters(
                 It.IsAny<int>(), It.IsAny<ActionType>(), It.IsAny<DateTime>()), Times.Once);
         }
 
