@@ -5,26 +5,26 @@ using System.Threading.Tasks;
 
 public class DepartmentManagerModel
 {
-    private ObservableCollection<Department> _s_departmentList;
+    private ObservableCollection<Department> s_departmentList;
     private DepartmentsDatabaseService _departmentsDBService;
 
     public DepartmentManagerModel(DepartmentsDatabaseService departmentsDBService)
     {
         _departmentsDBService = departmentsDBService;
-        _s_departmentList = new ObservableCollection<Department>();
+        s_departmentList = new ObservableCollection<Department>();
 
     }
     public async Task LoadDepartments()
     {
         var departments = await _departmentsDBService.GetDepartmentsFromDB();
-        _s_departmentList.Clear();
+        s_departmentList.Clear();
         foreach (var department in departments)
         {
-            _s_departmentList.Add(department);
+            s_departmentList.Add(department);
         }
     }
     public ObservableCollection<Department> GetDepartments()
     {
-        return _s_departmentList;
+        return s_departmentList;
     }
 }

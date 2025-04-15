@@ -8,17 +8,17 @@ namespace Hospital.Services
 {
     public class DepartmentsDatabaseService
     {
-        private readonly Config _configs;
+        private readonly Config configs;
 
         public DepartmentsDatabaseService()
         {
-            _configs = Config.GetInstance();
+            configs = Config.GetInstance();
         }
 
         public async Task<List<Department>> GetDepartmentsFromDB()
         {
             List<Department> departments = new List<Department>();
-            string connectionString = _configs.DatabaseConnection;
+            string connectionString = configs.DatabaseConnection;
             using (var connection = new SqlConnection(connectionString))
             {
                 await connection.OpenAsync();

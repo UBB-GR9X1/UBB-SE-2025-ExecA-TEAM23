@@ -10,15 +10,15 @@ namespace Hospital.Views
 {
     public sealed partial class PatientDashboardWindow : Window
     {
-        private readonly AuthViewModel _authenticationViewModel;
+        private readonly IAuthViewModel _authenticationViewModel;
 
-        public PatientDashboardWindow(PatientViewModel patientViewModel, AuthViewModel authenticationViewModel)
+        public PatientDashboardWindow(IPatientViewModel patientViewModel, IAuthViewModel authenticationViewModel)
         {
             InitializeComponent();
             _authenticationViewModel = authenticationViewModel;
 
             var patientDashboardControl = new PatientDashboardControl(patientViewModel);
-            patientDashboardControl.Logout += HandleLogoutRequested;
+            patientDashboardControl.LogoutButtonClicked += HandleLogoutRequested;
 
             PatientDashboard.Content = patientDashboardControl;
         }

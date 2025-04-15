@@ -1,65 +1,28 @@
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Hospital.ViewModels;
-using Hospital.Models;
-using Hospital.Managers;
-
-using System.Threading.Tasks;
-using Hospital.DatabaseServices;
-using System;
-using Hospital.Services;
-
 namespace Hospital.Views
 {
+    using Hospital.DatabaseServices;
+    using Hospital.Managers;
+    using Hospital.Models;
+    using Hospital.ViewModels;
+    using Microsoft.UI.Xaml.Controls;
+
+    /// <summary>
+    /// The view class for recommendation system.
+    /// </summary>
     public sealed partial class RecommendationView : Page
     {
-        private readonly RecommendationSystemFormViewModel _formViewModel;
-        private readonly RecommendationSystemModel _recommendationSystem;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RecommendationView"/> class.
+        /// </summary>
         public RecommendationView()
         {
-            _formViewModel = new RecommendationSystemFormViewModel();
-            this.DataContext = _formViewModel;
+            var doctorDbService = new DoctorsDatabaseHelper();
+            DoctorService doctorManager = new DoctorService(doctorDbService);
+            RecommendationSystemModel recommendationSystem = new RecommendationSystemModel(doctorManager);
+
+
+            this.DataContext = new RecommendationSystemFormViewModel(recommendationSystem);
             this.InitializeComponent();
-            var doctorDBService = new DoctorsDatabaseHelper(); // Assuming you have a default constructor or create an instance as needed
-            _recommendationSystem = new RecommendationSystemModel(new DoctorService(doctorDBService));
-
-        }
-
-        private async void RecommendButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (sender is Button button) button.IsEnabled = false;
-
-                var recommendedDoctor = await _recommendationSystem.RecommendDoctor(_formViewModel);
-
-                if (recommendedDoctor != null)
-                {
-                    DoctorNameText.Text = $"Doctor: {recommendedDoctor.GetDoctorName()}";
-                    DepartmentText.Text = $"Department: {recommendedDoctor.GetDoctorDepartment()}";
-                    RatingText.Text = $"Rating: {recommendedDoctor.GetDoctorRating():0.0}";
-                }
-                else
-                {
-                    DoctorNameText.Text = "No suitable doctor found";
-                    DepartmentText.Text = string.Empty;
-                    RatingText.Text = string.Empty;
-                }
-
-                ResultPanel.Visibility = Visibility.Visible;
-            }
-            catch (Exception ex)
-            {
-                DoctorNameText.Text = "Error getting recommendation";
-                DepartmentText.Text = ex.Message;
-                RatingText.Text = string.Empty;
-                ResultPanel.Visibility = Visibility.Visible;
-            }
-            finally
-            {
-                if (sender is Button button) button.IsEnabled = true;
-            }
         }
     }
 }

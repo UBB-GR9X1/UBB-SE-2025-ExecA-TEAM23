@@ -13,6 +13,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Views\LoginWindow.xaml" />
     <Compile Remove="Doctor Dashboard\Tests\**" />
     <EmbeddedResource Remove="Doctor Dashboard\Tests\**" />
     <None Remove="Doctor Dashboard\Tests\**" />
@@ -65,6 +66,9 @@
     <None Update="LogoutWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
+    <Page Update="Views\LoginWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\SearchDoctorsView.xaml">
@@ -95,6 +99,9 @@
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<CodeAnalysisRuleSet>SE.ruleset</CodeAnalysisRuleSet>
+	</PropertyGroup>
   <ItemGroup>
     <PRIResource Remove="Doctor Dashboard\Tests\**" />
   </ItemGroup>
