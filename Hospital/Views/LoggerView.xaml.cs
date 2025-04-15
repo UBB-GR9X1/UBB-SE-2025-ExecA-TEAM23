@@ -16,6 +16,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using System.Windows;
 using Hospital.Helpers;
+using Hospital.DatabaseServices;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -26,34 +27,39 @@ namespace Hospital.Views
     {
         private readonly LoggerViewModel _loggerViewModel;
 
-        public LoggerView()
+        // In LoggerView constructor
+        public LoggerView(ILoggerDatabaseService loggerDatabaseService)
         {
             this.InitializeComponent();
-            _loggerViewModel = new LoggerViewModel(new LoggerManagerModel());
-            this.BindUi();
-            this.PopulateLogsView();
+
+            LoggerManagerModel loggerManagerModel = new LoggerManagerModel(loggerDatabaseService);
+            _loggerViewModel = new LoggerViewModel(loggerManagerModel);
+
+            this.BindUserInterface();
+            this.LoadInitialLogs();
         }
 
-        private void PopulateLogsView()
+
+        private void LoadInitialLogs()
         {
             _loggerViewModel.LoadAllLogsCommand.Execute(null);
         }
 
-        private void BindUi()
+        private void BindUserInterface()
         {
             LogListView.ItemsSource = _loggerViewModel.Logs;
 
             LoadAllLogsButton.Command = _loggerViewModel.LoadAllLogsCommand;
 
-            LoadLogsByUserIdButton.Command = _loggerViewModel.LoadLogsByUserIdCommand;
+            LoadLogsByUserIdButton.Command = _loggerViewModel.FilterLogsByUserIdCommand;
             UserIdTextBox.DataContext = _loggerViewModel;
 
-            LoadLogsByActionTypeButton.Command = _loggerViewModel.LoadLogsByActionTypeCommand;
+            LoadLogsByActionTypeButton.Command = _loggerViewModel.FilterLogsByActionTypeCommand;
             ActionTypeComboBox.ItemsSource = _loggerViewModel.ActionTypes;
 
-            LoadLogsBeforeTimestampButton.Command = _loggerViewModel.LoadLogsBeforeTimestampCommand;
+            LoadLogsBeforeTimestampButton.Command = _loggerViewModel.FilterLogsByTimestampCommand;
 
-            LoadLogsWithAllParametersButton.Command = _loggerViewModel.LoadLogsWithParametersCommand;
+            LoadLogsWithAllParametersButton.Command = _loggerViewModel.ApplyAllFiltersCommand;
 
             // Bind TextBox, ComboBox, and DatePicker to ViewModel properties
             UserIdTextBox.SetBinding(Microsoft.UI.Xaml.Controls.TextBox.TextProperty, new Microsoft.UI.Xaml.Data.Binding
