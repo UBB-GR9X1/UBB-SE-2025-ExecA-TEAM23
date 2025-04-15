@@ -23,7 +23,7 @@ namespace Hospital.Tests.Managers
         }
 
         [TestMethod]
-        public async Task GetAllLogs_ValidRequest_ReturnsAllLogs()
+        public async Task GetAllLogs_GetsAllLogs_ReturnsAllLogs()
         {
             // Arrange
             var expectedLogs = new List<LogEntryModel>
@@ -44,7 +44,7 @@ namespace Hospital.Tests.Managers
         }
 
         [TestMethod]
-        public async Task GetLogsByUserId_ValidUserId_ReturnsUserLogs()
+        public async Task GetLogsByUserId_GetLogsByUserId_ReturnsUserLogs()
         {
             // Arrange
             int userId = 1;
@@ -66,7 +66,7 @@ namespace Hospital.Tests.Managers
         }
 
         [TestMethod]
-        public async Task GetLogsByActionType_ValidActionType_ReturnsFilteredLogs()
+        public async Task GetLogsByActionType_GetLogsByActionType_ReturnsFilteredLogs()
         {
             // Arrange
             var actionType = ActionType.LOGIN;
@@ -88,7 +88,7 @@ namespace Hospital.Tests.Managers
         }
 
         [TestMethod]
-        public async Task GetLogsBeforeTimestamp_ValidTimestamp_ReturnsFilteredLogs()
+        public async Task GetLogsBeforeTimestamp_GetLogsBeforeTimestamp_ReturnsFilteredLogs()
         {
             // Arrange
             var timestamp = DateTime.Now;
@@ -110,7 +110,7 @@ namespace Hospital.Tests.Managers
         }
 
         [TestMethod]
-        public async Task GetLogsWithParameters_AllParametersProvided_ReturnsFilteredLogs()
+        public async Task GetLogsWithParameter_GetLogsWithParametersAndFilterLogs_ReturnsFilteredLogs()
         {
             // Arrange
             int userId = 1;
@@ -133,7 +133,7 @@ namespace Hospital.Tests.Managers
         }
 
         [TestMethod]
-        public async Task LogAction_ValidParameters_ReturnsTrue()
+        public async Task LogAction_ChecksLogAction_ReturnsTrue()
         {
             // Arrange
             int userId = 1;
