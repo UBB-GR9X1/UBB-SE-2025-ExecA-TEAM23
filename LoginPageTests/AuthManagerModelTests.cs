@@ -17,7 +17,7 @@ public class AuthManagerModelTests
     }
 
     [TestMethod]
-    public async Task TestCreateAccout_withValidUser_ReturnsTrue()
+    public async Task TestCreateAccout_WithValidUser_ReturnsTrue()
     {
         // Task<bool> CreateAccount(UserCreateAccountModel modelForCreatingUserAccount);
         var model = new UserCreateAccountModel(
@@ -48,7 +48,7 @@ public class AuthManagerModelTests
     }
 
     [TestMethod]
-    public async Task TestCreateAccout_withInvalidCNPGender()
+    public async Task TestCreateAccout_WithInvalidCNPGender_ThrowsException()
     {
         // Task<bool> CreateAccount(UserCreateAccountModel modelForCreatingUserAccount);
         var model = new UserCreateAccountModel(
@@ -71,7 +71,7 @@ public class AuthManagerModelTests
     }
 
     [TestMethod]
-    public async Task TestCreateAccout_withInvalidCNPYear()
+    public async Task TestCreateAccout_WithInvalidCNPYear_ThrowsException()
     {
         // Task<bool> CreateAccount(UserCreateAccountModel modelForCreatingUserAccount);
         var model = new UserCreateAccountModel(
@@ -94,7 +94,7 @@ public class AuthManagerModelTests
     }
 
     [TestMethod]
-    public async Task TestCreateAccout_withInvalidCNPLength()
+    public async Task TestCreateAccout_WithInvalidCNPLength_ThrowsException()
     {
         // Task<bool> CreateAccount(UserCreateAccountModel modelForCreatingUserAccount);
         var model = new UserCreateAccountModel(
@@ -117,7 +117,7 @@ public class AuthManagerModelTests
     }
 
     [TestMethod]
-    public async Task TestCreateAccout_withInvalidUsername()
+    public async Task TestCreateAccout_WithInvalidUsername_ThrowsException()
     {
         // Task<bool> CreateAccount(UserCreateAccountModel modelForCreatingUserAccount);
         var model = new UserCreateAccountModel(
@@ -140,7 +140,7 @@ public class AuthManagerModelTests
     }
 
     [TestMethod]
-    public async Task TestLoadUserbyUsername()
+    public async Task TestLoadUserbyUsername_WithValidUsername_ReturnsTrue()
     {
         // Task<bool> LoadUserByUsername(string username);
         var result = await authManagerModel.LoadUserByUsername("john_doe");
@@ -148,7 +148,7 @@ public class AuthManagerModelTests
     }
 
     [TestMethod]
-    public async Task TestLoadUserbyUsername_withInvalidUsername()
+    public async Task TestLoadUserbyUsername_WithInvalidUsername_ThrowsException()
     {
         // Task<bool> LoadUserByUsername(string username);
         await Assert.ThrowsExceptionAsync<Hospital.Exceptions.AuthenticationException>(async () =>
@@ -158,7 +158,7 @@ public class AuthManagerModelTests
     }
 
     [TestMethod]
-    public async Task VerifyPassword_incorrectPassword()
+    public async Task VerifyPassword_IncorrectPassword_ReturnsFalse()
     {
         // Task<bool> VerifyPassword(string userInputPassword);
         var result = await authManagerModel.VerifyPassword("wrong_password");

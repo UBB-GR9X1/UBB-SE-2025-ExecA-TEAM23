@@ -80,7 +80,7 @@
         public double Weight { get; private set; }
 
         /// <summary>
-        /// Get's user's heigth.
+        /// Gets user's heigth.
         /// </summary>
         public int Height { get; private set; }
 

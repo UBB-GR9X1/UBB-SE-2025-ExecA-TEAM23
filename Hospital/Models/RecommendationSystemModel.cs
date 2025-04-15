@@ -82,7 +82,6 @@
                 .ThenBy(doctor => doctor.GetDoctorRating())
                 .FirstOrDefault();
         }
-
         private void InitializeSymptomToDepartmentScores()
         {
             this.symptomToDepartmentScoreMapping = new Dictionary<string, Dictionary<int, int>>

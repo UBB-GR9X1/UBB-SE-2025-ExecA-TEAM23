@@ -95,7 +95,7 @@ namespace Hospital
                     await this.viewModelCreateAccount.CreateAccount(new UserCreateAccountModel(username, password, mail, name, birthDate, cnp, (BloodType)selectedBloodType, emergencyContact, weight, height));
 
                     PatientManagerModel patientManagerModel = new PatientManagerModel();
-                    PatientViewModel patientViewModel = new PatientViewModel(patientManagerModel, this.viewModelCreateAccount.AuthManagerModel_.allUserInformation.UserId);
+                    PatientViewModel patientViewModel = new PatientViewModel(patientManagerModel, this.viewModelCreateAccount.authManagerModel.allUserInformation.UserId);
                     PatientDashboardWindow patientDashboardWindow = new PatientDashboardWindow(patientViewModel, this.viewModelCreateAccount);
                     patientDashboardWindow.Activate();
                     this.Close();

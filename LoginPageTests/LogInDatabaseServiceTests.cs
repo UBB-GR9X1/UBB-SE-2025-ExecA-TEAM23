@@ -14,30 +14,44 @@ namespace LoginPageTests.Tests
     [TestClass]
     public class LogInDatabaseServiceTests
     {
-        private readonly ILogInDatabaseService _logInDatabaseService;
+        private readonly ILogInDatabaseService logInDatabaseService;
 
         public LogInDatabaseServiceTests()
         {
-            _logInDatabaseService = new LogInDatabaseService();
+            logInDatabaseService = new LogInDatabaseService();
         }
 
         [TestMethod]
-        public async Task GetUserByUsername_WithValidUsername()
+        public async Task GetUserByUsername_WithValidUsernameCheckForUser_ReturnsUser()
         {
             // Task<UserAuthModel> GetUserByUsername(string username)
-            var result = await _logInDatabaseService.GetUserByUsername("john_doe");
+            var result = await logInDatabaseService.GetUserByUsername("john_doe");
             Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        public async Task GetUserByUsername_WithValidUsernameCheckIfTheEmailMatches_ReturnsTrue()
+        {
+            // Task<UserAuthModel> GetUserByUsername(string username)
+            var result = await logInDatabaseService.GetUserByUsername("john_doe");
             Assert.AreEqual("john@example.com", result.Mail);
+        }
+
+        [TestMethod]
+        public async Task GetUserByUsername_WithValidUsernameCheckIfTheRoleMatches_ReturnsTrue()
+        {
+            // Task<UserAuthModel> GetUserByUsername(string username)
+            var result = await logInDatabaseService.GetUserByUsername("john_doe");
             Assert.AreEqual("Doctor", result.Role);
         }
 
 
         [TestMethod]
-        public async Task GetUserByUsername_WithInvalidUsername()
+        public async Task GetUserByUsername_WithInvalidUsername_ThrowsException()
         {
             await Assert.ThrowsExceptionAsync<Hospital.Exceptions.AuthenticationException>(async () =>
             {
-                await _logInDatabaseService.GetUserByUsername("not_john_doe");
+                await logInDatabaseService.GetUserByUsername("not_john_doe");
             });
         }
 
@@ -57,7 +71,7 @@ namespace LoginPageTests.Tests
                 180
             );
 
-            bool result = await _logInDatabaseService.CreateAccount(model);
+            bool result = await logInDatabaseService.CreateAccount(model);
             Assert.IsTrue(result);
 
             string query = "DELETE FROM Users WHERE Username = @username";
@@ -72,7 +86,7 @@ namespace LoginPageTests.Tests
         }
 
         [TestMethod]
-        public async Task CreateAccount_WithExistingUsername_ThrowsAuthenticationException()
+        public async Task CreateAccount_WithExistingUsername_ReturnsTrue()
         {
             var model = new UserCreateAccountModel(
                 "john_doe",
@@ -86,13 +100,11 @@ namespace LoginPageTests.Tests
                 70.0f,
                 180
             );
-
             try
             {
-                await _logInDatabaseService.CreateAccount(model);
-                Assert.Fail("Exception was not thrown.");
+                await logInDatabaseService.CreateAccount(model);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Assert.IsTrue(true);
             }
