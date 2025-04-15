@@ -2,15 +2,13 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
+using Hospital.Repositories;
 using Hospital.Services;
 
 namespace Hospital
 {
     using System;
-    using Hospital.DatabaseServices;
-    using Hospital.Doctor_Dashboard;
     using Hospital.Exceptions;
-    using Hospital.Managers;
     using Hospital.ViewModels;
     using Hospital.Views;
     using Microsoft.Data.SqlClient;
@@ -35,9 +33,9 @@ namespace Hospital
         public LoginWindow()
         {
             this.InitializeComponent();
-            ILogInDatabaseService logInService = new LogInDatabaseService();
-            IAuthManagerModel managerModel = new AuthManagerModel(logInService);
-            this.loginPageViewModel = new AuthViewModel(managerModel);
+            ILogInRepository logInService = new LogInRepository();
+            IAuthService service = new AuthService(logInService);
+            this.loginPageViewModel = new AuthViewModel(service);
         }
 
         /// <summary>
@@ -60,8 +58,8 @@ namespace Hospital
 
                 if (this.loginPageViewModel.GetUserRole() == "Patient")
                 {
-                    PatientManagerModel patientManagerModel = new PatientManagerModel();
-                    PatientViewModel patientViewModel = new PatientViewModel(patientManagerModel, this.loginPageViewModel.authManagerModel.allUserInformation.UserId);
+                    PatientService patientService = new PatientService();
+                    PatientViewModel patientViewModel = new PatientViewModel(patientService, this.loginPageViewModel.AuthService.allUserInformation.UserId);
                     PatientDashboardWindow patientDashboardWindow = new PatientDashboardWindow(patientViewModel, this.loginPageViewModel);
                     patientDashboardWindow.Activate();
                     this.Close();
@@ -70,9 +68,9 @@ namespace Hospital
                 }
                 else if (this.loginPageViewModel.GetUserRole() == "Doctor")
                 {
-                    IDoctorsDatabaseHelper doctorsDatabaseHelper = new DoctorsDatabaseHelper();
-                    IDoctorService doctorService = new DoctorService(doctorsDatabaseHelper);
-                    IDoctorViewModel doctorViewModel = new DoctorViewModel(doctorService, this.loginPageViewModel.authManagerModel.allUserInformation.UserId);
+                    IDoctorRepository doctorRepository = new DoctorRepository();
+                    IDoctorService doctorService = new DoctorService(doctorRepository);
+                    IDoctorViewModel doctorViewModel = new DoctorViewModel(doctorService, this.loginPageViewModel.AuthService.allUserInformation.UserId);
                     DoctorDashboardWindow doctorDashboardWindow = new DoctorDashboardWindow(doctorViewModel, this.loginPageViewModel);
                     doctorDashboardWindow.Activate();
                     this.Close();
@@ -80,11 +78,11 @@ namespace Hospital
                 }
                 else if (this.loginPageViewModel.GetUserRole() == "Admin")
                 {
-                    ILoggerDatabaseService loggerDatabaseService = new LoggerDatabaseService();
+                    ILoggerRepository loggerRepository = new LoggerRepository();
 
                     AdminDashboardWindow adminDashboard = new AdminDashboardWindow(
                         this.loginPageViewModel,
-                        loggerDatabaseService);
+                        loggerRepository);
 
                     adminDashboard.Activate();
                     this.Close();

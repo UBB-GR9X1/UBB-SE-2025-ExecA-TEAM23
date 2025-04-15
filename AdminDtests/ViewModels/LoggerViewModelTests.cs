@@ -1,5 +1,5 @@
-using Hospital.Managers;
 using Hospital.Models;
+using Hospital.Services;
 using Hospital.ViewModels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -13,14 +13,14 @@ namespace Hospital.Tests.ViewModels
     [TestClass]
     public class LoggerViewModelTests
     {
-        private Mock<ILoggerManagerModel> _mockLoggerManager;
-        private LoggerViewModel _viewModel;
+        private Mock<ILoggerService> _mockLoggerService;
+        private LoggerViewModel _loggerViewModel;
 
         [TestInitialize]
         public void Setup()
         {
-            _mockLoggerManager = new Mock<ILoggerManagerModel>();
-            _viewModel = new LoggerViewModel(_mockLoggerManager.Object);
+            _mockLoggerService = new Mock<ILoggerService>();
+            _loggerViewModel = new LoggerViewModel(_mockLoggerService.Object);
         }
 
         [TestMethod]
@@ -32,69 +32,69 @@ namespace Hospital.Tests.ViewModels
                 new LogEntryModel(1, 1, ActionType.LOGIN, DateTime.Now),
                 new LogEntryModel(2, 2, ActionType.LOGOUT, DateTime.Now)
             };
-            _mockLoggerManager.Setup(manage => manage.GetAllLogs())
+            _mockLoggerService.Setup(manage => manage.GetAllLogs())
                 .ReturnsAsync(expectedLogs);
 
             // Act
-            await Task.Run(() => _viewModel.LoadAllLogsCommand.Execute(null));
+            await Task.Run(() => _loggerViewModel.LoadAllLogsCommand.Execute(null));
 
             // Assert
-            Assert.AreEqual(expectedLogs.Count, _viewModel.Logs.Count);
-            _mockLoggerManager.Verify(manage => manage.GetAllLogs(), Times.Once);
+            Assert.AreEqual(expectedLogs.Count, _loggerViewModel.Logs.Count);
+            _mockLoggerService.Verify(manage => manage.GetAllLogs(), Times.Once);
         }
 
         [TestMethod]
         public async Task FilterLogsById_CheckIfUserIdIsValid_UpdatesLogsCollection()
         {
             // Arrange
-            _viewModel.UserIdInput = "1";
+            _loggerViewModel.UserIdInput = "1";
             var expectedLogs = new List<LogEntryModel>
             {
                 new LogEntryModel(1, 1, ActionType.LOGIN, DateTime.Now)
             };
-            _mockLoggerManager.Setup(manage => manage.GetLogsByUserId(1))
+            _mockLoggerService.Setup(manage => manage.GetLogsByUserId(1))
                 .ReturnsAsync(expectedLogs);
 
             // Act
-            await Task.Run(() => _viewModel.FilterLogsByUserIdCommand.Execute(null));
+            await Task.Run(() => _loggerViewModel.FilterLogsByUserIdCommand.Execute(null));
 
             // Assert
-            Assert.AreEqual(expectedLogs.Count, _viewModel.Logs.Count);
-            _mockLoggerManager.Verify(manage => manage.GetLogsByUserId(1), Times.Once);
+            Assert.AreEqual(expectedLogs.Count, _loggerViewModel.Logs.Count);
+            _mockLoggerService.Verify(manage => manage.GetLogsByUserId(1), Times.Once);
         }
 
         [TestMethod]
         public async Task FilterLogsById_CheckIfUserIdIsInvalid_DoesNotUpdateLogsCollection()
         {
             // Arrange
-            _viewModel.UserIdInput = "invalid";
+            _loggerViewModel.UserIdInput = "invalid";
             
             // Act
-            await Task.Run(() => _viewModel.FilterLogsByUserIdCommand.Execute(null));
+            await Task.Run(() => _loggerViewModel.FilterLogsByUserIdCommand.Execute(null));
 
             // Assert
-            _mockLoggerManager.Verify(manage => manage.GetLogsByUserId(It.IsAny<int>()), Times.Never);
+            _mockLoggerService.Verify(manage => manage.GetLogsByUserId(It.IsAny<int>()), Times.Never);
         }
 
         [TestMethod]
         public async Task FilterLogsByActionTypeCommand_ValidateActionType_UpdatesLogsCollection()
         {
             // Arrange
-            _viewModel.SelectedActionType = ActionType.LOGIN;
+            _loggerViewModel.SelectedActionType = ActionType.LOGIN;
             var expectedLogs = new List<LogEntryModel>
             {
                 new LogEntryModel(1, 1, ActionType.LOGIN, DateTime.Now),
                 new LogEntryModel(3, 2, ActionType.LOGIN, DateTime.Now)
             };
-            _mockLoggerManager.Setup(manage => manage.GetLogsByActionType(ActionType.LOGIN))
+            _mockLoggerService.Setup(manage => manage.GetLogsByActionType(ActionType.LOGIN))
                 .ReturnsAsync(expectedLogs);
 
             // Act
-            await Task.Run(() => _viewModel.FilterLogsByActionTypeCommand.Execute(null));
+            await Task.Run(() => _loggerViewModel.FilterLogsByActionTypeCommand.Execute(null));
 
             // Assert
-            Assert.AreEqual(expectedLogs.Count, _viewModel.Logs.Count);
-            _mockLoggerManager.Verify(manage => manage.GetLogsByActionType(ActionType.LOGIN), Times.Once);
+            Assert.AreEqual(expectedLogs.Count, _loggerViewModel.Logs.Count);
+            _mockLoggerService.Verify(manage => manage.GetLogsByActionType(ActionType.LOGIN), Times.Once);
         }
 
         [TestMethod]
@@ -102,45 +102,45 @@ namespace Hospital.Tests.ViewModels
         {
             // Arrange
             var timestamp = DateTime.Now;
-            _viewModel.SelectedTimestamp = timestamp;
+            _loggerViewModel.SelectedTimestamp = timestamp;
             var expectedLogs = new List<LogEntryModel>
             {
                 new LogEntryModel(1, 1, ActionType.LOGIN, timestamp.AddDays(-1))
             };
-            _mockLoggerManager.Setup(manage => manage.GetLogsBeforeTimestamp(It.IsAny<DateTime>()))
+            _mockLoggerService.Setup(manage => manage.GetLogsBeforeTimestamp(It.IsAny<DateTime>()))
                 .ReturnsAsync(expectedLogs);
 
             // Act
-            await Task.Run(() => _viewModel.FilterLogsByTimestampCommand.Execute(null));
+            await Task.Run(() => _loggerViewModel.FilterLogsByTimestampCommand.Execute(null));
 
             // Assert
-            Assert.AreEqual(expectedLogs.Count, _viewModel.Logs.Count);
-            _mockLoggerManager.Verify(manage => manage.GetLogsBeforeTimestamp(It.IsAny<DateTime>()), Times.Once);
+            Assert.AreEqual(expectedLogs.Count, _loggerViewModel.Logs.Count);
+            _mockLoggerService.Verify(manage => manage.GetLogsBeforeTimestamp(It.IsAny<DateTime>()), Times.Once);
         }
 
         [TestMethod]
         public async Task ApplyAllFiltersCommand_AllFiltersApplied_UpdatesLogsCollection()
         {
             // Arrange
-            _viewModel.UserIdInput = "1";
-            _viewModel.SelectedActionType = ActionType.LOGIN;
-            _viewModel.SelectedTimestamp = DateTime.Now;
+            _loggerViewModel.UserIdInput = "1";
+            _loggerViewModel.SelectedActionType = ActionType.LOGIN;
+            _loggerViewModel.SelectedTimestamp = DateTime.Now;
             
             var expectedLogs = new List<LogEntryModel>
             {
                 new LogEntryModel(1, 1, ActionType.LOGIN, DateTime.Now.AddHours(-1))
             };
             
-            _mockLoggerManager.Setup(manage => manage.GetLogsWithParameters(
+            _mockLoggerService.Setup(manage => manage.GetLogsWithParameters(
                 It.IsAny<int?>(), It.IsAny<ActionType>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(expectedLogs);
 
             // Act
-            await Task.Run(() => _viewModel.ApplyAllFiltersCommand.Execute(null));
+            await Task.Run(() => _loggerViewModel.ApplyAllFiltersCommand.Execute(null));
 
             // Assert
-            Assert.AreEqual(expectedLogs.Count, _viewModel.Logs.Count);
-            _mockLoggerManager.Verify(manage => manage.GetLogsWithParameters(
+            Assert.AreEqual(expectedLogs.Count, _loggerViewModel.Logs.Count);
+            _mockLoggerService.Verify(manage => manage.GetLogsWithParameters(
                 It.IsAny<int>(), It.IsAny<ActionType>(), It.IsAny<DateTime>()), Times.Once);
         }
 
@@ -148,24 +148,24 @@ namespace Hospital.Tests.ViewModels
         public async Task ApplyAllFiltersCommand_CheckForInvalidUserId_UsesDefaultFilters()
         {
             // Arrange
-            _viewModel.UserIdInput = "invalid";
-            _viewModel.SelectedActionType = ActionType.LOGIN;
-            _viewModel.SelectedTimestamp = DateTime.Now;
+            _loggerViewModel.UserIdInput = "invalid";
+            _loggerViewModel.SelectedActionType = ActionType.LOGIN;
+            _loggerViewModel.SelectedTimestamp = DateTime.Now;
             
             var expectedLogs = new List<LogEntryModel>
             {
                 new LogEntryModel(1, 1, ActionType.LOGIN, DateTime.Now.AddHours(-1))
             };
 
-            _mockLoggerManager.Setup(manage => manage.GetLogsWithParameters(
+            _mockLoggerService.Setup(manage => manage.GetLogsWithParameters(
                     It.Is<int?>(uid => !uid.HasValue), It.IsAny<ActionType>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(expectedLogs);
 
             // Act
-            await Task.Run(() => _viewModel.ApplyAllFiltersCommand.Execute(null));
+            await Task.Run(() => _loggerViewModel.ApplyAllFiltersCommand.Execute(null));
 
             // Assert
-            _mockLoggerManager.Verify(manage => manage.GetLogsWithParameters(
+            _mockLoggerService.Verify(manage => manage.GetLogsWithParameters(
                 null, It.IsAny<ActionType>(), It.IsAny<DateTime>()), Times.Once);
         }
         
@@ -173,7 +173,7 @@ namespace Hospital.Tests.ViewModels
         public void Constructor_InitializesProperties_SetsDefaultValues()
         {
             // Arrange & Act
-            var viewModel = new LoggerViewModel(_mockLoggerManager.Object);
+            var viewModel = new LoggerViewModel(_mockLoggerService.Object);
             
             // Assert
             Assert.IsNotNull(viewModel.Logs);

@@ -1,5 +1,4 @@
-﻿using Hospital.Doctor_Dashboard;
-using Hospital.Managers;
+﻿using Hospital.Repositories;
 using Hospital.Models;
 using Hospital.Services;
 using Moq;
@@ -7,20 +6,21 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Hospital.Repositories;
 
 namespace AdminDashboardTests
 {
     public class DoctorServiceTests
     {
-        private Mock<IDoctorsDatabaseHelper> mockDatabaseHelper;
-        private DoctorService doctorService;
-        private const int TestUserId = 123;
+        private Mock<IDoctorRepository> _mockDoctorRepository;
+        private DoctorService _doctorService;
+        private const int _testUserId = 123;
 
         [SetUp]
         public void Setup()
         {
-            mockDatabaseHelper = new Mock<IDoctorsDatabaseHelper>();
-            doctorService = new DoctorService(mockDatabaseHelper.Object);
+            _mockDoctorRepository = new Mock<IDoctorRepository>();
+            _doctorService = new DoctorService(_mockDoctorRepository.Object);
         }
 
         [Test]
@@ -32,13 +32,13 @@ namespace AdminDashboardTests
         [Test]
         public void Constructor_WhenCalled_InitializesDoctorListAsEmpty()
         {
-            Assert.AreEqual(0, doctorService.DoctorList.Count);
+            Assert.AreEqual(0, _doctorService.DoctorList.Count);
         }
 
         [Test]
         public void Constructor_WhenCalled_InitializesDoctorInformationWithDefaultValue()
         {
-            Assert.AreEqual(DoctorModel.Default, doctorService.DoctorInformation);
+            Assert.AreEqual(DoctorModel.Default, _doctorService.DoctorInformation);
         }
 
         [Test]
@@ -81,12 +81,12 @@ namespace AdminDashboardTests
                 )
             };
 
-            mockDatabaseHelper.Setup(db => db.GetDoctorsByDepartment(departmentId))
+            _mockDoctorRepository.Setup(db => db.GetDoctorsByDepartment(departmentId))
                 .ReturnsAsync(expectedDoctors);
 
-            var result = await doctorService.GetDoctorsByDepartment(departmentId);
+            var result = await _doctorService.GetDoctorsByDepartment(departmentId);
 
-            mockDatabaseHelper.Verify(db => db.GetDoctorsByDepartment(departmentId), Times.Once);
+            _mockDoctorRepository.Verify(db => db.GetDoctorsByDepartment(departmentId), Times.Once);
         }
 
         [Test]
@@ -129,10 +129,10 @@ namespace AdminDashboardTests
                 )
             };
 
-            mockDatabaseHelper.Setup(db => db.GetDoctorsByDepartment(departmentId))
+            _mockDoctorRepository.Setup(db => db.GetDoctorsByDepartment(departmentId))
                 .ReturnsAsync(expectedDoctors);
 
-            var result = await doctorService.GetDoctorsByDepartment(departmentId);
+            var result = await _doctorService.GetDoctorsByDepartment(departmentId);
 
             Assert.AreEqual(expectedDoctors, result);
         }
@@ -176,12 +176,12 @@ namespace AdminDashboardTests
                 )
             };
 
-            mockDatabaseHelper.Setup(db => db.GetAllDoctors())
+            _mockDoctorRepository.Setup(db => db.GetAllDoctors())
                 .ReturnsAsync(expectedDoctors);
 
-            await doctorService.GetAllDoctorsAsync();
+            await _doctorService.GetAllDoctorsAsync();
 
-            mockDatabaseHelper.Verify(db => db.GetAllDoctors(), Times.Once);
+            _mockDoctorRepository.Verify(db => db.GetAllDoctors(), Times.Once);
         }
 
         [Test]
@@ -223,10 +223,10 @@ namespace AdminDashboardTests
                 )
             };
 
-            mockDatabaseHelper.Setup(db => db.GetAllDoctors())
+            _mockDoctorRepository.Setup(db => db.GetAllDoctors())
                 .ReturnsAsync(expectedDoctors);
 
-            var result = await doctorService.GetAllDoctorsAsync();
+            var result = await _doctorService.GetAllDoctorsAsync();
 
             Assert.AreEqual(expectedDoctors, result);
         }
@@ -236,16 +236,16 @@ namespace AdminDashboardTests
         {
             var expectedDoctor = new DoctorModel
             {
-                DoctorId = TestUserId,
+                DoctorId = _testUserId,
                 DoctorName = "Dr. John Doe",
                 DepartmentId = 456,
                 DepartmentName = "Cardiology"
             };
 
-            mockDatabaseHelper.Setup(db => db.GetDoctorById(TestUserId))
+            _mockDoctorRepository.Setup(db => db.GetDoctorById(_testUserId))
                 .ReturnsAsync(expectedDoctor);
 
-            bool result = await doctorService.LoadDoctorInformationByUserId(TestUserId);
+            bool result = await _doctorService.LoadDoctorInformationByUserId(_testUserId);
 
             Assert.IsTrue(result);
         }
@@ -255,18 +255,18 @@ namespace AdminDashboardTests
         {
             var expectedDoctor = new DoctorModel
             {
-                DoctorId = TestUserId,
+                DoctorId = _testUserId,
                 DoctorName = "Dr. John Doe",
                 DepartmentId = 456,
                 DepartmentName = "Cardiology"
             };
 
-            mockDatabaseHelper.Setup(db => db.GetDoctorById(TestUserId))
+            _mockDoctorRepository.Setup(db => db.GetDoctorById(_testUserId))
                 .ReturnsAsync(expectedDoctor);
 
-            await doctorService.LoadDoctorInformationByUserId(TestUserId);
+            await _doctorService.LoadDoctorInformationByUserId(_testUserId);
 
-            Assert.AreEqual(expectedDoctor, doctorService.DoctorInformation);
+            Assert.AreEqual(expectedDoctor, _doctorService.DoctorInformation);
         }
 
         [Test]
@@ -274,27 +274,27 @@ namespace AdminDashboardTests
         {
             var expectedDoctor = new DoctorModel
             {
-                DoctorId = TestUserId,
+                DoctorId = _testUserId,
                 DoctorName = "Dr. John Doe",
                 DepartmentId = 456,
                 DepartmentName = "Cardiology"
             };
 
-            mockDatabaseHelper.Setup(db => db.GetDoctorById(TestUserId))
+            _mockDoctorRepository.Setup(db => db.GetDoctorById(_testUserId))
                 .ReturnsAsync(expectedDoctor);
 
-            await doctorService.LoadDoctorInformationByUserId(TestUserId);
+            await _doctorService.LoadDoctorInformationByUserId(_testUserId);
 
-            mockDatabaseHelper.Verify(db => db.GetDoctorById(TestUserId), Times.Once);
+            _mockDoctorRepository.Verify(db => db.GetDoctorById(_testUserId), Times.Once);
         }
 
         [Test]
         public async Task LoadDoctorInformationByUserId_WhenDoctorNotFound_ReturnsFalse()
         {
-            mockDatabaseHelper.Setup(db => db.GetDoctorById(TestUserId))
+            _mockDoctorRepository.Setup(db => db.GetDoctorById(_testUserId))
                 .ReturnsAsync(DoctorModel.Default);
 
-            bool result = await doctorService.LoadDoctorInformationByUserId(TestUserId);
+            bool result = await _doctorService.LoadDoctorInformationByUserId(_testUserId);
 
             Assert.IsFalse(result);
         }
@@ -302,34 +302,34 @@ namespace AdminDashboardTests
         [Test]
         public async Task LoadDoctorInformationByUserId_WhenDoctorNotFound_SetsDoctorInformationToDefault()
         {
-            mockDatabaseHelper.Setup(db => db.GetDoctorById(TestUserId))
+            _mockDoctorRepository.Setup(db => db.GetDoctorById(_testUserId))
                 .ReturnsAsync(DoctorModel.Default);
 
-            await doctorService.LoadDoctorInformationByUserId(TestUserId);
+            await _doctorService.LoadDoctorInformationByUserId(_testUserId);
 
-            Assert.AreEqual(DoctorModel.Default, doctorService.DoctorInformation);
+            Assert.AreEqual(DoctorModel.Default, _doctorService.DoctorInformation);
         }
 
         [Test]
         public async Task LoadDoctorInformationByUserId_WhenDoctorNotFound_CallsDatabaseHelper()
         {
-            mockDatabaseHelper.Setup(db => db.GetDoctorById(TestUserId))
+            _mockDoctorRepository.Setup(db => db.GetDoctorById(_testUserId))
                 .ReturnsAsync(DoctorModel.Default);
 
-            await doctorService.LoadDoctorInformationByUserId(TestUserId);
+            await _doctorService.LoadDoctorInformationByUserId(_testUserId);
 
-            mockDatabaseHelper.Verify(db => db.GetDoctorById(TestUserId), Times.Once);
+            _mockDoctorRepository.Verify(db => db.GetDoctorById(_testUserId), Times.Once);
         }
 
         [Test]
         public void LoadDoctorInformationByUserId_WhenDatabaseThrowsException_RethrowsWithAppropriateMessage()
         {
             var expectedException = new Exception("Database error");
-            mockDatabaseHelper.Setup(db => db.GetDoctorById(TestUserId))
+            _mockDoctorRepository.Setup(db => db.GetDoctorById(_testUserId))
                 .ThrowsAsync(expectedException);
 
             var exception = Assert.ThrowsAsync<Exception>(async () =>
-                await doctorService.LoadDoctorInformationByUserId(TestUserId));
+                await _doctorService.LoadDoctorInformationByUserId(_testUserId));
 
             Assert.IsTrue(exception.Message.Contains("Error loading doctor info"));
         }
@@ -338,11 +338,11 @@ namespace AdminDashboardTests
         public void LoadDoctorInformationByUserId_WhenDatabaseThrowsException_PreservesOriginalExceptionAsInnerException()
         {
             var expectedException = new Exception("Database error");
-            mockDatabaseHelper.Setup(db => db.GetDoctorById(TestUserId))
+            _mockDoctorRepository.Setup(db => db.GetDoctorById(_testUserId))
                 .ThrowsAsync(expectedException);
 
             var exception = Assert.ThrowsAsync<Exception>(async () =>
-                await doctorService.LoadDoctorInformationByUserId(TestUserId));
+                await _doctorService.LoadDoctorInformationByUserId(_testUserId));
 
             Assert.AreEqual(expectedException, exception.InnerException);
         }
@@ -356,10 +356,10 @@ namespace AdminDashboardTests
                 new DoctorModel { DoctorId = 1, DoctorName = "Dr. Smith", DepartmentName = "Cardiology" }
             };
 
-            mockDatabaseHelper.Setup(db => db.GetDoctorsByDepartmentPartialName(departmentName))
+            _mockDoctorRepository.Setup(db => db.GetDoctorsByDepartmentPartialName(departmentName))
                 .ReturnsAsync(expectedDoctors);
 
-            bool result = await doctorService.SearchDoctorsByDepartmentAsync(departmentName);
+            bool result = await _doctorService.SearchDoctorsByDepartmentAsync(departmentName);
 
             Assert.IsTrue(result);
         }
@@ -373,12 +373,12 @@ namespace AdminDashboardTests
                 new DoctorModel { DoctorId = 1, DoctorName = "Dr. Smith", DepartmentName = "Cardiology" }
             };
 
-            mockDatabaseHelper.Setup(db => db.GetDoctorsByDepartmentPartialName(departmentName))
+            _mockDoctorRepository.Setup(db => db.GetDoctorsByDepartmentPartialName(departmentName))
                 .ReturnsAsync(expectedDoctors);
 
-            await doctorService.SearchDoctorsByDepartmentAsync(departmentName);
+            await _doctorService.SearchDoctorsByDepartmentAsync(departmentName);
 
-            Assert.AreEqual(expectedDoctors, doctorService.DoctorList);
+            Assert.AreEqual(expectedDoctors, _doctorService.DoctorList);
         }
 
         [Test]
@@ -390,12 +390,12 @@ namespace AdminDashboardTests
                 new DoctorModel { DoctorId = 1, DoctorName = "Dr. Smith", DepartmentName = "Cardiology" }
             };
 
-            mockDatabaseHelper.Setup(db => db.GetDoctorsByDepartmentPartialName(departmentName))
+            _mockDoctorRepository.Setup(db => db.GetDoctorsByDepartmentPartialName(departmentName))
                 .ReturnsAsync(expectedDoctors);
 
-            await doctorService.SearchDoctorsByDepartmentAsync(departmentName);
+            await _doctorService.SearchDoctorsByDepartmentAsync(departmentName);
 
-            mockDatabaseHelper.Verify(db => db.GetDoctorsByDepartmentPartialName(departmentName), Times.Once);
+            _mockDoctorRepository.Verify(db => db.GetDoctorsByDepartmentPartialName(departmentName), Times.Once);
         }
 
         [Test]
@@ -403,10 +403,10 @@ namespace AdminDashboardTests
         {
             string departmentName = "Nonexistent";
 
-            mockDatabaseHelper.Setup(db => db.GetDoctorsByDepartmentPartialName(departmentName))
+            _mockDoctorRepository.Setup(db => db.GetDoctorsByDepartmentPartialName(departmentName))
                 .ReturnsAsync((List<DoctorModel>)null);
 
-            bool result = await doctorService.SearchDoctorsByDepartmentAsync(departmentName);
+            bool result = await _doctorService.SearchDoctorsByDepartmentAsync(departmentName);
 
             Assert.IsFalse(result);
         }
@@ -416,12 +416,12 @@ namespace AdminDashboardTests
         {
             string departmentName = "Nonexistent";
 
-            mockDatabaseHelper.Setup(db => db.GetDoctorsByDepartmentPartialName(departmentName))
+            _mockDoctorRepository.Setup(db => db.GetDoctorsByDepartmentPartialName(departmentName))
                 .ReturnsAsync((List<DoctorModel>)null);
 
-            await doctorService.SearchDoctorsByDepartmentAsync(departmentName);
+            await _doctorService.SearchDoctorsByDepartmentAsync(departmentName);
 
-            mockDatabaseHelper.Verify(db => db.GetDoctorsByDepartmentPartialName(departmentName), Times.Once);
+            _mockDoctorRepository.Verify(db => db.GetDoctorsByDepartmentPartialName(departmentName), Times.Once);
         }
 
         [Test]
@@ -433,10 +433,10 @@ namespace AdminDashboardTests
                 new DoctorModel { DoctorId = 1, DoctorName = "Dr. Smith" }
             };
 
-            mockDatabaseHelper.Setup(db => db.GetDoctorsByPartialDoctorName(doctorName))
+            _mockDoctorRepository.Setup(db => db.GetDoctorsByPartialDoctorName(doctorName))
                 .ReturnsAsync(expectedDoctors);
 
-            bool result = await doctorService.SearchDoctorsByNameAsync(doctorName);
+            bool result = await _doctorService.SearchDoctorsByNameAsync(doctorName);
 
             Assert.IsTrue(result);
         }
@@ -450,12 +450,12 @@ namespace AdminDashboardTests
                 new DoctorModel { DoctorId = 1, DoctorName = "Dr. Smith" }
             };
 
-            mockDatabaseHelper.Setup(db => db.GetDoctorsByPartialDoctorName(doctorName))
+            _mockDoctorRepository.Setup(db => db.GetDoctorsByPartialDoctorName(doctorName))
                 .ReturnsAsync(expectedDoctors);
 
-            await doctorService.SearchDoctorsByNameAsync(doctorName);
+            await _doctorService.SearchDoctorsByNameAsync(doctorName);
 
-            Assert.AreEqual(expectedDoctors, doctorService.DoctorList);
+            Assert.AreEqual(expectedDoctors, _doctorService.DoctorList);
         }
 
         [Test]
@@ -467,12 +467,12 @@ namespace AdminDashboardTests
                 new DoctorModel { DoctorId = 1, DoctorName = "Dr. Smith" }
             };
 
-            mockDatabaseHelper.Setup(db => db.GetDoctorsByPartialDoctorName(doctorName))
+            _mockDoctorRepository.Setup(db => db.GetDoctorsByPartialDoctorName(doctorName))
                 .ReturnsAsync(expectedDoctors);
 
-            await doctorService.SearchDoctorsByNameAsync(doctorName);
+            await _doctorService.SearchDoctorsByNameAsync(doctorName);
 
-            mockDatabaseHelper.Verify(db => db.GetDoctorsByPartialDoctorName(doctorName), Times.Once);
+            _mockDoctorRepository.Verify(db => db.GetDoctorsByPartialDoctorName(doctorName), Times.Once);
         }
 
         [Test]
@@ -480,10 +480,10 @@ namespace AdminDashboardTests
         {
             string doctorName = "Nonexistent";
 
-            mockDatabaseHelper.Setup(db => db.GetDoctorsByPartialDoctorName(doctorName))
+            _mockDoctorRepository.Setup(db => db.GetDoctorsByPartialDoctorName(doctorName))
                 .ReturnsAsync((List<DoctorModel>)null);
 
-            bool result = await doctorService.SearchDoctorsByNameAsync(doctorName);
+            bool result = await _doctorService.SearchDoctorsByNameAsync(doctorName);
 
             Assert.IsFalse(result);
         }
@@ -493,12 +493,12 @@ namespace AdminDashboardTests
         {
             string doctorName = "Nonexistent";
 
-            mockDatabaseHelper.Setup(db => db.GetDoctorsByPartialDoctorName(doctorName))
+            _mockDoctorRepository.Setup(db => db.GetDoctorsByPartialDoctorName(doctorName))
                 .ReturnsAsync((List<DoctorModel>)null);
 
-            await doctorService.SearchDoctorsByNameAsync(doctorName);
+            await _doctorService.SearchDoctorsByNameAsync(doctorName);
 
-            mockDatabaseHelper.Verify(db => db.GetDoctorsByPartialDoctorName(doctorName), Times.Once);
+            _mockDoctorRepository.Verify(db => db.GetDoctorsByPartialDoctorName(doctorName), Times.Once);
         }
 
         [Test]
@@ -506,10 +506,10 @@ namespace AdminDashboardTests
         {
             string validName = "Dr. John Doe";
 
-            mockDatabaseHelper.Setup(db => db.UpdateDoctorName(TestUserId, validName))
+            _mockDoctorRepository.Setup(db => db.UpdateDoctorName(_testUserId, validName))
                 .ReturnsAsync(true);
 
-            bool result = await doctorService.UpdateDoctorName(TestUserId, validName);
+            bool result = await _doctorService.UpdateDoctorName(_testUserId, validName);
 
             Assert.IsTrue(result);
         }
@@ -519,12 +519,12 @@ namespace AdminDashboardTests
         {
             string validName = "Dr. John Doe";
 
-            mockDatabaseHelper.Setup(db => db.UpdateDoctorName(TestUserId, validName))
+            _mockDoctorRepository.Setup(db => db.UpdateDoctorName(_testUserId, validName))
                 .ReturnsAsync(true);
 
-            await doctorService.UpdateDoctorName(TestUserId, validName);
+            await _doctorService.UpdateDoctorName(_testUserId, validName);
 
-            mockDatabaseHelper.Verify(db => db.UpdateDoctorName(TestUserId, validName), Times.Once);
+            _mockDoctorRepository.Verify(db => db.UpdateDoctorName(_testUserId, validName), Times.Once);
         }
 
         [Test]
@@ -533,7 +533,7 @@ namespace AdminDashboardTests
             string emptyName = "";
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdateDoctorName(TestUserId, emptyName));
+                await _doctorService.UpdateDoctorName(_testUserId, emptyName));
 
             Assert.That(exception.Message, Does.StartWith("Doctor name must include at least a first and last name."));
         }
@@ -544,7 +544,7 @@ namespace AdminDashboardTests
             string emptyName = "";
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdateDoctorName(TestUserId, emptyName));
+                await _doctorService.UpdateDoctorName(_testUserId, emptyName));
 
             Assert.AreEqual("name", exception.ParamName);
         }
@@ -555,7 +555,7 @@ namespace AdminDashboardTests
             string whitespace = "   ";
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdateDoctorName(TestUserId, whitespace));
+                await _doctorService.UpdateDoctorName(_testUserId, whitespace));
 
             Assert.That(exception.Message, Does.StartWith("Doctor name must include at least a first and last name."));
         }
@@ -566,7 +566,7 @@ namespace AdminDashboardTests
             string onlyFirstName = "John";
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdateDoctorName(TestUserId, onlyFirstName));
+                await _doctorService.UpdateDoctorName(_testUserId, onlyFirstName));
 
             Assert.That(exception.Message, Does.StartWith("Doctor name must include at least a first and last name."));
         }
@@ -577,7 +577,7 @@ namespace AdminDashboardTests
             string noSpacing = "Dr.John";
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdateDoctorName(TestUserId, noSpacing));
+                await _doctorService.UpdateDoctorName(_testUserId, noSpacing));
 
             Assert.That(exception.Message, Does.StartWith("Doctor name must include at least a first and last name."));
         }
@@ -589,11 +589,11 @@ namespace AdminDashboardTests
 
             try
             {
-                doctorService.UpdateDoctorName(TestUserId, invalidName).Wait();
+                _doctorService.UpdateDoctorName(_testUserId, invalidName).Wait();
             }
             catch { /* Expected exception */ }
 
-            mockDatabaseHelper.Verify(db => db.UpdateDoctorName(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
+            _mockDoctorRepository.Verify(db => db.UpdateDoctorName(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
         }
 
         [Test]
@@ -602,7 +602,7 @@ namespace AdminDashboardTests
             string tooLongName = new string('A', 50) + " " + new string('B', 51); // 102 characters
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdateDoctorName(TestUserId, tooLongName));
+                await _doctorService.UpdateDoctorName(_testUserId, tooLongName));
 
             Assert.That(exception.Message, Does.StartWith("Doctor name is too long."));
         }
@@ -613,7 +613,7 @@ namespace AdminDashboardTests
             string tooLongName = new string('A', 50) + " " + new string('B', 51); // 102 characters
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdateDoctorName(TestUserId, tooLongName));
+                await _doctorService.UpdateDoctorName(_testUserId, tooLongName));
 
             Assert.AreEqual("name", exception.ParamName);
         }
@@ -623,10 +623,10 @@ namespace AdminDashboardTests
         {
             int departmentId = 456;
 
-            mockDatabaseHelper.Setup(db => db.UpdateDoctorDepartment(TestUserId, departmentId))
+            _mockDoctorRepository.Setup(db => db.UpdateDoctorDepartment(_testUserId, departmentId))
                 .ReturnsAsync(true);
 
-            bool result = await doctorService.UpdateDepartment(TestUserId, departmentId);
+            bool result = await _doctorService.UpdateDepartment(_testUserId, departmentId);
 
             Assert.IsTrue(result);
         }
@@ -636,12 +636,12 @@ namespace AdminDashboardTests
         {
             int departmentId = 456;
 
-            mockDatabaseHelper.Setup(db => db.UpdateDoctorDepartment(TestUserId, departmentId))
+            _mockDoctorRepository.Setup(db => db.UpdateDoctorDepartment(_testUserId, departmentId))
                 .ReturnsAsync(true);
 
-            await doctorService.UpdateDepartment(TestUserId, departmentId);
+            await _doctorService.UpdateDepartment(_testUserId, departmentId);
 
-            mockDatabaseHelper.Verify(db => db.UpdateDoctorDepartment(TestUserId, departmentId), Times.Once);
+            _mockDoctorRepository.Verify(db => db.UpdateDoctorDepartment(_testUserId, departmentId), Times.Once);
         }
 
         [Test]
@@ -649,10 +649,10 @@ namespace AdminDashboardTests
         {
             double validRating = 4.5;
 
-            mockDatabaseHelper.Setup(db => db.UpdateDoctorRating(TestUserId, validRating))
+            _mockDoctorRepository.Setup(db => db.UpdateDoctorRating(_testUserId, validRating))
                 .ReturnsAsync(true);
 
-            bool result = await doctorService.UpdateRatingAsync(TestUserId, validRating);
+            bool result = await _doctorService.UpdateRatingAsync(_testUserId, validRating);
 
             Assert.IsTrue(result);
         }
@@ -662,12 +662,12 @@ namespace AdminDashboardTests
         {
             double validRating = 4.5;
 
-            mockDatabaseHelper.Setup(db => db.UpdateDoctorRating(TestUserId, validRating))
+            _mockDoctorRepository.Setup(db => db.UpdateDoctorRating(_testUserId, validRating))
                 .ReturnsAsync(true);
 
-            await doctorService.UpdateRatingAsync(TestUserId, validRating);
+            await _doctorService.UpdateRatingAsync(_testUserId, validRating);
 
-            mockDatabaseHelper.Verify(db => db.UpdateDoctorRating(TestUserId, validRating), Times.Once);
+            _mockDoctorRepository.Verify(db => db.UpdateDoctorRating(_testUserId, validRating), Times.Once);
         }
 
         [Test]
@@ -676,7 +676,7 @@ namespace AdminDashboardTests
             double negativeRating = -0.1;
 
             var exception = Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
-                await doctorService.UpdateRatingAsync(TestUserId, negativeRating));
+                await _doctorService.UpdateRatingAsync(_testUserId, negativeRating));
 
             Assert.That(exception.Message, Does.Contain("Rating must be between 0 and 5."));
         }
@@ -687,7 +687,7 @@ namespace AdminDashboardTests
             double negativeRating = -0.1;
 
             var exception = Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
-                await doctorService.UpdateRatingAsync(TestUserId, negativeRating));
+                await _doctorService.UpdateRatingAsync(_testUserId, negativeRating));
 
             Assert.AreEqual("rating", exception.ParamName);
         }
@@ -698,7 +698,7 @@ namespace AdminDashboardTests
             double tooHighRating = 5.1;
 
             var exception = Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
-                await doctorService.UpdateRatingAsync(TestUserId, tooHighRating));
+                await _doctorService.UpdateRatingAsync(_testUserId, tooHighRating));
 
             Assert.That(exception.Message, Does.Contain("Rating must be between 0 and 5."));
         }
@@ -710,11 +710,11 @@ namespace AdminDashboardTests
 
             try
             {
-                doctorService.UpdateRatingAsync(TestUserId, invalidRating).Wait();
+                _doctorService.UpdateRatingAsync(_testUserId, invalidRating).Wait();
             }
             catch { /* Expected exception */ }
 
-            mockDatabaseHelper.Verify(db => db.UpdateDoctorRating(It.IsAny<int>(), It.IsAny<double>()), Times.Never);
+            _mockDoctorRepository.Verify(db => db.UpdateDoctorRating(It.IsAny<int>(), It.IsAny<double>()), Times.Never);
         }
 
         [Test]
@@ -722,10 +722,10 @@ namespace AdminDashboardTests
         {
             string careerInfo = "Experienced cardiologist with 10+ years of practice";
 
-            mockDatabaseHelper.Setup(db => db.UpdateDoctorCareerInfo(TestUserId, careerInfo))
+            _mockDoctorRepository.Setup(db => db.UpdateDoctorCareerInfo(_testUserId, careerInfo))
                 .ReturnsAsync(true);
 
-            bool result = await doctorService.UpdateCareerInfo(TestUserId, careerInfo);
+            bool result = await _doctorService.UpdateCareerInfo(_testUserId, careerInfo);
 
             Assert.IsTrue(result);
         }
@@ -735,32 +735,32 @@ namespace AdminDashboardTests
         {
             string careerInfo = "Experienced cardiologist with 10+ years of practice";
 
-            mockDatabaseHelper.Setup(db => db.UpdateDoctorCareerInfo(TestUserId, careerInfo))
+            _mockDoctorRepository.Setup(db => db.UpdateDoctorCareerInfo(_testUserId, careerInfo))
                 .ReturnsAsync(true);
 
-            await doctorService.UpdateCareerInfo(TestUserId, careerInfo);
+            await _doctorService.UpdateCareerInfo(_testUserId, careerInfo);
 
-            mockDatabaseHelper.Verify(db => db.UpdateDoctorCareerInfo(TestUserId, careerInfo), Times.Once);
+            _mockDoctorRepository.Verify(db => db.UpdateDoctorCareerInfo(_testUserId, careerInfo), Times.Once);
         }
 
         [Test]
         public async Task UpdateCareerInfo_WhenCareerInfoIsNull_PassesEmptyStringToDatabaseHelper()
         {
-            mockDatabaseHelper.Setup(db => db.UpdateDoctorCareerInfo(TestUserId, string.Empty))
+            _mockDoctorRepository.Setup(db => db.UpdateDoctorCareerInfo(_testUserId, string.Empty))
                 .ReturnsAsync(true);
 
-            await doctorService.UpdateCareerInfo(TestUserId, null);
+            await _doctorService.UpdateCareerInfo(_testUserId, null);
 
-            mockDatabaseHelper.Verify(db => db.UpdateDoctorCareerInfo(TestUserId, string.Empty), Times.Once);
+            _mockDoctorRepository.Verify(db => db.UpdateDoctorCareerInfo(_testUserId, string.Empty), Times.Once);
         }
 
         [Test]
         public async Task UpdateCareerInfo_WhenCareerInfoIsNull_ReturnsTrue()
         {
-            mockDatabaseHelper.Setup(db => db.UpdateDoctorCareerInfo(TestUserId, string.Empty))
+            _mockDoctorRepository.Setup(db => db.UpdateDoctorCareerInfo(_testUserId, string.Empty))
                 .ReturnsAsync(true);
 
-            bool result = await doctorService.UpdateCareerInfo(TestUserId, null);
+            bool result = await _doctorService.UpdateCareerInfo(_testUserId, null);
 
             Assert.IsTrue(result);
         }
@@ -770,10 +770,10 @@ namespace AdminDashboardTests
         {
             string validUrl = "https://example.com/avatar.jpg";
 
-            mockDatabaseHelper.Setup(db => db.UpdateDoctorAvatarUrl(TestUserId, validUrl))
+            _mockDoctorRepository.Setup(db => db.UpdateDoctorAvatarUrl(_testUserId, validUrl))
                 .ReturnsAsync(true);
 
-            bool result = await doctorService.UpdateAvatarUrl(TestUserId, validUrl);
+            bool result = await _doctorService.UpdateAvatarUrl(_testUserId, validUrl);
 
             Assert.IsTrue(result);
         }
@@ -783,12 +783,12 @@ namespace AdminDashboardTests
         {
             string validUrl = "https://example.com/avatar.jpg";
 
-            mockDatabaseHelper.Setup(db => db.UpdateDoctorAvatarUrl(TestUserId, validUrl))
+            _mockDoctorRepository.Setup(db => db.UpdateDoctorAvatarUrl(_testUserId, validUrl))
                 .ReturnsAsync(true);
 
-            await doctorService.UpdateAvatarUrl(TestUserId, validUrl);
+            await _doctorService.UpdateAvatarUrl(_testUserId, validUrl);
 
-            mockDatabaseHelper.Verify(db => db.UpdateDoctorAvatarUrl(TestUserId, validUrl), Times.Once);
+            _mockDoctorRepository.Verify(db => db.UpdateDoctorAvatarUrl(_testUserId, validUrl), Times.Once);
         }
 
         [Test]
@@ -797,7 +797,7 @@ namespace AdminDashboardTests
             string tooLongUrl = new string('a', 256);
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdateAvatarUrl(TestUserId, tooLongUrl));
+                await _doctorService.UpdateAvatarUrl(_testUserId, tooLongUrl));
 
             Assert.That(exception.Message, Does.StartWith("Avatar URL is too long."));
         }
@@ -808,7 +808,7 @@ namespace AdminDashboardTests
             string tooLongUrl = new string('a', 256);
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdateAvatarUrl(TestUserId, tooLongUrl));
+                await _doctorService.UpdateAvatarUrl(_testUserId, tooLongUrl));
 
             Assert.AreEqual("avatarUrl", exception.ParamName);
         }
@@ -820,31 +820,31 @@ namespace AdminDashboardTests
 
             try
             {
-                doctorService.UpdateAvatarUrl(TestUserId, tooLongUrl).Wait();
+                _doctorService.UpdateAvatarUrl(_testUserId, tooLongUrl).Wait();
             }
             catch { /* Expected exception */ }
 
-            mockDatabaseHelper.Verify(db => db.UpdateDoctorAvatarUrl(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
+            _mockDoctorRepository.Verify(db => db.UpdateDoctorAvatarUrl(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
         }
 
         [Test]
         public async Task UpdateAvatarUrl_WhenUrlIsNull_PassesEmptyStringToDatabaseHelper()
         {
-            mockDatabaseHelper.Setup(db => db.UpdateDoctorAvatarUrl(TestUserId, string.Empty))
+            _mockDoctorRepository.Setup(db => db.UpdateDoctorAvatarUrl(_testUserId, string.Empty))
                 .ReturnsAsync(true);
 
-            await doctorService.UpdateAvatarUrl(TestUserId, null);
+            await _doctorService.UpdateAvatarUrl(_testUserId, null);
 
-            mockDatabaseHelper.Verify(db => db.UpdateDoctorAvatarUrl(TestUserId, string.Empty), Times.Once);
+            _mockDoctorRepository.Verify(db => db.UpdateDoctorAvatarUrl(_testUserId, string.Empty), Times.Once);
         }
 
         [Test]
         public async Task UpdateAvatarUrl_WhenUrlIsNull_ReturnsTrue()
         {
-            mockDatabaseHelper.Setup(db => db.UpdateDoctorAvatarUrl(TestUserId, string.Empty))
+            _mockDoctorRepository.Setup(db => db.UpdateDoctorAvatarUrl(_testUserId, string.Empty))
                 .ReturnsAsync(true);
 
-            bool result = await doctorService.UpdateAvatarUrl(TestUserId, null);
+            bool result = await _doctorService.UpdateAvatarUrl(_testUserId, null);
 
             Assert.IsTrue(result);
         }
@@ -854,10 +854,10 @@ namespace AdminDashboardTests
         {
             string validPhoneNumber = "1234567890";
 
-            mockDatabaseHelper.Setup(db => db.UpdateDoctorPhoneNumber(TestUserId, validPhoneNumber))
+            _mockDoctorRepository.Setup(db => db.UpdateDoctorPhoneNumber(_testUserId, validPhoneNumber))
                 .ReturnsAsync(true);
 
-            bool result = await doctorService.UpdatePhoneNumber(TestUserId, validPhoneNumber);
+            bool result = await _doctorService.UpdatePhoneNumber(_testUserId, validPhoneNumber);
 
             Assert.IsTrue(result);
         }
@@ -867,12 +867,12 @@ namespace AdminDashboardTests
         {
             string validPhoneNumber = "1234567890";
 
-            mockDatabaseHelper.Setup(db => db.UpdateDoctorPhoneNumber(TestUserId, validPhoneNumber))
+            _mockDoctorRepository.Setup(db => db.UpdateDoctorPhoneNumber(_testUserId, validPhoneNumber))
                 .ReturnsAsync(true);
 
-            await doctorService.UpdatePhoneNumber(TestUserId, validPhoneNumber);
+            await _doctorService.UpdatePhoneNumber(_testUserId, validPhoneNumber);
 
-            mockDatabaseHelper.Verify(db => db.UpdateDoctorPhoneNumber(TestUserId, validPhoneNumber), Times.Once);
+            _mockDoctorRepository.Verify(db => db.UpdateDoctorPhoneNumber(_testUserId, validPhoneNumber), Times.Once);
         }
 
         [Test]
@@ -881,7 +881,7 @@ namespace AdminDashboardTests
             string emptyPhoneNumber = "";
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdatePhoneNumber(TestUserId, emptyPhoneNumber));
+                await _doctorService.UpdatePhoneNumber(_testUserId, emptyPhoneNumber));
 
             Assert.That(exception.Message, Does.StartWith("Phone number must be exactly 10 digits."));
         }
@@ -892,7 +892,7 @@ namespace AdminDashboardTests
             string emptyPhoneNumber = "";
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdatePhoneNumber(TestUserId, emptyPhoneNumber));
+                await _doctorService.UpdatePhoneNumber(_testUserId, emptyPhoneNumber));
 
             Assert.AreEqual("phoneNumber", exception.ParamName);
         }
@@ -903,7 +903,7 @@ namespace AdminDashboardTests
             string whitespacePhoneNumber = "   ";
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdatePhoneNumber(TestUserId, whitespacePhoneNumber));
+                await _doctorService.UpdatePhoneNumber(_testUserId, whitespacePhoneNumber));
 
             Assert.That(exception.Message, Does.StartWith("Phone number must be exactly 10 digits."));
         }
@@ -914,7 +914,7 @@ namespace AdminDashboardTests
             string tooShortPhoneNumber = "123456789";  // 9 digits
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdatePhoneNumber(TestUserId, tooShortPhoneNumber));
+                await _doctorService.UpdatePhoneNumber(_testUserId, tooShortPhoneNumber));
 
             Assert.That(exception.Message, Does.StartWith("Phone number must be exactly 10 digits."));
         }
@@ -925,7 +925,7 @@ namespace AdminDashboardTests
             string tooLongPhoneNumber = "12345678901"; // 11 digits
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdatePhoneNumber(TestUserId, tooLongPhoneNumber));
+                await _doctorService.UpdatePhoneNumber(_testUserId, tooLongPhoneNumber));
 
             Assert.That(exception.Message, Does.StartWith("Phone number must be exactly 10 digits."));
         }
@@ -936,7 +936,7 @@ namespace AdminDashboardTests
             string phoneNumberWithNonDigits = "123-456-789";
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdatePhoneNumber(TestUserId, phoneNumberWithNonDigits));
+                await _doctorService.UpdatePhoneNumber(_testUserId, phoneNumberWithNonDigits));
 
             Assert.That(exception.Message, Does.StartWith("Phone number must be exactly 10 digits."));
         }
@@ -947,7 +947,7 @@ namespace AdminDashboardTests
             string phoneNumberWithLetters = "123456789a";
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdatePhoneNumber(TestUserId, phoneNumberWithLetters));
+                await _doctorService.UpdatePhoneNumber(_testUserId, phoneNumberWithLetters));
 
             Assert.That(exception.Message, Does.StartWith("Phone number must contain only digits."));
         }
@@ -958,7 +958,7 @@ namespace AdminDashboardTests
             string phoneNumberWithLetters = "123456789a";
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdatePhoneNumber(TestUserId, phoneNumberWithLetters));
+                await _doctorService.UpdatePhoneNumber(_testUserId, phoneNumberWithLetters));
 
             Assert.AreEqual("phoneNumber", exception.ParamName);
         }
@@ -970,11 +970,11 @@ namespace AdminDashboardTests
 
             try
             {
-                doctorService.UpdatePhoneNumber(TestUserId, invalidPhoneNumber).Wait();
+                _doctorService.UpdatePhoneNumber(_testUserId, invalidPhoneNumber).Wait();
             }
             catch { /* Expected exception */ }
 
-            mockDatabaseHelper.Verify(db => db.UpdateDoctorPhoneNumber(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
+            _mockDoctorRepository.Verify(db => db.UpdateDoctorPhoneNumber(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
         }
 
         [Test]
@@ -982,10 +982,10 @@ namespace AdminDashboardTests
         {
             string validEmail = "doctor@hospital.com";
 
-            mockDatabaseHelper.Setup(db => db.UpdateDoctorEmail(TestUserId, validEmail))
+            _mockDoctorRepository.Setup(db => db.UpdateDoctorEmail(_testUserId, validEmail))
                 .ReturnsAsync(true);
 
-            bool result = await doctorService.UpdateEmail(TestUserId, validEmail);
+            bool result = await _doctorService.UpdateEmail(_testUserId, validEmail);
 
             Assert.IsTrue(result);
         }
@@ -995,12 +995,12 @@ namespace AdminDashboardTests
         {
             string validEmail = "doctor@hospital.com";
 
-            mockDatabaseHelper.Setup(db => db.UpdateDoctorEmail(TestUserId, validEmail))
+            _mockDoctorRepository.Setup(db => db.UpdateDoctorEmail(_testUserId, validEmail))
                 .ReturnsAsync(true);
 
-            await doctorService.UpdateEmail(TestUserId, validEmail);
+            await _doctorService.UpdateEmail(_testUserId, validEmail);
 
-            mockDatabaseHelper.Verify(db => db.UpdateDoctorEmail(TestUserId, validEmail), Times.Once);
+            _mockDoctorRepository.Verify(db => db.UpdateDoctorEmail(_testUserId, validEmail), Times.Once);
         }
 
         [Test]
@@ -1009,7 +1009,7 @@ namespace AdminDashboardTests
             string emptyEmail = "";
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdateEmail(TestUserId, emptyEmail));
+                await _doctorService.UpdateEmail(_testUserId, emptyEmail));
 
             Assert.That(exception.Message, Does.StartWith("Mail cannot be empty."));
         }
@@ -1020,7 +1020,7 @@ namespace AdminDashboardTests
             string emptyEmail = "";
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdateEmail(TestUserId, emptyEmail));
+                await _doctorService.UpdateEmail(_testUserId, emptyEmail));
 
             Assert.AreEqual("email", exception.ParamName);
         }
@@ -1031,7 +1031,7 @@ namespace AdminDashboardTests
             string whitespaceEmail = "   ";
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdateEmail(TestUserId, whitespaceEmail));
+                await _doctorService.UpdateEmail(_testUserId, whitespaceEmail));
 
             Assert.That(exception.Message, Does.StartWith("Mail cannot be empty."));
         }
@@ -1042,7 +1042,7 @@ namespace AdminDashboardTests
             string invalidEmail = "doctor";
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdateEmail(TestUserId, invalidEmail));
+                await _doctorService.UpdateEmail(_testUserId, invalidEmail));
 
             Assert.That(exception.Message, Does.StartWith("Mail must contain '@' and '.'."));
         }
@@ -1053,7 +1053,7 @@ namespace AdminDashboardTests
             string invalidEmail = "doctor@hospital";
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdateEmail(TestUserId, invalidEmail));
+                await _doctorService.UpdateEmail(_testUserId, invalidEmail));
 
             Assert.That(exception.Message, Does.StartWith("Mail must contain '@' and '.'."));
         }
@@ -1064,7 +1064,7 @@ namespace AdminDashboardTests
             string invalidEmail = "doctor.hospital";
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdateEmail(TestUserId, invalidEmail));
+                await _doctorService.UpdateEmail(_testUserId, invalidEmail));
 
             Assert.That(exception.Message, Does.StartWith("Mail must contain '@' and '.'."));
         }
@@ -1075,7 +1075,7 @@ namespace AdminDashboardTests
             string invalidEmail = "doctor";
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdateEmail(TestUserId, invalidEmail));
+                await _doctorService.UpdateEmail(_testUserId, invalidEmail));
 
             Assert.AreEqual("email", exception.ParamName);
         }
@@ -1086,7 +1086,7 @@ namespace AdminDashboardTests
             string tooLongEmail = new string('a', 90) + "@hospital.com"; // More than 100 characters
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdateEmail(TestUserId, tooLongEmail));
+                await _doctorService.UpdateEmail(_testUserId, tooLongEmail));
 
             Assert.That(exception.Message, Does.StartWith("Mail is too long."));
         }
@@ -1097,7 +1097,7 @@ namespace AdminDashboardTests
             string tooLongEmail = new string('a', 90) + "@hospital.com"; // More than 100 characters
 
             var exception = Assert.ThrowsAsync<ArgumentException>(async () =>
-                await doctorService.UpdateEmail(TestUserId, tooLongEmail));
+                await _doctorService.UpdateEmail(_testUserId, tooLongEmail));
 
             Assert.AreEqual("email", exception.ParamName);
         }
@@ -1109,11 +1109,11 @@ namespace AdminDashboardTests
 
             try
             {
-                doctorService.UpdateEmail(TestUserId, invalidEmail).Wait();
+                _doctorService.UpdateEmail(_testUserId, invalidEmail).Wait();
             }
             catch { /* Expected exception */ }
 
-            mockDatabaseHelper.Verify(db => db.UpdateDoctorEmail(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
+            _mockDoctorRepository.Verify(db => db.UpdateDoctorEmail(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
         }
 
         [Test]
@@ -1121,10 +1121,10 @@ namespace AdminDashboardTests
         {
             var actionType = ActionType.UPDATE_PROFILE;
 
-            mockDatabaseHelper.Setup(db => db.UpdateLogService(TestUserId, actionType))
+            _mockDoctorRepository.Setup(db => db.UpdateLogService(_testUserId, actionType))
                 .ReturnsAsync(true);
 
-            bool result = await doctorService.LogUpdate(TestUserId, actionType);
+            bool result = await _doctorService.LogUpdate(_testUserId, actionType);
 
             Assert.IsTrue(result);
         }
@@ -1134,12 +1134,12 @@ namespace AdminDashboardTests
         {
             var actionType = ActionType.UPDATE_PROFILE;
 
-            mockDatabaseHelper.Setup(db => db.UpdateLogService(TestUserId, actionType))
+            _mockDoctorRepository.Setup(db => db.UpdateLogService(_testUserId, actionType))
                 .ReturnsAsync(true);
 
-            await doctorService.LogUpdate(TestUserId, actionType);
+            await _doctorService.LogUpdate(_testUserId, actionType);
 
-            mockDatabaseHelper.Verify(db => db.UpdateLogService(TestUserId, actionType), Times.Once);
+            _mockDoctorRepository.Verify(db => db.UpdateLogService(_testUserId, actionType), Times.Once);
         }
     }
 }

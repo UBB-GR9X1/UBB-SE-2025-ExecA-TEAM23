@@ -1,12 +1,13 @@
-﻿// <copyright file="AuthManagerModel.cs" company="PlaceholderCompany">
+﻿// <copyright file="AuthService.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace Hospital.Managers
+using Hospital.Repositories;
+
+namespace Hospital.Services
 {
     using System;
     using System.Threading.Tasks;
-    using Hospital.DatabaseServices;
     using Hospital.Exceptions;
     using Hospital.Models;
     using Windows.Services.Maps;
@@ -14,17 +15,17 @@ namespace Hospital.Managers
     /// <summary>
     /// Service for the Login / Create Account.
     /// </summary>
-    public class AuthManagerModel : IAuthManagerModel
+    public class AuthService : IAuthService
     {
-        private readonly ILogInDatabaseService logInDatabaseService;
+        private readonly ILogInRepository _logInRepository;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AuthManagerModel"/> class.
+        /// Initializes a new instance of the <see cref="AuthService"/> class.
         /// </summary>
-        /// <param name="databaseService">.</param>
-        public AuthManagerModel(ILogInDatabaseService databaseService)
+        /// <param name="repository">.</param>
+        public AuthService(ILogInRepository repository)
         {
-            this.logInDatabaseService = databaseService;
+            _logInRepository = repository;
         }
 
         /// <summary>
@@ -141,7 +142,7 @@ namespace Hospital.Managers
         /// <returns>true, no mather what.</returns>
         public async Task<bool> LoadUserByUsername(string username)
         {
-            this.allUserInformation = await this.logInDatabaseService.GetUserByUsername(username).ConfigureAwait(false);
+            allUserInformation = await _logInRepository.GetUserByUsername(username).ConfigureAwait(false);
             return true;
         }
 
@@ -152,17 +153,17 @@ namespace Hospital.Managers
         /// <returns>true, if the password matches with the user's one, or false if the one from the input does not match.</returns>
         public async Task<bool> VerifyPassword(string userInputPassword)
         {
-            if (this.allUserInformation == UserAuthModel.Default)
+            if (allUserInformation == UserAuthModel.Default)
             {
                 return false;
             }
 
-            if (!this.allUserInformation.Password.Equals(userInputPassword))
+            if (!allUserInformation.Password.Equals(userInputPassword))
             {
                 return false;
             }
 
-            return await this.LogAction(ActionType.LOGIN);
+            return await LogAction(ActionType.LOGIN);
         }
 
         /// <summary>
@@ -172,16 +173,16 @@ namespace Hospital.Managers
         /// <exception cref="AuthenticationException">Checks if the user is logged in, throws an exception if not.</exception>
         public async Task<bool> Logout()
         {
-            if (this.allUserInformation == UserAuthModel.Default)
+            if (allUserInformation == UserAuthModel.Default)
             {
                 throw new AuthenticationException("Not logged in");
             }
 
-            bool resultForLoggingout = await this.LogAction(ActionType.LOGOUT);
+            bool resultForLoggingout = await LogAction(ActionType.LOGOUT);
 
             if (resultForLoggingout)
             {
-                this.allUserInformation = UserAuthModel.Default;
+                allUserInformation = UserAuthModel.Default;
             }
 
             return resultForLoggingout;
@@ -330,13 +331,13 @@ namespace Hospital.Managers
                 throw new AuthenticationException("Mismatch between Birth Day and CNP birth day");
             }
 
-            bool result = await this.logInDatabaseService.CreateAccount(modelForCreatingUserAccount);
+            bool result = await _logInRepository.CreateAccount(modelForCreatingUserAccount);
             if (result)
             {
-                if (await this.LoadUserByUsername(modelForCreatingUserAccount.Username))
+                if (await LoadUserByUsername(modelForCreatingUserAccount.Username))
                 {
-                    await this.LogAction(ActionType.CREATE_ACCOUNT);
-                    return await this.LogAction(ActionType.LOGIN);
+                    await LogAction(ActionType.CREATE_ACCOUNT);
+                    return await LogAction(ActionType.LOGIN);
                 }
             }
 
@@ -350,7 +351,7 @@ namespace Hospital.Managers
         /// <returns>The action setter.</returns>
         public async Task<bool> LogAction(ActionType actionType_loginORlogout)
         {
-            return await this.logInDatabaseService.AuthenticationLogService(this.allUserInformation.UserId, actionType_loginORlogout);
+            return await _logInRepository.AuthenticationLogService(allUserInformation.UserId, actionType_loginORlogout);
         }
     }
 }

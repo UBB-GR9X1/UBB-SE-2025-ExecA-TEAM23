@@ -1,5 +1,4 @@
 using Hospital.Configs;
-using Hospital.DatabaseServices;
 using Hospital.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -8,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Hospital.Repositories;
 
 namespace Hospital.Tests.IntegrationTest
 {
@@ -15,8 +15,8 @@ namespace Hospital.Tests.IntegrationTest
     public class LoggerDatabaseServiceIntegrationTests
     {
         private Mock<IConfigProvider> _mockConfigProvider;
-        private LoggerDatabaseService _loggerService;
-        private string _testConnectionString = "Data Source=DESKTOP-2KUEEF3;Initial Catalog=HospitalApp;Integrated Security=True;TrustServerCertificate=True";
+        private LoggerRepository _loggerRepository;
+        private string _testConnectionString = Config.GetInstance().GetDatabaseConnection();
 
         [TestInitialize]
         public void Setup()
@@ -25,7 +25,7 @@ namespace Hospital.Tests.IntegrationTest
             _mockConfigProvider.Setup(config => config.GetDatabaseConnection())
                 .Returns(_testConnectionString);
 
-            _loggerService = new LoggerDatabaseService(_mockConfigProvider.Object);
+            _loggerRepository = new LoggerRepository(_mockConfigProvider.Object);
 
             // Set up test database
             try
@@ -63,7 +63,7 @@ namespace Hospital.Tests.IntegrationTest
                 await InsertTestLogs();
 
                 // Act
-                var logs = await _loggerService.GetAllLogs();
+                var logs = await _loggerRepository.GetAllLogs();
 
                 // Assert
                 Assert.IsNotNull(logs, "Logs should not be null");
@@ -87,7 +87,7 @@ namespace Hospital.Tests.IntegrationTest
                 await InsertLogForUser(testUserId, ActionType.LOGIN);
 
                 // Act
-                var logs = await _loggerService.GetLogsByUserId(testUserId);
+                var logs = await _loggerRepository.GetLogsByUserId(testUserId);
 
                 // Assert
                 Assert.IsNotNull(logs, "Logs should not be null");
@@ -117,7 +117,7 @@ namespace Hospital.Tests.IntegrationTest
                 await InsertLogForUser(2, ActionType.LOGOUT);
 
                 // Act
-                var logs = await _loggerService.GetLogsByActionType(ActionType.LOGIN);
+                var logs = await _loggerRepository.GetLogsByActionType(ActionType.LOGIN);
 
                 // Assert
                 Assert.IsNotNull(logs, "Logs should not be null");
@@ -152,7 +152,7 @@ namespace Hospital.Tests.IntegrationTest
                 await InsertLogForUserWithTimestamp(2, ActionType.LOGOUT, newerTime);
 
                 // Act
-                var logs = await _loggerService.GetLogsBeforeTimestamp(filterTime);
+                var logs = await _loggerRepository.GetLogsBeforeTimestamp(filterTime);
 
                 // Assert
                 Assert.IsNotNull(logs, "Logs should not be null");
@@ -186,10 +186,10 @@ namespace Hospital.Tests.IntegrationTest
                 await EnsureUserExists(testUserId);
 
                 // Act
-                bool result = await _loggerService.LogAction(testUserId, actionType);
+                bool result = await _loggerRepository.LogAction(testUserId, actionType);
 
                 // Verify
-                var logs = await _loggerService.GetLogsByUserId(testUserId);
+                var logs = await _loggerRepository.GetLogsByUserId(testUserId);
 
                 // Assert
                 Assert.IsTrue(result, "LogAction should return true");

@@ -1,5 +1,5 @@
-using Hospital.DatabaseServices;
-using Hospital.Managers;
+using Hospital.Repositories;
+using Hospital.Services;
 using Hospital.ViewModels;
 
 namespace LoginPageTests;
@@ -10,9 +10,9 @@ public class AuthViewModelTests
     AuthViewModel authViewModel;
     public AuthViewModelTests()
     {
-        ILogInDatabaseService logInDatabaseService = new LogInDatabaseService();
-        AuthManagerModel authManagerModel = new AuthManagerModel(logInDatabaseService);
-        authViewModel = new AuthViewModel(authManagerModel);
+        ILogInRepository logInRepository = new LogInRepository();
+        AuthService authService = new AuthService(logInRepository);
+        authViewModel = new AuthViewModel(authService);
     }
 
     /* [TestMethod]

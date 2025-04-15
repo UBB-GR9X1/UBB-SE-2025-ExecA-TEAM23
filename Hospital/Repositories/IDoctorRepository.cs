@@ -1,10 +1,10 @@
-﻿using Hospital.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Hospital.Models;
 
-namespace Hospital.Services
+namespace Hospital.Repositories
 {
-    public interface IDoctorsDatabaseHelper
+    public interface IDoctorRepository
     {
         Task<List<DoctorModel>> GetDoctorsByDepartmentPartialName(string departmentPartialName);
 

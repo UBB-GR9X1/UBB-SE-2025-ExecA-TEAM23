@@ -1,11 +1,10 @@
 using Hospital.Models;
-using Hospital.Services;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Hospital.Doctor_Dashboard;
+using Hospital.Repositories;
 
-namespace Hospital.Managers
+namespace Hospital.Services
 {
     public class DoctorService : IDoctorService
     {
@@ -14,13 +13,13 @@ namespace Hospital.Managers
         private const int MaxAvatarUrlLength = 255;
         private const int PhoneNumberLength = 10;
 
-        private readonly IDoctorsDatabaseHelper _doctorDatabaseHelper;
+        private readonly IDoctorRepository _doctorDatabaseHelper;
 
         public DoctorModel DoctorInformation { get; private set; } = DoctorModel.Default;
 
         public List<DoctorModel> DoctorList { get; private set; }
 
-        public DoctorService(IDoctorsDatabaseHelper doctorDbHelper)
+        public DoctorService(IDoctorRepository doctorDbHelper)
         {
             _doctorDatabaseHelper = doctorDbHelper ?? throw new ArgumentNullException(nameof(doctorDbHelper));
             DoctorList = new List<DoctorModel>();

@@ -35,7 +35,7 @@ namespace Hospital.Configs
             return configurationInstance;
         }
 
-        private readonly string databaseConnection = "Data Source=DESKTOP-2KUEEF3;Initial Catalog=HospitalApp;Integrated Security=True;TrustServerCertificate=True";
+        private readonly string databaseConnection = "Data Source=DESKTOP-HGL99LI\\SQLEXPRESS;Initial Catalog=HospitalApp;Integrated Security=True;TrustServerCertificate=True";
 
         /// <summary>
         /// Gets the database connection.

@@ -6,8 +6,8 @@ namespace Hospital.ViewModels
 {
     using System.Threading.Tasks;
     using Hospital.Exceptions;
-    using Hospital.Managers;
     using Hospital.Models;
+    using Hospital.Services;
 
 
     /// <summary>
@@ -17,12 +17,12 @@ namespace Hospital.ViewModels
     /// Initializes a new instance of the <see cref="AuthViewModel"/> class.
     /// </remarks>
     /// <param name="userServiceModel">Servuce for Login or Create Account.</param>
-    public class AuthViewModel(IAuthManagerModel userServiceModel) : IAuthViewModel
+    public class AuthViewModel(IAuthService userServiceModel) : IAuthViewModel
     {
         /// <summary>
         /// Gets the Service (Model) for the user.
         /// </summary>
-        public IAuthManagerModel authManagerModel { get; private set; } = userServiceModel;
+        public IAuthService AuthService { get; private set; } = userServiceModel;
 
         /// <summary>
         /// Logs the user in if the user exists and the password for the account is correct.
@@ -34,14 +34,14 @@ namespace Hospital.ViewModels
         /// it throws an exception.</exception>
         public async Task Login(string username, string password)
         {
-            bool checkIfUserExists = await this.authManagerModel.LoadUserByUsername(username);
+            bool checkIfUserExists = await this.AuthService.LoadUserByUsername(username);
 
             if (!checkIfUserExists)
             {
                 throw new AuthenticationException("Username doesn't exist!");
             }
 
-            bool isThePasswordValid = await this.authManagerModel.VerifyPassword(password);
+            bool isThePasswordValid = await this.AuthService.VerifyPassword(password);
 
             if (!isThePasswordValid)
             {
@@ -55,7 +55,7 @@ namespace Hospital.ViewModels
         /// <returns>.</returns>
         public async Task Logout()
         {
-            await this.authManagerModel.Logout();
+            await this.AuthService.Logout();
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace Hospital.ViewModels
         /// <returns>.</returns>
         public async Task CreateAccount(UserCreateAccountModel modelForCreatingUserAccount)
         {
-            await this.authManagerModel.CreateAccount(modelForCreatingUserAccount);
+            await this.AuthService.CreateAccount(modelForCreatingUserAccount);
         }
 
         /// <summary>

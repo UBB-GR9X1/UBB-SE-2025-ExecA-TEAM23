@@ -1,11 +1,11 @@
-﻿using Hospital.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Hospital.Models;
 
-namespace Hospital.DatabaseServices
+namespace Hospital.Repositories
 {
-    public interface IPatientsDatabaseService
+    public interface IPatientRepository
     {
         Task<List<PatientJointModel>> GetAllPatients();
         Task<PatientJointModel> GetPatientByUserId(int userId);

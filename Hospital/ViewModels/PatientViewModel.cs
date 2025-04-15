@@ -1,5 +1,5 @@
-﻿using Hospital.Managers;
-using Hospital.Models;
+﻿using Hospital.Models;
+using Hospital.Services;
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -8,12 +8,12 @@ namespace Hospital.ViewModels
 {
     public class PatientViewModel : IPatientViewModel
     {
-        private readonly IPatientManagerModel _patientManager;
+        private readonly IPatientService _patientManager;
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public PatientJointModel _originalPatient { get; private set; }
 
-        public PatientViewModel(IPatientManagerModel patientManager, int userId)
+        public PatientViewModel(IPatientService patientManager, int userId)
         {
             _patientManager = patientManager;
             _userId = userId;

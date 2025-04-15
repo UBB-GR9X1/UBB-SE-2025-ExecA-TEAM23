@@ -1,18 +1,18 @@
-﻿// <copyright file="ILogInDatabaseService.cs" company="PlaceholderCompany">
+﻿// <copyright file="ILogInRepository.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace Hospital.DatabaseServices
-{
-    using System.Threading.Tasks;
-    using Hospital.Models;
+using System.Threading.Tasks;
+using Hospital.Models;
 
+namespace Hospital.Repositories
+{
     /// <summary>
-    /// Interface for LogInDatabaseService which does the following things:
+    /// Interface for LogInRepository which does the following things:
     /// Makes the connection with the database in order to get information about the user
     /// useful for the login and for creating a new account.
     /// </summary>
-    public interface ILogInDatabaseService
+    public interface ILogInRepository
     {
         /// <summary>
         /// Checks the action the user makes, loging in or loging out and adds it to the database.

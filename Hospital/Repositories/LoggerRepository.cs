@@ -1,20 +1,20 @@
-﻿// <copyright file="LoggerDatabaseService.cs"  company="PlaceholderCompany">
+﻿// <copyright file="LoggerRepository.cs"  company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace Hospital.DatabaseServices
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using Hospital.Configs;
-    using Hospital.Models;
-    using Microsoft.Data.SqlClient;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Hospital.Configs;
+using Hospital.Models;
+using Microsoft.Data.SqlClient;
 
+namespace Hospital.Repositories
+{
     /// <summary>
     /// Service for handling database operations related to system logs.
     /// </summary>
-    public class LoggerDatabaseService : ILoggerDatabaseService
+    public class LoggerRepository : ILoggerRepository
     {
         private const int LogIdColumnIndex = 0;
         private const int UserIdColumnIndex = 1;
@@ -24,22 +24,22 @@ namespace Hospital.DatabaseServices
         private readonly string connectionString;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoggerDatabaseService"/> class.
+        /// Initializes a new instance of the <see cref="LoggerRepository"/> class.
         /// </summary>
         /// <param name="configProvider">The configuration provider for database connection information.</param>
         /// <exception cref="ArgumentNullException">Thrown when configProvider is null.</exception>
-        public LoggerDatabaseService()
+        public LoggerRepository()
         {
             var config = Config.GetInstance();
             connectionString = config.GetDatabaseConnection();
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoggerDatabaseService"/> class.
+        /// Initializes a new instance of the <see cref="LoggerRepository"/> class.
         /// </summary>
         /// <param name="configProvider">The configuration provider for database connection information.</param>
         /// <exception cref="ArgumentNullException">Thrown when configProvider is null.</exception>
-        public LoggerDatabaseService(IConfigProvider configProvider)
+        public LoggerRepository(IConfigProvider configProvider)
         {
             if (configProvider == null)
                 throw new ArgumentNullException(nameof(configProvider));

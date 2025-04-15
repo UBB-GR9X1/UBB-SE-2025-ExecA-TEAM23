@@ -1,4 +1,5 @@
-using Hospital.Doctor_Dashboard;
+using Hospital.Services;
+using Hospital.Repositories;
 using Hospital.Exceptions;
 using Hospital.ViewModels;
 using Microsoft.Data.SqlClient;

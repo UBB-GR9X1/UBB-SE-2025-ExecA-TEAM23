@@ -1,30 +1,30 @@
-﻿// <copyright file="LogInDatabaseService.cs" company="PlaceholderCompany">
+﻿// <copyright file="LogInRepository.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace Hospital.DatabaseServices
-{
-    using System;
-    using System.Threading.Tasks;
-    using Hospital.Configs;
-    using Hospital.Exceptions;
-    using Hospital.Models;
-    using Microsoft.Data.SqlClient;
+using System;
+using System.Threading.Tasks;
+using Hospital.Configs;
+using Hospital.Exceptions;
+using Hospital.Models;
+using Microsoft.Data.SqlClient;
 
+namespace Hospital.Repositories
+{
     /// <summary>
     /// Makes the connection with the database in order to get information about the user
     /// useful for the login and for creating a new account.
     /// </summary>
-    public class LogInDatabaseService : ILogInDatabaseService
+    public class LogInRepository : ILogInRepository
     {
         private readonly Config databaseConfiguration;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LogInDatabaseService"/> class.
+        /// Initializes a new instance of the <see cref="LogInRepository"/> class.
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
-        public LogInDatabaseService()
+        public LogInRepository()
         {
             this.databaseConfiguration = Config.GetInstance();
         }

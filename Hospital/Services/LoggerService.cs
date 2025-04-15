@@ -1,29 +1,29 @@
-﻿// <copyright file="LoggerManagerModel.cs"  company="PlaceholderCompany">
+﻿// <copyright file="LoggerService.cs"  company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace Hospital.Managers
+namespace Hospital.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Hospital.DatabaseServices;
     using Hospital.Models;
+    using Hospital.Repositories;
 
     /// <summary>
     /// Model for handling system logging operations.
     /// </summary>
-    public class LoggerManagerModel : ILoggerManagerModel
+    public class LoggerService : ILoggerService
     {
-        private readonly ILoggerDatabaseService loggerDatabaseService;
+        private readonly ILoggerRepository _loggerRepository;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoggerManagerModel"/> class.
+        /// Initializes a new instance of the <see cref="LoggerService"/> class.
         /// </summary>
-        /// <param name="loggerDatabaseService">The logger service interface.</param>
-        public LoggerManagerModel(ILoggerDatabaseService loggerDatabaseService)
+        /// <param name="loggerRepository">The logger service interface.</param>
+        public LoggerService(ILoggerRepository loggerRepository)
         {
-            this.loggerDatabaseService = loggerDatabaseService ?? throw new ArgumentNullException(nameof(loggerDatabaseService));
+            _loggerRepository = loggerRepository ?? throw new ArgumentNullException(nameof(loggerRepository));
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Hospital.Managers
         /// <returns>A list of all log entries.</returns>
         public async Task<List<LogEntryModel>> GetAllLogs()
         {
-            return await this.loggerDatabaseService.GetAllLogs();
+            return await _loggerRepository.GetAllLogs();
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Hospital.Managers
                 throw new ArgumentException("User ID must be greater than zero.", nameof(userId));
             }
 
-            return await this.loggerDatabaseService.GetLogsByUserId(userId);
+            return await _loggerRepository.GetLogsByUserId(userId);
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Hospital.Managers
                 throw new ArgumentNullException(nameof(actionType), "Action type cannot be null.");
             }
 
-            return await this.loggerDatabaseService.GetLogsByActionType(actionType);
+            return await _loggerRepository.GetLogsByActionType(actionType);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace Hospital.Managers
                 throw new ArgumentException("Timestamp cannot be default.", nameof(timestamp));
             }
 
-            return await this.loggerDatabaseService.GetLogsBeforeTimestamp(timestamp);
+            return await _loggerRepository.GetLogsBeforeTimestamp(timestamp);
         }
 
         /// <summary>
@@ -97,11 +97,11 @@ namespace Hospital.Managers
         {
             if (userId != null)
             {
-                return await this.loggerDatabaseService.GetLogsWithParameters(userId.Value, actionType, timestamp);
+                return await _loggerRepository.GetLogsWithParameters(userId.Value, actionType, timestamp);
             }
             else
             {
-                return await this.loggerDatabaseService.GetLogsWithParametersWithoutUserId(actionType, timestamp);
+                return await _loggerRepository.GetLogsWithParametersWithoutUserId(actionType, timestamp);
             }
         }
 
@@ -127,7 +127,7 @@ namespace Hospital.Managers
                 throw new ArgumentNullException(nameof(actionType), "Action type cannot be null.");
             }
 
-            return await this.loggerDatabaseService.LogAction(userId, actionType);
+            return await _loggerRepository.LogAction(userId, actionType);
         }
     }
 }

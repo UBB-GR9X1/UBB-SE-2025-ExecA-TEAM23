@@ -1,10 +1,10 @@
-using Hospital.Managers;
+using Hospital.Repositories;
 using Hospital.Models;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Hospital.Doctor_Dashboard;
+using Hospital.Services;
 
 namespace Hospital.ViewModels
 {

@@ -5,8 +5,8 @@
 namespace Hospital.ViewModels
 {
     using System.Threading.Tasks;
-    using Hospital.Managers;
     using Hospital.Models;
+    using Hospital.Services;
 
     /// <summary>
     /// Interface for AuthViewModel:
@@ -17,7 +17,7 @@ namespace Hospital.ViewModels
         /// <summary>
         /// The service / model for creating an account / loging in.
         /// </summary>
-        IAuthManagerModel authManagerModel { get; }
+        IAuthService AuthService { get; }
 
         /// <summary>
         /// Creates an accout for the user.

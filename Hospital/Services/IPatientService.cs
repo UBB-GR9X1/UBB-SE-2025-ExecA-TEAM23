@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Hospital.Managers
+namespace Hospital.Services
 {
-    public interface IPatientManagerModel
+    public interface IPatientService
     {
         PatientJointModel _patientInfo { get; }
         List<PatientJointModel> _patientList { get; }

@@ -4,28 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Hospital.DatabaseServices;
 using Hospital.Models;
 using Microsoft.Data.SqlClient;
 using Hospital.Configs;
+using Hospital.Repositories;
 
 namespace LoginPageTests.Tests
 {
     [TestClass]
-    public class LogInDatabaseServiceTests
+    public class LogInRepositoryTests
     {
-        private readonly ILogInDatabaseService logInDatabaseService;
+        private readonly ILogInRepository _logInRepository;
 
-        public LogInDatabaseServiceTests()
+        public LogInRepositoryTests()
         {
-            logInDatabaseService = new LogInDatabaseService();
+            _logInRepository = new LogInRepository();
         }
 
         [TestMethod]
         public async Task GetUserByUsername_WithValidUsernameCheckForUser_ReturnsUser()
         {
             // Task<UserAuthModel> GetUserByUsername(string username)
-            var result = await logInDatabaseService.GetUserByUsername("john_doe");
+            var result = await _logInRepository.GetUserByUsername("john_doe");
             Assert.IsNotNull(result);
         }
 
@@ -33,7 +33,7 @@ namespace LoginPageTests.Tests
         public async Task GetUserByUsername_WithValidUsernameCheckIfTheEmailMatches_ReturnsTrue()
         {
             // Task<UserAuthModel> GetUserByUsername(string username)
-            var result = await logInDatabaseService.GetUserByUsername("john_doe");
+            var result = await _logInRepository.GetUserByUsername("john_doe");
             Assert.AreEqual("john@example.com", result.Mail);
         }
 
@@ -41,7 +41,7 @@ namespace LoginPageTests.Tests
         public async Task GetUserByUsername_WithValidUsernameCheckIfTheRoleMatches_ReturnsTrue()
         {
             // Task<UserAuthModel> GetUserByUsername(string username)
-            var result = await logInDatabaseService.GetUserByUsername("john_doe");
+            var result = await _logInRepository.GetUserByUsername("john_doe");
             Assert.AreEqual("Doctor", result.Role);
         }
 
@@ -51,7 +51,7 @@ namespace LoginPageTests.Tests
         {
             await Assert.ThrowsExceptionAsync<Hospital.Exceptions.AuthenticationException>(async () =>
             {
-                await logInDatabaseService.GetUserByUsername("not_john_doe");
+                await _logInRepository.GetUserByUsername("not_john_doe");
             });
         }
 
@@ -71,10 +71,10 @@ namespace LoginPageTests.Tests
                 180
             );
 
-            bool result = await logInDatabaseService.CreateAccount(model);
+            bool result = await _logInRepository.CreateAccount(model);
             Assert.IsTrue(result);
 
-            string query = "DELETE FROM Users WHERE Username = @username";
+            string query = "DELETE FROM Logs WHERE UserId=(SELECT TOP 1 UserId FROM Users WHERE Username=@username)";
 
             using SqlConnection connectionToDatabase = new SqlConnection(Config.GetInstance().DatabaseConnection);
             await connectionToDatabase.OpenAsync().ConfigureAwait(false);
@@ -82,7 +82,12 @@ namespace LoginPageTests.Tests
             using SqlCommand command = new SqlCommand(query, connectionToDatabase);
             command.Parameters.AddWithValue("@username", "nexuser");
 
+            query = "DELETE FROM Users WHERE Username=@username";
             int rowsAffected = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+
+            using SqlCommand command2 = new SqlCommand(query, connectionToDatabase);
+            command2.Parameters.AddWithValue("@username", "nexuser");
+            int rowsAffected2 = await command2.ExecuteNonQueryAsync().ConfigureAwait(false);
         }
 
         [TestMethod]
@@ -102,7 +107,7 @@ namespace LoginPageTests.Tests
             );
             try
             {
-                await logInDatabaseService.CreateAccount(model);
+                await _logInRepository.CreateAccount(model);
             }
             catch (Exception)
             {

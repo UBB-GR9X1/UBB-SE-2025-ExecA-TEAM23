@@ -1,17 +1,17 @@
-﻿using Hospital.DatabaseServices;
-using Hospital.Exceptions;
+﻿using Hospital.Exceptions;
 using Hospital.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Hospital.Repositories;
 
-namespace Hospital.Managers
+namespace Hospital.Services
 {
-    public class PatientManagerModel : IPatientManagerModel
+    public class PatientService : IPatientService
     {
-        private readonly IPatientsDatabaseService _patientsDatabaseService;
+        private readonly IPatientRepository _patientRepository;
 
         //Use this for working on a specific patient
         public PatientJointModel _patientInfo { get; private set; } = PatientJointModel.Default;
@@ -19,25 +19,25 @@ namespace Hospital.Managers
         //Use this for working with more patients
         public List<PatientJointModel> _patientList { get; private set; } = new List<PatientJointModel>();
 
-        public PatientManagerModel() : this(new PatientsDatabaseService()) { }
+        public PatientService() : this(new PatientRepository()) { }
 
         // Second constructor for test injection
-        public PatientManagerModel(IPatientsDatabaseService testService)
+        public PatientService(IPatientRepository testService)
         {
-            _patientsDatabaseService = testService;
+            _patientRepository = testService;
         }
 
 
         public async Task<bool> LoadPatientInfoByUserId(int userId)
         {
-            _patientInfo = await _patientsDatabaseService.GetPatientByUserId(userId).ConfigureAwait(false);
+            _patientInfo = await _patientRepository.GetPatientByUserId(userId).ConfigureAwait(false);
             Debug.WriteLine($"Patient info loaded: {_patientInfo.PatientName}");
             return true;
         }
 
         public async Task<bool> LoadAllPatients()
         {
-            _patientList = await _patientsDatabaseService.GetAllPatients().ConfigureAwait(false);
+            _patientList = await _patientRepository.GetAllPatients().ConfigureAwait(false);
             return true;
         }
 
@@ -49,7 +49,7 @@ namespace Hospital.Managers
             if (password.Length > 255)
                 throw new InputProfileException("Invalid password!\nPassword cannot exceed 255 characters.");
 
-            return await _patientsDatabaseService.UpdatePassword(userId, password);
+            return await _patientRepository.UpdatePassword(userId, password);
         }
 
         public virtual async Task<bool> UpdateEmail(int userId, string email)
@@ -60,7 +60,7 @@ namespace Hospital.Managers
             if (email.Length > 100)
                 throw new InputProfileException("Invalid email!\nEmail cannot exceed 100 characters.");
 
-            return await _patientsDatabaseService.UpdateEmail(userId, email);
+            return await _patientRepository.UpdateEmail(userId, email);
         }
 
         public virtual async Task<bool> UpdateUsername(int userId, string username)
@@ -71,7 +71,7 @@ namespace Hospital.Managers
             if (username.Length > 50)
                 throw new InputProfileException("Invalid username!\nUsername cannot exceed 50 characters.");
 
-            return await _patientsDatabaseService.UpdateUsername(userId, username);
+            return await _patientRepository.UpdateUsername(userId, username);
         }
 
         public virtual async Task<bool> UpdateName(int userId, string name)
@@ -82,12 +82,12 @@ namespace Hospital.Managers
             if (name.Length > 100)
                 throw new InputProfileException("Invalid name!\nName cannot exceed 100 characters.");
 
-            return await _patientsDatabaseService.UpdateName(userId, name);
+            return await _patientRepository.UpdateName(userId, name);
         }
 
         public virtual async Task<bool> UpdateBirthDate(int userId, DateOnly birthDate)
         {
-            return await _patientsDatabaseService.UpdateBirthDate(userId, birthDate);
+            return await _patientRepository.UpdateBirthDate(userId, birthDate);
         }
 
         public virtual async Task<bool> UpdateAddress(int userId, string address)
@@ -98,7 +98,7 @@ namespace Hospital.Managers
             if (address.Length > 255)
                 throw new InputProfileException("Invalid address!\nAddress cannot exceed 255 characters.");
 
-            return await _patientsDatabaseService.UpdateAddress(userId, address);
+            return await _patientRepository.UpdateAddress(userId, address);
         }
 
         public virtual async Task<bool> UpdatePhoneNumber(int userId, string phoneNumber)
@@ -109,7 +109,7 @@ namespace Hospital.Managers
             if (!phoneNumber.All(char.IsDigit))
                 throw new InputProfileException("Invalid phone number!\nOnly digits are allowed.");
 
-            return await _patientsDatabaseService.UpdatePhoneNumber(userId, phoneNumber);
+            return await _patientRepository.UpdatePhoneNumber(userId, phoneNumber);
         }
 
         public virtual async Task<bool> UpdateEmergencyContact(int userId, string emergencyContact)
@@ -120,7 +120,7 @@ namespace Hospital.Managers
             if (!emergencyContact.All(char.IsDigit))
                 throw new InputProfileException("Invalid emergency contact!\nOnly digits are allowed.");
 
-            return await _patientsDatabaseService.UpdateEmergencyContact(userId, emergencyContact);
+            return await _patientRepository.UpdateEmergencyContact(userId, emergencyContact);
         }
 
         public virtual async Task<bool> UpdateWeight(int userId, double weight)
@@ -128,7 +128,7 @@ namespace Hospital.Managers
             if (weight <= 0)
                 throw new InputProfileException("Invalid weight!\nWeight must be greater than 0.");
 
-            return await _patientsDatabaseService.UpdateWeight(userId, weight);
+            return await _patientRepository.UpdateWeight(userId, weight);
         }
 
         public virtual async Task<bool> UpdateHeight(int userId, int height)
@@ -136,12 +136,12 @@ namespace Hospital.Managers
             if (height <= 0)
                 throw new InputProfileException("Invalid height!\nHeight must be greater than 0.");
 
-            return await _patientsDatabaseService.UpdateHeight(userId, height);
+            return await _patientRepository.UpdateHeight(userId, height);
         }
 
         public virtual async Task<bool> LogUpdate(int userId, ActionType action)
         {
-            return await _patientsDatabaseService.LogUpdate(userId, action);
+            return await _patientRepository.LogUpdate(userId, action);
         }
     }
 }

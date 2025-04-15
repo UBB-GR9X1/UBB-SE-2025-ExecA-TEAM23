@@ -2,13 +2,14 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
+
 namespace Hospital.Views
 {
     using System;
     using System.Threading.Tasks;
-    using Hospital.Managers;
+    using Hospital.Repositories;
+    using Hospital.Services;
     using Hospital.ViewModels;
-    using Hospital.DatabaseServices;
     using Microsoft.UI.Xaml;
     using Microsoft.UI.Xaml.Controls;
     using Microsoft.UI.Xaml.Data;
@@ -25,15 +26,15 @@ namespace Hospital.Views
         /// Initializes a new instance of the <see cref="AdminDashboardWindow"/> class.
         /// </summary>
         /// <param name="authViewModel">Authentication service for user operations.</param>
-        /// <param name="loggerDatabaseService">Logger service for auditing.</param>
+        /// <param name="loggerRepository">Logger service for auditing.</param>
         /// <exception cref="ArgumentNullException">Thrown if auth service is null.</exception>
-        public AdminDashboardWindow(IAuthViewModel authViewModel, ILoggerDatabaseService loggerDatabaseService)
+        public AdminDashboardWindow(IAuthViewModel authViewModel, ILoggerRepository loggerRepository)
         {
             this.InitializeComponent();
             this.authViewModel = authViewModel ?? throw new ArgumentNullException(nameof(authViewModel));
 
-            // Initialize LoggerViewModel with LoggerManagerModel
-            var loggerManagerModel = new LoggerManagerModel(loggerDatabaseService);
+            // Initialize LoggerViewModel with LoggerService
+            var loggerManagerModel = new LoggerService(loggerRepository);
             this.loggerViewModel = new LoggerViewModel(loggerManagerModel);
 
             // Load all logs initially

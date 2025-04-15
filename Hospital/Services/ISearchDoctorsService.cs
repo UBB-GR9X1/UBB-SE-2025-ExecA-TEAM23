@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Hospital.Managers
+namespace Hospital.Services
 {
     /// <summary>
     /// Interface for doctor search operations and sorting functionality

@@ -1,16 +1,16 @@
-﻿// <copyright file="IAuthManagerModel.cs" company="PlaceholderCompany">
+﻿// <copyright file="IAuthService.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace Hospital.Managers
+namespace Hospital.Services
 {
     using System.Threading.Tasks;
     using Hospital.Models;
 
     /// <summary>
-    /// Interface for AuthManagerModel.
+    /// Interface for AuthService.
     /// </summary>
-    public interface IAuthManagerModel
+    public interface IAuthService
     {
 
         /// <summary>

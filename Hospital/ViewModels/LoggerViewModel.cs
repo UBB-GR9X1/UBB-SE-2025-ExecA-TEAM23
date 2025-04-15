@@ -12,15 +12,15 @@ namespace Hospital.ViewModels
     using System.Linq;
     using System.Threading.Tasks;
     using System.Windows.Input;
-    using Hospital.Managers;
     using Hospital.Models;
+    using Hospital.Services;
 
     /// <summary>
     /// View model for managing and displaying system logs.
     /// </summary>
     public class LoggerViewModel : BaseViewModel, ILoggerViewModel
     {
-        private readonly ILoggerManagerModel loggerManager;
+        private readonly ILoggerService loggerManager;
         private string userIdInput = string.Empty;
         private ActionType selectedActionType;
         private DateTime selectedTimestamp = DateTime.Now;
@@ -29,7 +29,7 @@ namespace Hospital.ViewModels
         /// Initializes a new instance of the <see cref="LoggerViewModel"/> class.
         /// </summary>
         /// <param name="loggerManager">The logger manager model interface.</param>
-        public LoggerViewModel(ILoggerManagerModel loggerManager)
+        public LoggerViewModel(ILoggerService loggerManager)
         {
             this.loggerManager = loggerManager ?? throw new ArgumentNullException(nameof(loggerManager));
             this.Logs = new ObservableCollection<LogEntryModel>();

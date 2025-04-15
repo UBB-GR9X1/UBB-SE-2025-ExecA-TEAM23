@@ -1,5 +1,5 @@
-﻿using Hospital.Managers;
-using Hospital.Models;
+﻿using Hospital.Models;
+using Hospital.Repositories;
 using Hospital.Services;
 using Moq;
 
@@ -8,14 +8,14 @@ namespace AdminDashboardTests
     [TestFixture]
     public class SearchDoctorsServiceTests
     {
-        private Mock<IDoctorsDatabaseHelper> _mockDatabaseHelper;
+        private Mock<IDoctorRepository> _mockDoctorRepository;
         private SearchDoctorsService _searchDoctorsService;
 
         [SetUp]
         public void Setup()
         {
-            _mockDatabaseHelper = new Mock<IDoctorsDatabaseHelper>();
-            _searchDoctorsService = new SearchDoctorsService(_mockDatabaseHelper.Object);
+            _mockDoctorRepository = new Mock<IDoctorRepository>();
+            _searchDoctorsService = new SearchDoctorsService(_mockDoctorRepository.Object);
         }
 
        
@@ -26,9 +26,9 @@ namespace AdminDashboardTests
             {
                 new DoctorModel { DoctorId = 1, DoctorName = "Dr. A", DepartmentName = "Cardio" }
             };
-            _mockDatabaseHelper.Setup(helper => helper.GetDoctorsByDepartmentPartialName("test"))
+            _mockDoctorRepository.Setup(helper => helper.GetDoctorsByDepartmentPartialName("test"))
                 .ReturnsAsync(departmentDoctors);
-            _mockDatabaseHelper.Setup(helper => helper.GetDoctorsByPartialDoctorName("test"))
+            _mockDoctorRepository.Setup(helper => helper.GetDoctorsByPartialDoctorName("test"))
                 .ReturnsAsync(new List<DoctorModel>());
 
             await _searchDoctorsService.LoadDoctors("test");
@@ -43,9 +43,9 @@ namespace AdminDashboardTests
             {
                 new DoctorModel { DoctorId = 2, DoctorName = "Dr. B", DepartmentName = "Neuro" }
             };
-            _mockDatabaseHelper.Setup(helper => helper.GetDoctorsByDepartmentPartialName("test"))
+            _mockDoctorRepository.Setup(helper => helper.GetDoctorsByDepartmentPartialName("test"))
                 .ReturnsAsync(new List<DoctorModel>());
-            _mockDatabaseHelper.Setup(helper => helper.GetDoctorsByPartialDoctorName("test"))
+            _mockDoctorRepository.Setup(helper => helper.GetDoctorsByPartialDoctorName("test"))
                 .ReturnsAsync(nameDoctors);
 
             await _searchDoctorsService.LoadDoctors("test");
@@ -65,9 +65,9 @@ namespace AdminDashboardTests
                 new DoctorModel { DoctorId = 2, DoctorName = "Dr. B", DepartmentName = "Neuro" }
             };
 
-            _mockDatabaseHelper.Setup(helper => helper.GetDoctorsByDepartmentPartialName("test"))
+            _mockDoctorRepository.Setup(helper => helper.GetDoctorsByDepartmentPartialName("test"))
                 .ReturnsAsync(doctorsFromDept);
-            _mockDatabaseHelper.Setup(helper => helper.GetDoctorsByPartialDoctorName("test"))
+            _mockDoctorRepository.Setup(helper => helper.GetDoctorsByPartialDoctorName("test"))
                 .ReturnsAsync(doctorsFromName);
 
             await _searchDoctorsService.LoadDoctors("test");
@@ -81,9 +81,9 @@ namespace AdminDashboardTests
             var duplicateDoctor = new DoctorModel { DoctorId = 1, DoctorName = "Dr. A", DepartmentName = "Cardio" };
             var doctorList = new List<DoctorModel> { duplicateDoctor };
 
-            _mockDatabaseHelper.Setup(helper => helper.GetDoctorsByDepartmentPartialName("duplicate"))
+            _mockDoctorRepository.Setup(helper => helper.GetDoctorsByDepartmentPartialName("duplicate"))
                 .ReturnsAsync(doctorList);
-            _mockDatabaseHelper.Setup(helper => helper.GetDoctorsByPartialDoctorName("duplicate"))
+            _mockDoctorRepository.Setup(helper => helper.GetDoctorsByPartialDoctorName("duplicate"))
                 .ReturnsAsync(doctorList);
 
             await _searchDoctorsService.LoadDoctors("duplicate");
@@ -94,7 +94,7 @@ namespace AdminDashboardTests
         [Test]
         public async Task LoadDoctors_WhenExceptionOccurs_ShouldNotThrow()
         {
-            _mockDatabaseHelper.Setup(helper => helper.GetDoctorsByDepartmentPartialName(It.IsAny<string>()))
+            _mockDoctorRepository.Setup(helper => helper.GetDoctorsByDepartmentPartialName(It.IsAny<string>()))
                 .ThrowsAsync(new Exception("Simulated error"));
 
             Assert.DoesNotThrowAsync(async () => await _searchDoctorsService.LoadDoctors("error"));
@@ -126,9 +126,9 @@ namespace AdminDashboardTests
                 new DoctorModel { DoctorId = 3, DoctorName = "Dr. M", Rating = 4.8, DepartmentName = "Dermatology" }
             };
 
-            _mockDatabaseHelper.Setup(helper => helper.GetDoctorsByDepartmentPartialName(It.IsAny<string>()))
+            _mockDoctorRepository.Setup(helper => helper.GetDoctorsByDepartmentPartialName(It.IsAny<string>()))
                 .ReturnsAsync(doctors);
-            _mockDatabaseHelper.Setup(helper => helper.GetDoctorsByPartialDoctorName(It.IsAny<string>()))
+            _mockDoctorRepository.Setup(helper => helper.GetDoctorsByPartialDoctorName(It.IsAny<string>()))
                 .ReturnsAsync(new List<DoctorModel>());
 
             await _searchDoctorsService.LoadDoctors("sort");

@@ -1,16 +1,16 @@
-﻿using Hospital.Configs;
-using Hospital.Models;
-using Microsoft.Data.SqlClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Hospital.Configs;
+using Hospital.Models;
+using Microsoft.Data.SqlClient;
 
-namespace Hospital.DatabaseServices
+namespace Hospital.Repositories
 {
-    public class PatientsDatabaseService : IPatientsDatabaseService
+    public class PatientRepository : IPatientRepository
     {
         private readonly Config _config;
-        public PatientsDatabaseService()
+        public PatientRepository()
         {
             _config = Config.GetInstance();
         }

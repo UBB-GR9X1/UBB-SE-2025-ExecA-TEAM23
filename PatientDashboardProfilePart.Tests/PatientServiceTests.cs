@@ -1,6 +1,4 @@
 ﻿using FluentAssertions;
-using Hospital.Managers;
-using Hospital.DatabaseServices;
 using Hospital.Exceptions;
 using Moq;
 using System;
@@ -8,26 +6,28 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Hospital.Models;
+using Hospital.Repositories;
+using Hospital.Services;
 
 namespace PatientDashboardProfilePart.Tests
 {
-    public class PatientManagerModelTests
+    public class PatientServiceTests
     {
-        private readonly Mock<PatientsDatabaseService> _dbMock;
-        private readonly PatientManagerModel _manager;
+        private readonly Mock<PatientRepository> _mockPatientRepository;
+        private readonly PatientService _patientService;
 
-        public PatientManagerModelTests()
+        public PatientServiceTests()
         {
-            _dbMock = new Mock<PatientsDatabaseService>();
-            _manager = new PatientManagerModel(_dbMock.Object);
+            _mockPatientRepository = new Mock<PatientRepository>();
+            _patientService = new PatientService(_mockPatientRepository.Object);
         }
 
         [Fact]
         public async Task UpdateEmail_ValidEmail_ReturnsTrue()
         {
-            _dbMock.Setup(x => x.UpdateEmail(1, "test@email.com")).ReturnsAsync(true);
+            _mockPatientRepository.Setup(x => x.UpdateEmail(1, "test@email.com")).ReturnsAsync(true);
 
-            var result = await _manager.UpdateEmail(1, "test@email.com");
+            var result = await _patientService.UpdateEmail(1, "test@email.com");
 
             result.Should().BeTrue();
         }
@@ -35,7 +35,7 @@ namespace PatientDashboardProfilePart.Tests
         [Fact]
         public async Task UpdateEmail_InvalidEmail_Throws()
         {
-            var action = async () => await _manager.UpdateEmail(1, "bademail");
+            var action = async () => await _patientService.UpdateEmail(1, "bademail");
 
             await action.Should().ThrowAsync<InputProfileException>();
         }
@@ -45,7 +45,7 @@ namespace PatientDashboardProfilePart.Tests
         {
             string longEmail = new string('a', 101) + "@mail.com";
 
-            var action = async () => await _manager.UpdateEmail(1, longEmail);
+            var action = async () => await _patientService.UpdateEmail(1, longEmail);
 
             await action.Should().ThrowAsync<InputProfileException>().WithMessage("*cannot exceed 100*");
         }
@@ -53,9 +53,9 @@ namespace PatientDashboardProfilePart.Tests
         [Fact]
         public async Task UpdatePhoneNumber_Valid_ReturnsTrue()
         {
-            _dbMock.Setup(x => x.UpdatePhoneNumber(1, "0712345678")).ReturnsAsync(true);
+            _mockPatientRepository.Setup(x => x.UpdatePhoneNumber(1, "0712345678")).ReturnsAsync(true);
 
-            var result = await _manager.UpdatePhoneNumber(1, "0712345678");
+            var result = await _patientService.UpdatePhoneNumber(1, "0712345678");
 
             result.Should().BeTrue();
         }
@@ -63,7 +63,7 @@ namespace PatientDashboardProfilePart.Tests
         [Fact]
         public async Task UpdatePhoneNumber_Invalid_Throws()
         {
-            var action = async () => await _manager.UpdatePhoneNumber(1, "1234");
+            var action = async () => await _patientService.UpdatePhoneNumber(1, "1234");
 
             await action.Should().ThrowAsync<InputProfileException>();
         }
@@ -71,9 +71,9 @@ namespace PatientDashboardProfilePart.Tests
         [Fact]
         public async Task UpdatePassword_ValidPassword_ReturnsTrue()
         {
-            _dbMock.Setup(x => x.UpdatePassword(1, "securePass123")).ReturnsAsync(true);
+            _mockPatientRepository.Setup(x => x.UpdatePassword(1, "securePass123")).ReturnsAsync(true);
 
-            var result = await _manager.UpdatePassword(1, "securePass123");
+            var result = await _patientService.UpdatePassword(1, "securePass123");
 
             result.Should().BeTrue();
         }
@@ -81,7 +81,7 @@ namespace PatientDashboardProfilePart.Tests
         [Fact]
         public async Task UpdatePassword_Empty_Throws()
         {
-            var action = async () => await _manager.UpdatePassword(1, "");
+            var action = async () => await _patientService.UpdatePassword(1, "");
 
             await action.Should().ThrowAsync<InputProfileException>().WithMessage("*empty or contain spaces*");
         }
@@ -91,7 +91,7 @@ namespace PatientDashboardProfilePart.Tests
         {
             string longPassword = new string('a', 256);
 
-            var action = async () => await _manager.UpdatePassword(1, longPassword);
+            var action = async () => await _patientService.UpdatePassword(1, longPassword);
 
             await action.Should().ThrowAsync<InputProfileException>().WithMessage("*cannot exceed 255*");
         }
@@ -99,7 +99,7 @@ namespace PatientDashboardProfilePart.Tests
         [Fact]
         public async Task UpdateUsername_WithSpaces_Throws()
         {
-            var action = async () => await _manager.UpdateUsername(1, "bad username");
+            var action = async () => await _patientService.UpdateUsername(1, "bad username");
 
             await action.Should().ThrowAsync<InputProfileException>().WithMessage("*cannot be empty or contain spaces*");
         }
@@ -107,7 +107,7 @@ namespace PatientDashboardProfilePart.Tests
         [Fact]
         public async Task UpdateName_InvalidNameWithDigits_Throws()
         {
-            var action = async () => await _manager.UpdateName(1, "John123");
+            var action = async () => await _patientService.UpdateName(1, "John123");
 
             await action.Should().ThrowAsync<InputProfileException>().WithMessage("*contain digits*");
         }
@@ -117,9 +117,9 @@ namespace PatientDashboardProfilePart.Tests
         {
             var date = DateOnly.FromDateTime(DateTime.Today);
 
-            _dbMock.Setup(x => x.UpdateBirthDate(1, date)).ReturnsAsync(true);
+            _mockPatientRepository.Setup(x => x.UpdateBirthDate(1, date)).ReturnsAsync(true);
 
-            var result = await _manager.UpdateBirthDate(1, date);
+            var result = await _patientService.UpdateBirthDate(1, date);
 
             result.Should().BeTrue();
         }
@@ -129,7 +129,7 @@ namespace PatientDashboardProfilePart.Tests
         {
             string longAddress = new string('a', 256);
 
-            var action = async () => await _manager.UpdateAddress(1, longAddress);
+            var action = async () => await _patientService.UpdateAddress(1, longAddress);
 
             await action.Should().ThrowAsync<InputProfileException>().WithMessage("*cannot exceed 255*");
         }
@@ -137,7 +137,7 @@ namespace PatientDashboardProfilePart.Tests
         [Fact]
         public async Task UpdateEmergencyContact_NonDigits_Throws()
         {
-            var action = async () => await _manager.UpdateEmergencyContact(1, "123abc4567");
+            var action = async () => await _patientService.UpdateEmergencyContact(1, "123abc4567");
 
             await action.Should().ThrowAsync<InputProfileException>().WithMessage("*Only digits are allowed*");
         }
@@ -145,7 +145,7 @@ namespace PatientDashboardProfilePart.Tests
         [Fact]
         public async Task UpdateHeight_Invalid_Throws()
         {
-            var action = async () => await _manager.UpdateHeight(1, 0);
+            var action = async () => await _patientService.UpdateHeight(1, 0);
 
             await action.Should().ThrowAsync<InputProfileException>().WithMessage("*must be greater than 0*");
         }
@@ -153,9 +153,9 @@ namespace PatientDashboardProfilePart.Tests
         [Fact]
         public async Task LoadPatientInfoByUserId_ReturnsTrue()
         {
-            _dbMock.Setup(x => x.GetPatientByUserId(1)).ReturnsAsync(new PatientJointModel(1, 1, "Test", "", "", "", 60, 170, "user", "pass", "email", DateOnly.FromDateTime(DateTime.Now), "123", "addr", "0123456789", DateTime.Now));
+            _mockPatientRepository.Setup(x => x.GetPatientByUserId(1)).ReturnsAsync(new PatientJointModel(1, 1, "Test", "", "", "", 60, 170, "user", "pass", "email", DateOnly.FromDateTime(DateTime.Now), "123", "addr", "0123456789", DateTime.Now));
 
-            var result = await _manager.LoadPatientInfoByUserId(1);
+            var result = await _patientService.LoadPatientInfoByUserId(1);
 
             result.Should().BeTrue();
         }
@@ -163,9 +163,9 @@ namespace PatientDashboardProfilePart.Tests
         [Fact]
         public async Task LogUpdate_ValidAction_ReturnsTrue()
         {
-            _dbMock.Setup(x => x.LogUpdate(1, ActionType.UPDATE_PROFILE)).ReturnsAsync(true);
+            _mockPatientRepository.Setup(x => x.LogUpdate(1, ActionType.UPDATE_PROFILE)).ReturnsAsync(true);
 
-            var result = await _manager.LogUpdate(1, ActionType.UPDATE_PROFILE);
+            var result = await _patientService.LogUpdate(1, ActionType.UPDATE_PROFILE);
 
             result.Should().BeTrue();
         }

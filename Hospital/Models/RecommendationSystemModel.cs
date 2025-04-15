@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Hospital.Managers;
+    using Hospital.Services;
 
     /// <summary>
     /// The model of our recommendation system.

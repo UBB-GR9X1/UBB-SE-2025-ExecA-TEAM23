@@ -1,20 +1,20 @@
 ﻿using Hospital.Models;
-using Hospital.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hospital.Repositories;
 
-namespace Hospital.Managers
+namespace Hospital.Services
 {
     public class SearchDoctorsService : ISearchDoctorsService
     {
-        private readonly IDoctorsDatabaseHelper _doctorsDatabaseHelper;
+        private readonly IDoctorRepository _doctorRepository;
         public List<DoctorModel> AvailableDoctors { get; private set; }
 
-        public SearchDoctorsService(IDoctorsDatabaseHelper doctorsDatabaseHelper)
+        public SearchDoctorsService(IDoctorRepository doctorRepository)
         {
-            _doctorsDatabaseHelper = doctorsDatabaseHelper;
+            _doctorRepository = doctorRepository;
             AvailableDoctors = new List<DoctorModel>();
         }
 
@@ -23,8 +23,8 @@ namespace Hospital.Managers
             try
             {
                 AvailableDoctors.Clear();
-                var doctorsByDepartment = await _doctorsDatabaseHelper.GetDoctorsByDepartmentPartialName(searchTerm);
-                var doctorsByName = await _doctorsDatabaseHelper.GetDoctorsByPartialDoctorName(searchTerm);
+                var doctorsByDepartment = await _doctorRepository.GetDoctorsByDepartmentPartialName(searchTerm);
+                var doctorsByName = await _doctorRepository.GetDoctorsByPartialDoctorName(searchTerm);
 
                 foreach (var doctor in doctorsByDepartment)
                 {
