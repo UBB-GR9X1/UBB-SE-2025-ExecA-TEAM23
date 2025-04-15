@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Hospital.Managers
 {
-    public class PatientManagerModel
+    public class PatientManagerModel : IPatientManagerModel
     {
-        private readonly PatientsDatabaseService _patientsDatabaseService;
+        private readonly IPatientsDatabaseService _patientsDatabaseService;
 
         //Use this for working on a specific patient
         public PatientJointModel _patientInfo { get; private set; } = PatientJointModel.Default;
@@ -22,7 +22,7 @@ namespace Hospital.Managers
         public PatientManagerModel() : this(new PatientsDatabaseService()) { }
 
         // Second constructor for test injection
-        public PatientManagerModel(PatientsDatabaseService testService)
+        public PatientManagerModel(IPatientsDatabaseService testService)
         {
             _patientsDatabaseService = testService;
         }
