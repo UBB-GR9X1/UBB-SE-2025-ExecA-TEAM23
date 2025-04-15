@@ -25,5 +25,7 @@ namespace Hospital.Doctor_Dashboard
         Task<bool> LogUpdate(int userId, ActionType action);
 
         DoctorModel DoctorInformation { get; }
+
+
     }
 }

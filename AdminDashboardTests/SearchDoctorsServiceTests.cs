@@ -1,113 +1,112 @@
-﻿using Hospital.DatabaseServices;
-using Hospital.Managers;
+﻿using Hospital.Managers;
 using Hospital.Models;
+using Hospital.Services;
 using Moq;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AdminDashboardTests
 {
     [TestFixture]
     public class SearchDoctorsServiceTests
     {
-        private Mock<IDoctorsDatabaseHelper> _mockDoctorDbHelper;
-        private SearchDoctorsService _service;
+        private Mock<IDoctorsDatabaseHelper> _mockDatabaseHelper;
+        private SearchDoctorsService _searchDoctorsService;
 
         [SetUp]
         public void Setup()
         {
-            _mockDoctorDbHelper = new Mock<IDoctorsDatabaseHelper>();
-            _service = new SearchDoctorsService(_mockDoctorDbHelper.Object);
+            _mockDatabaseHelper = new Mock<IDoctorsDatabaseHelper>();
+            _searchDoctorsService = new SearchDoctorsService(_mockDatabaseHelper.Object);
         }
 
+       
         [Test]
-        public void Constructor_ShouldInitializeAvailableDoctors()
+        public async Task LoadDoctors_WhenLoaded_ShouldIncludeDepartmentDoctors()
         {
-            // Assert
-            Assert.IsNotNull(_service.AvailableDoctors);
-            Assert.IsEmpty(_service.AvailableDoctors);
-        }
-
-        [Test]
-        public async Task LoadDoctors_ShouldLoadAndMergeUniqueDoctors()
-        {
-            // Arrange
-            var deptDoctors = new List<DoctorModel>
-            {
-                new DoctorModel { DoctorId = 1, DoctorName = "Dr. A", DepartmentName = "Cardio", Rating = 4.5 }
-            };
-
-            var nameDoctors = new List<DoctorModel>
-            {
-                new DoctorModel { DoctorId = 2, DoctorName = "Dr. B", DepartmentName = "Neuro", Rating = 4.7 }
-            };
-
-            _mockDoctorDbHelper.Setup(db => db.GetDoctorsByDepartmentPartialName("test"))
-                .ReturnsAsync(deptDoctors);
-
-            _mockDoctorDbHelper.Setup(db => db.GetDoctorsByPartialDoctorName("test"))
-                .ReturnsAsync(nameDoctors);
-
-            // Act
-            await _service.LoadDoctors("test");
-
-            // Assert
-            Assert.AreEqual(2, _service.AvailableDoctors.Count);
-            Assert.IsTrue(_service.AvailableDoctors.Any(d => d.DoctorId == 1));
-            Assert.IsTrue(_service.AvailableDoctors.Any(d => d.DoctorId == 2));
-        }
-
-        [Test]
-        public async Task LoadDoctors_ShouldNotDuplicateDoctorsWithSameId()
-        {
-            // Arrange
-            var deptDoctors = new List<DoctorModel>
+            var departmentDoctors = new List<DoctorModel>
             {
                 new DoctorModel { DoctorId = 1, DoctorName = "Dr. A", DepartmentName = "Cardio" }
             };
+            _mockDatabaseHelper.Setup(helper => helper.GetDoctorsByDepartmentPartialName("test"))
+                .ReturnsAsync(departmentDoctors);
+            _mockDatabaseHelper.Setup(helper => helper.GetDoctorsByPartialDoctorName("test"))
+                .ReturnsAsync(new List<DoctorModel>());
 
+            await _searchDoctorsService.LoadDoctors("test");
+
+            Assert.IsTrue(_searchDoctorsService.AvailableDoctors.Any(d => d.DoctorId == 1));
+        }
+
+        [Test]
+        public async Task LoadDoctors_WhenLoaded_ShouldIncludeNameDoctors()
+        {
             var nameDoctors = new List<DoctorModel>
+            {
+                new DoctorModel { DoctorId = 2, DoctorName = "Dr. B", DepartmentName = "Neuro" }
+            };
+            _mockDatabaseHelper.Setup(helper => helper.GetDoctorsByDepartmentPartialName("test"))
+                .ReturnsAsync(new List<DoctorModel>());
+            _mockDatabaseHelper.Setup(helper => helper.GetDoctorsByPartialDoctorName("test"))
+                .ReturnsAsync(nameDoctors);
+
+            await _searchDoctorsService.LoadDoctors("test");
+
+            Assert.IsTrue(_searchDoctorsService.AvailableDoctors.Any(d => d.DoctorId == 2));
+        }
+
+        [Test]
+        public async Task LoadDoctors_WhenSourcesReturnUniqueDoctors_ShouldResultInCountOfTwo()
+        {
+            var doctorsFromDept = new List<DoctorModel>
             {
                 new DoctorModel { DoctorId = 1, DoctorName = "Dr. A", DepartmentName = "Cardio" }
             };
+            var doctorsFromName = new List<DoctorModel>
+            {
+                new DoctorModel { DoctorId = 2, DoctorName = "Dr. B", DepartmentName = "Neuro" }
+            };
 
-            _mockDoctorDbHelper.Setup(db => db.GetDoctorsByDepartmentPartialName("cardio"))
-                .ReturnsAsync(deptDoctors);
+            _mockDatabaseHelper.Setup(helper => helper.GetDoctorsByDepartmentPartialName("test"))
+                .ReturnsAsync(doctorsFromDept);
+            _mockDatabaseHelper.Setup(helper => helper.GetDoctorsByPartialDoctorName("test"))
+                .ReturnsAsync(doctorsFromName);
 
-            _mockDoctorDbHelper.Setup(db => db.GetDoctorsByPartialDoctorName("cardio"))
-                .ReturnsAsync(nameDoctors);
+            await _searchDoctorsService.LoadDoctors("test");
 
-            // Act
-            await _service.LoadDoctors("cardio");
-
-            // Assert
-            Assert.AreEqual(1, _service.AvailableDoctors.Count);
+            Assert.AreEqual(2, _searchDoctorsService.AvailableDoctors.Count);
         }
 
         [Test]
-        public async Task LoadDoctors_ShouldHandleExceptionsGracefully()
+        public async Task LoadDoctors_WhenDuplicatesExist_ShouldResultInOnlyOneDoctor()
         {
-            // Arrange
-            _mockDoctorDbHelper.Setup(db => db.GetDoctorsByDepartmentPartialName(It.IsAny<string>()))
-                .ThrowsAsync(new Exception("Test error"));
+            var duplicateDoctor = new DoctorModel { DoctorId = 1, DoctorName = "Dr. A", DepartmentName = "Cardio" };
+            var doctorList = new List<DoctorModel> { duplicateDoctor };
 
-            // Act & Assert (no crash)
-            Assert.DoesNotThrowAsync(async () => await _service.LoadDoctors("anything"));
+            _mockDatabaseHelper.Setup(helper => helper.GetDoctorsByDepartmentPartialName("duplicate"))
+                .ReturnsAsync(doctorList);
+            _mockDatabaseHelper.Setup(helper => helper.GetDoctorsByPartialDoctorName("duplicate"))
+                .ReturnsAsync(doctorList);
+
+            await _searchDoctorsService.LoadDoctors("duplicate");
+
+            Assert.AreEqual(1, _searchDoctorsService.AvailableDoctors.Count);
         }
 
         [Test]
-        public void GetSearchedDoctors_ShouldReturnAvailableDoctors()
+        public async Task LoadDoctors_WhenExceptionOccurs_ShouldNotThrow()
         {
-            // Arrange
-            _service.AvailableDoctors.Add(new DoctorModel { DoctorId = 1 });
+            _mockDatabaseHelper.Setup(helper => helper.GetDoctorsByDepartmentPartialName(It.IsAny<string>()))
+                .ThrowsAsync(new Exception("Simulated error"));
 
-            // Act
-            var result = _service.GetSearchedDoctors();
+            Assert.DoesNotThrowAsync(async () => await _searchDoctorsService.LoadDoctors("error"));
+        }
 
-            // Assert
+        [Test]
+        public void GetSearchedDoctors_WhenOneDoctorExists_ShouldReturnCountOne()
+        {
+            _searchDoctorsService.AvailableDoctors.Add(new DoctorModel { DoctorId = 1 });
+
+            var result = _searchDoctorsService.GetSearchedDoctors();
+
             Assert.AreEqual(1, result.Count);
         }
 
@@ -117,31 +116,26 @@ namespace AdminDashboardTests
         [TestCase(SortCriteria.NameDescending)]
         [TestCase(SortCriteria.DepartmentAscending)]
         [TestCase(SortCriteria.RatingThenNameThenDepartment)]
-        [TestCase((SortCriteria)999)] // default
-
-        public async Task GetDoctorsSortedBy_ShouldReturnSortedDoctors(SortCriteria sortCriteria)
+        [TestCase((SortCriteria)999)]
+        public async Task GetDoctorsSortedBy_WhenSortingCalled_ShouldReturnSortedListOfThree(SortCriteria sortCriteria)
         {
-            // Arrange
-            var testDoctors = new List<DoctorModel>
+            var doctors = new List<DoctorModel>
             {
                 new DoctorModel { DoctorId = 1, DoctorName = "Dr. Z", Rating = 3.2, DepartmentName = "Neurology" },
                 new DoctorModel { DoctorId = 2, DoctorName = "Dr. A", Rating = 4.8, DepartmentName = "Cardiology" },
                 new DoctorModel { DoctorId = 3, DoctorName = "Dr. M", Rating = 4.8, DepartmentName = "Dermatology" }
             };
 
-            _mockDoctorDbHelper.Setup(db => db.GetDoctorsByDepartmentPartialName(It.IsAny<string>()))
-                .ReturnsAsync(testDoctors);
+            _mockDatabaseHelper.Setup(helper => helper.GetDoctorsByDepartmentPartialName(It.IsAny<string>()))
+                .ReturnsAsync(doctors);
+            _mockDatabaseHelper.Setup(helper => helper.GetDoctorsByPartialDoctorName(It.IsAny<string>()))
+                .ReturnsAsync(new List<DoctorModel>());
 
-            _mockDoctorDbHelper.Setup(db => db.GetDoctorsByPartialDoctorName(It.IsAny<string>()))
-                .ReturnsAsync(new List<DoctorModel>()); // no duplicates
+            await _searchDoctorsService.LoadDoctors("sort");
 
-            await _service.LoadDoctors("test");
+            var sortedDoctors = _searchDoctorsService.GetDoctorsSortedBy(sortCriteria);
 
-            // Act
-            var sortedList = _service.GetDoctorsSortedBy(sortCriteria);
-
-            // Assert
-            Assert.AreEqual(3, sortedList.Count);
+            Assert.AreEqual(3, sortedDoctors.Count);
         }
     }
 }
