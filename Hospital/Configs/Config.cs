@@ -61,7 +61,7 @@ namespace Hospital.Configs
 
         // private string _databaseConnection = "Data Source=DESKTOP-5A6VJDA;Initial Catalog=HospitalDB;Integrated Security=True;TrustServerCertificate=True";
 
-        private readonly string databaseConnection = "Data Source=BLK16\\SQLEXPRESS;Initial Catalog=HospitalApp;Integrated Security=True;TrustServerCertificate=True";
+        private readonly string databaseConnection = "Data Source=DESKTOP-HGL99LI\SQLEXPRESS;Initial Catalog=HospitalApp;Integrated Security=True;TrustServerCertificate=True";
 
         /// <summary>
         /// Gets the database connection.

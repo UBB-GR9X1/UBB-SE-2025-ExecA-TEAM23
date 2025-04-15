@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace Hospital.ViewModels
 {
-    public class PatientViewModel : INotifyPropertyChanged
+    public class PatientViewModel : IPatientViewModel
     {
-        private readonly PatientManagerModel _patientManager;
+        private readonly IPatientManagerModel _patientManager;
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public PatientJointModel _originalPatient { get; private set; }
 
-        public PatientViewModel(PatientManagerModel patientManager, int userId)
+        public PatientViewModel(IPatientManagerModel patientManager, int userId)
         {
             _patientManager = patientManager;
             _userId = userId;
