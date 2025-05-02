@@ -1,4 +1,4 @@
-﻿// <copyright file="CreateAccountView.xaml.cs" company="PlaceholderCompany">
+﻿// <copyright file="CreateAccountPage.xaml.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
@@ -13,25 +13,47 @@ namespace Hospital
     using Microsoft.Data.SqlClient;
     using Microsoft.UI.Xaml;
     using Microsoft.UI.Xaml.Controls;
+    using Microsoft.UI.Xaml.Navigation;
 
     /// <summary>
     /// The create an account window for the hospital application:
     /// Asks for user information necessary for creating an account.
     /// Creates a new account if the information is valid, otherwise it throws exceptions that will be seen by the user.
     /// </summary>
-    public sealed partial class CreateAccountView : Window
+    public sealed partial class CreateAccountPage : Page
     {
 
         private AuthViewModel viewModelCreateAccount;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CreateAccountView"/> class.
+        /// Initializes a new instance of the <see cref="CreateAccountPage"/> class.
+        /// </summary>
+        public CreateAccountPage()
+        {
+            this.InitializeComponent();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CreateAccountPage"/> class.
         /// </summary>
         /// <param name="authviewModel">View Model for Creating an account.</param>
-        public CreateAccountView(AuthViewModel authviewModel)
+        public CreateAccountPage(AuthViewModel authviewModel)
         {
             this.InitializeComponent();
             this.viewModelCreateAccount = authviewModel;
+        }
+
+        /// <summary>
+        /// Handle navigation parameters
+        /// </summary>
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            if (e.Parameter is AuthViewModel authViewModel)
+            {
+                this.viewModelCreateAccount = authViewModel;
+            }
         }
 
         private async void CreateAccountButton_Click(object sender, RoutedEventArgs e)
@@ -96,9 +118,14 @@ namespace Hospital
 
                     PatientService patientService = new PatientService();
                     PatientViewModel patientViewModel = new PatientViewModel(patientService, this.viewModelCreateAccount.AuthService.allUserInformation.UserId);
-                    PatientDashboardWindow patientDashboardWindow = new PatientDashboardWindow(patientViewModel, this.viewModelCreateAccount);
-                    patientDashboardWindow.Activate();
-                    this.Close();
+                    // Navigate to PatientDashboardPage
+                    if (App.MainWindow is LoginWindow loginWindow)
+                    {
+                        var parameters = new Tuple<IPatientViewModel, IAuthViewModel>(patientViewModel, this.viewModelCreateAccount);
+                        loginWindow.ReturnToLogin();
+                        // Optionally navigate to patient dashboard if auto-login is desired
+                        // loginWindow.mainFrame.Navigate(typeof(PatientDashboardPage), parameters);
+                    }
                     return;
 
                 }
@@ -141,9 +168,10 @@ namespace Hospital
 
         private void GoBackButton_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow main = new MainWindow();
-            main.Activate();
-            this.Close();
+            if (App.MainWindow is LoginWindow loginWindow)
+            {
+                loginWindow.ReturnToLogin();
+            }
         }
     }
 }

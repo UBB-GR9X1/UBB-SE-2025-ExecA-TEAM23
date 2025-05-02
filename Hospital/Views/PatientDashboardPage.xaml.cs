@@ -5,14 +5,20 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using Hospital.Exceptions;
 using System.Threading.Tasks;
+using Microsoft.UI.Xaml.Navigation;
 
 namespace Hospital.Views
 {
-    public sealed partial class PatientDashboardWindow : Window
+    public sealed partial class PatientDashboardPage : Page
     {
-        private readonly IAuthViewModel _authenticationViewModel;
+        private IAuthViewModel _authenticationViewModel;
 
-        public PatientDashboardWindow(IPatientViewModel patientViewModel, IAuthViewModel authenticationViewModel)
+        public PatientDashboardPage()
+        {
+            InitializeComponent();
+        }
+
+        public PatientDashboardPage(IPatientViewModel patientViewModel, IAuthViewModel authenticationViewModel)
         {
             InitializeComponent();
             _authenticationViewModel = authenticationViewModel;
@@ -20,7 +26,23 @@ namespace Hospital.Views
             var patientDashboardControl = new PatientDashboardControl(patientViewModel);
             patientDashboardControl.LogoutButtonClicked += HandleLogoutRequested;
 
-            PatientDashboard.Content = patientDashboardControl;
+            this.Content = patientDashboardControl;
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            if (e.Parameter is Tuple<IPatientViewModel, IAuthViewModel> parameters)
+            {
+                var patientViewModel = parameters.Item1;
+                _authenticationViewModel = parameters.Item2;
+
+                var patientDashboardControl = new PatientDashboardControl(patientViewModel);
+                patientDashboardControl.LogoutButtonClicked += HandleLogoutRequested;
+
+                this.Content = patientDashboardControl;
+            }
         }
 
         private async void HandleLogoutRequested()
@@ -28,9 +50,11 @@ namespace Hospital.Views
             try
             {
                 await _authenticationViewModel.Logout();
-                var loginWindow = new MainWindow();
-                loginWindow.Activate();
-                Close();
+
+                if (App.MainWindow is LoginWindow loginWindow)
+                {
+                    loginWindow.ReturnToLogin();
+                }
             }
             catch (AuthenticationException authenticationException)
             {
