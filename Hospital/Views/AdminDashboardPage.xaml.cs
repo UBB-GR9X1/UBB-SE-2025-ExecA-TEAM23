@@ -1,4 +1,4 @@
-// <copyright file="AdminDashboardWindow.xaml.cs" company="PlaceholderCompany">
+// <copyright file="AdminDashboardPage.xaml.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
@@ -13,26 +13,59 @@ namespace Hospital.Views
     using Microsoft.UI.Xaml;
     using Microsoft.UI.Xaml.Controls;
     using Microsoft.UI.Xaml.Data;
+    using Microsoft.UI.Xaml.Navigation;
 
     /// <summary>
     /// Window for the Admin Dashboard functionality.
     /// </summary>
-    public sealed partial class AdminDashboardWindow : Window
+    public sealed partial class AdminDashboardPage : Page
     {
-        private readonly IAuthViewModel authViewModel;
-        private readonly ILoggerViewModel loggerViewModel;
+        private IAuthViewModel authViewModel;
+        private ILoggerViewModel loggerViewModel;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AdminDashboardWindow"/> class.
+        /// Initializes a new instance of the <see cref="AdminDashboardPage"/> class.
+        /// Default constructor for XAML preview.
+        /// </summary>
+        public AdminDashboardPage()
+        {
+            this.InitializeComponent();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AdminDashboardPage"/> class.
         /// </summary>
         /// <param name="authViewModel">Authentication service for user operations.</param>
         /// <param name="loggerRepository">Logger service for auditing.</param>
         /// <exception cref="ArgumentNullException">Thrown if auth service is null.</exception>
-        public AdminDashboardWindow(IAuthViewModel authViewModel, ILoggerRepository loggerRepository)
+        public AdminDashboardPage(IAuthViewModel authViewModel, ILoggerRepository loggerRepository)
         {
             this.InitializeComponent();
             this.authViewModel = authViewModel ?? throw new ArgumentNullException(nameof(authViewModel));
+            InitializeLogger(loggerRepository ?? throw new ArgumentNullException(nameof(loggerRepository)));
+        }
 
+        /// <summary>
+        /// Override OnNavigatedTo to handle parameters passed during navigation
+        /// </summary>
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            if (e.Parameter is Tuple<IAuthViewModel, ILoggerRepository> parameters)
+            {
+                this.authViewModel = parameters.Item1;
+                InitializeLogger(parameters.Item2);
+            }
+            else if (e.Parameter is ValueTuple<IAuthViewModel, ILoggerRepository> valueTuple)
+            {
+                this.authViewModel = valueTuple.Item1;
+                InitializeLogger(valueTuple.Item2);
+            }
+        }
+
+        private void InitializeLogger(ILoggerRepository loggerRepository)
+        {
             // Initialize LoggerViewModel with LoggerService
             var loggerManagerModel = new LoggerService(loggerRepository);
             this.loggerViewModel = new LoggerViewModel(loggerManagerModel);
@@ -100,7 +133,12 @@ namespace Hospital.Views
             try
             {
                 await this.authViewModel.Logout();
-                this.NavigateToMainWindow();
+
+                // Get the main window which should be LoginWindow
+                if (App.MainWindow is LoginWindow loginWindow)
+                {
+                    loginWindow.ReturnToLogin();
+                }
             }
             catch (Exception exception)
             {
@@ -108,12 +146,6 @@ namespace Hospital.Views
             }
         }
 
-        private void NavigateToMainWindow()
-        {
-            MainWindow mainWindow = new MainWindow();
-            mainWindow.Activate();
-            this.Close();
-        }
 
         private async Task DisplayErrorDialogAsync(string errorMessage)
         {

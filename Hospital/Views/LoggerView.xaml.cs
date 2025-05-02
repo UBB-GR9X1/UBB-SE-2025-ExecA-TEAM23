@@ -23,15 +23,47 @@ using Hospital.Services;
 
 namespace Hospital.Views
 {
-    public sealed partial class LoggerView : Window
+    public sealed partial class LoggerView : Page
     {
-        private readonly LoggerViewModel _loggerViewModel;
+        private LoggerViewModel _loggerViewModel;
 
-        // In LoggerView constructor
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggerView"/> class.
+        /// Default constructor required for XAML preview.
+        /// </summary>
+        public LoggerView()
+        {
+            this.InitializeComponent();
+        }
+
+
+        /// <summary>
+        /// Overrides the OnNavigatedTo method to initialize with parameters.
+        /// </summary>
+        /// <param name="e">Navigation event arguments</param>
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            // Check if we received a repository in navigation
+            if (e.Parameter is ILoggerRepository loggerRepository)
+            {
+                InitializeWithRepository(loggerRepository);
+            }
+        }
+
+        /// <summary>
+        /// Secondary constructor for direct initialization with repository
+        /// </summary>
+        /// <param name="loggerRepository">The logger repository to use</param>
         public LoggerView(ILoggerRepository loggerRepository)
         {
             this.InitializeComponent();
+            InitializeWithRepository(loggerRepository);
+        }
 
+        private void InitializeWithRepository(ILoggerRepository loggerRepository)
+        {
             LoggerService loggerService = new LoggerService(loggerRepository);
             _loggerViewModel = new LoggerViewModel(loggerService);
 

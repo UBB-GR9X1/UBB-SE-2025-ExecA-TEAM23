@@ -80,7 +80,7 @@
             <TextBox Text="{Binding Name, Mode=TwoWay}" Width="300" Grid.Row="1" Grid.Column="0" Margin="30,0,30,30"/>
 
             <TextBlock Text="Mail" Foreground="White" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="30,0,30,0"/>
-            <TextBox Text="{Binding Mail, Mode=TwoWay}" Width="400" Grid.Row="1" Grid.Column="1" Margin="30,0,30,30"/>
+            <TextBox Text="{Binding Email, Mode=TwoWay}" Width="400" Grid.Row="1" Grid.Column="1" Margin="30,0,30,30"/>
 
             <TextBlock Text="Password" Foreground="White" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" Margin="30,0,30,0"/>
             <TextBox Text="{Binding Password, Mode=TwoWay}" Width="400" Grid.Row="1" Grid.Column="2" Margin="30,0,30,30"/>

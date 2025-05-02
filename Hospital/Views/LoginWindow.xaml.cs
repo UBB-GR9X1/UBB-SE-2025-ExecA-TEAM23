@@ -24,6 +24,7 @@ namespace Hospital
     {
 
         private readonly AuthViewModel loginPageViewModel;
+        private Frame mainFrame;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoginWindow"/> class.
@@ -33,9 +34,16 @@ namespace Hospital
         public LoginWindow()
         {
             this.InitializeComponent();
+
             ILogInRepository logInService = new LogInRepository();
             IAuthService service = new AuthService(logInService);
             this.loginPageViewModel = new AuthViewModel(service);
+
+            this.mainFrame = this.LoginFrame;
+
+            this.LoginPanel.Visibility = Visibility.Visible;
+            // Create login form page and navigate to it
+            // this.mainFrame.Navigate(typeof(LoginPage), this.loginPageViewModel);
         }
 
         /// <summary>
@@ -55,15 +63,15 @@ namespace Hospital
             {
                 await this.loginPageViewModel.Login(username, password);
 
+                this.LoginPanel.Visibility = Visibility.Collapsed;
 
                 if (this.loginPageViewModel.GetUserRole() == "Patient")
                 {
                     PatientService patientService = new PatientService();
                     PatientViewModel patientViewModel = new PatientViewModel(patientService, this.loginPageViewModel.AuthService.allUserInformation.UserId);
-                    PatientDashboardWindow patientDashboardWindow = new PatientDashboardWindow(patientViewModel, this.loginPageViewModel);
-                    patientDashboardWindow.Activate();
-                    this.Close();
 
+                    var parameters = new Tuple<IPatientViewModel, IAuthViewModel>(patientViewModel, this.loginPageViewModel);
+                    this.mainFrame.Navigate(typeof(PatientDashboardPage), parameters);
                     return;
                 }
                 else if (this.loginPageViewModel.GetUserRole() == "Doctor")
@@ -71,21 +79,16 @@ namespace Hospital
                     IDoctorRepository doctorRepository = new DoctorRepository();
                     IDoctorService doctorService = new DoctorService(doctorRepository);
                     IDoctorViewModel doctorViewModel = new DoctorViewModel(doctorService, this.loginPageViewModel.AuthService.allUserInformation.UserId);
-                    DoctorDashboardWindow doctorDashboardWindow = new DoctorDashboardWindow(doctorViewModel, this.loginPageViewModel);
-                    doctorDashboardWindow.Activate();
-                    this.Close();
+
+                    var parameters = new Tuple<IDoctorViewModel, AuthViewModel>(doctorViewModel, this.loginPageViewModel);
+                    this.mainFrame.Navigate(typeof(DoctorDashboardPage), parameters);
                     return;
                 }
                 else if (this.loginPageViewModel.GetUserRole() == "Admin")
                 {
                     ILoggerRepository loggerRepository = new LoggerRepository();
-
-                    AdminDashboardWindow adminDashboard = new AdminDashboardWindow(
-                        this.loginPageViewModel,
-                        loggerRepository);
-
-                    adminDashboard.Activate();
-                    this.Close();
+                    var parameters = new Tuple<IAuthViewModel, ILoggerRepository>(this.loginPageViewModel, loggerRepository);
+                    this.mainFrame.Navigate(typeof(AdminDashboardPage), parameters);
                     return;
                 }
 
@@ -121,9 +124,18 @@ namespace Hospital
 
         private void CreateAccountButton_Click(object sender, RoutedEventArgs e)
         {
-            CreateAccountView createAccWindow = new CreateAccountView(this.loginPageViewModel);
-            createAccWindow.Activate();
-            this.Close();
+            this.LoginPanel.Visibility = Visibility.Collapsed;
+            this.mainFrame.Navigate(typeof(CreateAccountPage), this.loginPageViewModel);
+        }
+
+        /// <summary>
+        /// Returns to login from page
+        /// </summary>
+        public void ReturnToLogin()
+        {
+            // Clear the frame and show login controls
+            this.mainFrame.Content = null;
+            this.LoginPanel.Visibility = Visibility.Visible;
         }
     }
 }

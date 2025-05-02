@@ -2,89 +2,33 @@
     x:Class="Hospital.LoginWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="Hospital Management System"
     xmlns:local="using:Hospital"
-    xmlns:views="using:Hospital.Views"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
-
-    <Grid Background="Black">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-
-        <StackPanel Grid.Row="1" Padding="20" Background="Black"
-            Width="300" HorizontalAlignment="Center"
-            VerticalAlignment="Center" Spacing="10">
-
-            <!-- Title -->
-            <TextBlock Text="Login" FontSize="24" FontWeight="Bold"
-               HorizontalAlignment="Center" Margin="0,0,0,10" Foreground="White"/>
-
-            <!-- Username Field -->
-            <TextBox x:Name="UsernameTextField" PlaceholderText="Username"
-             Background="Black" Foreground="White" BorderBrush="Gray" BorderThickness="1" Margin="0,5"/>
-
-            <!-- Password Field -->
-            <PasswordBox x:Name="PasswordTextField" PlaceholderText="Password"
-                 Background="Black" Foreground="White" BorderBrush="Gray" BorderThickness="1" Margin="0,5"/>
-
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
-                <!-- Login Button -->
-                <Button x:Name="LoginButton" Content="Login"
-                Background="#0078D7" Foreground="White"
-                Padding="10" FontWeight="Bold" Click="LoginButton_Click">
-                </Button>
-
-                <!-- Create Account Button -->
-                <Button x:Name="CreateAccount" Content="Create Account"
-                Background="#0078D7" Foreground="White"
-                Padding="10" FontWeight="Bold" Click="CreateAccountButton_Click">
-                </Button>
-
-            </StackPanel>
-            <!-- TESTING RECOMMENDSYS
-            <Grid>
-                <Frame x:Name="MainFrame"/>
-
-                <Button Content="Doctor Guide"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Bottom"
-                Click="TestPatientDashboardButton_Click"/>
-            </Grid>-->
-
-        </StackPanel>
-
-
-
-        <!-- IMPORTANT: I COMMENTED THIS CODE TO HAVE THE AUTHENTICATION ON MAIN WINDOW !!!
-    xmlns:local="using:Hospital"
-    xmlns:views="using:Hospital.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Title="Hospital Management System">
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <!-- Login Panel -->
+        <StackPanel x:Name="LoginPanel" VerticalAlignment="Center" HorizontalAlignment="Center" Width="300">
+            <TextBlock Text="Login" FontSize="24" HorizontalAlignment="Center" Margin="0,0,0,20"/>
 
-        <TextBlock Grid.Row="0" Text="Hospital Management System" 
-                   Style="{StaticResource TitleTextBlockStyle}" 
-                   Margin="20,10" HorizontalAlignment="Center"/>
-        
-        
-        <views:SearchDoctorsView Grid.Row="1" x:Name="searchDoctorsView" 
-                         Width="600" Height="400" 
-                         HorizontalAlignment="Center" 
-                         VerticalAlignment="Center"/>
+            <!-- Username Field -->
+            <TextBlock Text="Username:" Margin="0,5,0,5"/>
+            <TextBox x:Name="UsernameTextField" Margin="0,0,0,10"/>
 
-       IMPORTANT: I COMMENTED THIS CODE TO HAVE THE AUTHENTICATION ON MAIN WINDOW !!!
-        -->
+            <!-- Password Field -->
+            <TextBlock Text="Password:" Margin="0,5,0,5"/>
+            <PasswordBox x:Name="PasswordTextField" Margin="0,0,0,20"/>
+
+            <!-- Buttons -->
+            <Button x:Name="LoginButton" Content="Login" Click="LoginButton_Click" 
+                    HorizontalAlignment="Stretch" Margin="0,0,0,10"/>
+            <Button x:Name="CreateAccountButton" Content="Create Account" Click="CreateAccountButton_Click" 
+                    HorizontalAlignment="Stretch"/>
+        </StackPanel>
+
+        <!-- Frame for Page Navigation -->
+        <Frame x:Name="LoginFrame"/>
     </Grid>
 </Window>
